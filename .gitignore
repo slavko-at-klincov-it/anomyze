@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+*.mapping.json
+mapping.json
+anonymized*.txt
+
+# HuggingFace cache (optional - models are cached in ~/.cache/huggingface)
+# .cache/
