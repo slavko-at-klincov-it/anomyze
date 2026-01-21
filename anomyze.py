@@ -13,6 +13,7 @@ Features:
 import sys
 import json
 import re
+import subprocess
 import torch
 from transformers import pipeline
 from pathlib import Path
@@ -94,6 +95,93 @@ ENTITY_BLACKLIST = {
     # Short fragments that are often subword errors
     'te', 'er', 'en', 'el', 'ho', 'an', 'in', 'um', 'zu',
 }
+
+
+def smooth_text_with_ollama(text, model="qwen2.5:14b"):
+    """
+    Smooth/rewrite text using local Ollama LLM.
+    Protects placeholders like [ORG_1] during processing.
+    """
+    # Step 1: Protect placeholders by replacing with unique tokens
+    placeholder_pattern = r'\[([A-Z_]+_\d+)\]'
+    placeholders = re.findall(placeholder_pattern, text)
+    protected_text = text
+
+    placeholder_map = {}
+    for i, ph in enumerate(set(placeholders)):
+        token = f"§§§PLACEHOLDER{i}§§§"
+        placeholder_map[token] = f"[{ph}]"
+        protected_text = protected_text.replace(f"[{ph}]", token)
+
+    # Step 2: Create prompt for smoothing
+    prompt = f"""Du bist ein Texteditor. Glätte den folgenden deutschen Text:
+
+REGELN:
+- Entferne Füllwörter (ähm, also, halt, ja, mhm, etc.)
+- Korrigiere Grammatik und mache Sätze flüssiger
+- Behalte die Bedeutung und alle Fakten exakt bei
+- WICHTIG: Alle §§§PLACEHOLDER...§§§ Tokens MÜSSEN exakt unverändert bleiben!
+- Entferne keine Informationen
+- Behalte Zeitstempel und Sprechernamen
+
+TEXT:
+{protected_text}
+
+GEGLÄTTETER TEXT:"""
+
+    # Step 3: Call Ollama
+    try:
+        result = subprocess.run(
+            ["ollama", "run", model, prompt],
+            capture_output=True,
+            text=True,
+            timeout=120  # 2 minute timeout
+        )
+
+        if result.returncode != 0:
+            print(f"Ollama error: {result.stderr}")
+            return text  # Return original on error
+
+        smoothed = result.stdout.strip()
+
+        # Step 4: Restore placeholders
+        for token, original in placeholder_map.items():
+            smoothed = smoothed.replace(token, original)
+
+        return smoothed
+
+    except subprocess.TimeoutExpired:
+        print("Ollama timeout - Text zu lang oder Model zu langsam")
+        return text
+    except FileNotFoundError:
+        print("Ollama nicht gefunden. Bitte installieren: https://ollama.ai")
+        return text
+
+
+def fix_encoding(text):
+    """Fix common encoding issues from transcription software."""
+    replacements = {
+        # German umlauts (various broken encodings)
+        '‰': 'ä', 'Š': 'ä',
+        '÷': 'ö', '÷': 'ö',
+        '¸': 'ü', '³': 'ü',
+        'ƒ': 'ä', '÷': 'ö',
+        'ﬂ': 'ß', 'ﬁ': 'ß', '§': 'ß',
+        'Ð': 'Ä', '÷': 'Ö', '⁄': 'Ü',
+        # Common OCR/transcription errors
+        '´': "'", '`': "'",
+        '—': '-', '–': '-',
+        '…': '...',
+        '"': '"', '"': '"',
+        ''': "'", ''': "'",
+        '\u00a0': ' ',  # Non-breaking space
+        '\ufeff': '',   # BOM
+    }
+
+    for wrong, correct in replacements.items():
+        text = text.replace(wrong, correct)
+
+    return text
 
 
 def get_device():
@@ -279,6 +367,9 @@ def find_emails_regex(text):
 
 def anonymize(text, pii_pipeline, org_pipeline, mlm_pipeline):
     """Main anonymization function combining all detection methods."""
+
+    # Fix encoding issues first
+    text = fix_encoding(text)
 
     # Layer 0: Regex fallback for emails (most reliable)
     email_entities = find_emails_regex(text)
@@ -480,14 +571,23 @@ def print_banner():
 
 
 def main():
-    if len(sys.argv) < 2:
+    # Parse arguments
+    args = sys.argv[1:]
+    smooth_enabled = "--smooth" in args
+    if smooth_enabled:
+        args.remove("--smooth")
+
+    if len(args) < 1:
         print_banner()
         print(f"""
     Version {__version__}
 
     Usage:
-      python anomyze.py <input.txt> [output.txt]
-      python anomyze.py --interactive
+      python anomyze.py <input.txt> [output.txt] [--smooth]
+      python anomyze.py --interactive [--smooth]
+
+    Options:
+      --smooth    Glätte Text mit lokalem LLM (Ollama + Qwen)
 
     Detection Layers:
       1. PII Model      → Names, emails, phone numbers
@@ -498,12 +598,15 @@ def main():
 
     print_banner()
 
+    if smooth_enabled:
+        print("    Smooth Mode: ON (Ollama + Qwen)\n")
+
     device, device_name = get_device()
     print(f"    Device: {device_name}\n")
 
     pii_pipeline, org_pipeline, mlm_pipeline = load_models(device)
 
-    if sys.argv[1] == "--interactive":
+    if args[0] == "--interactive":
         print("=" * 60)
         print("Interactive Mode")
         if PROMPT_TOOLKIT_AVAILABLE:
@@ -559,18 +662,29 @@ def main():
                 print("=" * 60)
                 print(anonymized)
 
+                # Optional: Smooth with local LLM
+                if smooth_enabled:
+                    print("\n" + "=" * 60)
+                    print("SMOOTHING TEXT (Ollama)...")
+                    print("=" * 60)
+                    smoothed = smooth_text_with_ollama(anonymized)
+                    print("\n" + "=" * 60)
+                    print("SMOOTHED TEXT")
+                    print("=" * 60)
+                    print(smoothed)
+
             except KeyboardInterrupt:
                 print("\n\nGoodbye!")
                 sys.exit(0)
 
     else:
-        input_path = Path(sys.argv[1])
+        input_path = Path(args[0])
 
         if not input_path.exists():
             print(f"Error: File not found: {input_path}")
             sys.exit(1)
 
-        output_path = Path(sys.argv[2]) if len(sys.argv) > 2 else None
+        output_path = Path(args[1]) if len(args) > 1 else None
         mapping_path = output_path.with_suffix('.mapping.json') if output_path else Path("mapping.json")
 
         print(f"Reading: {input_path}")
@@ -591,14 +705,32 @@ def main():
         mapping_path.write_text(json.dumps(mapping, indent=2, ensure_ascii=False), encoding="utf-8")
         print(f"\nMapping saved to: {mapping_path}")
 
+        # Optional: Smooth with local LLM
+        final_text = anonymized
+        if smooth_enabled:
+            print("\n" + "=" * 60)
+            print("SMOOTHING TEXT (Ollama)...")
+            print("=" * 60)
+            final_text = smooth_text_with_ollama(anonymized)
+            print("Smoothing complete.")
+
         if output_path:
-            output_path.write_text(anonymized, encoding="utf-8")
-            print(f"Anonymized text saved to: {output_path}")
+            output_path.write_text(final_text, encoding="utf-8")
+            print(f"Output saved to: {output_path}")
+
+            # Also save original anonymized version if smoothing was applied
+            if smooth_enabled:
+                raw_path = output_path.with_suffix('.raw.txt')
+                raw_path.write_text(anonymized, encoding="utf-8")
+                print(f"Raw anonymized text saved to: {raw_path}")
         else:
             print("\n" + "=" * 60)
-            print("ANONYMIZED TEXT")
+            if smooth_enabled:
+                print("SMOOTHED TEXT")
+            else:
+                print("ANONYMIZED TEXT")
             print("=" * 60)
-            print(anonymized)
+            print(final_text)
 
 
 if __name__ == "__main__":
