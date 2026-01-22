@@ -48,6 +48,14 @@ COMPANY_CONTEXT_PATTERNS = [
     (r'\b[Vv]on\s+(?:der\s+)?(\w+)\s+(?:bekommen|erhalten|gehört)', 'nach "von X bekommen"', None),
     (r'\b[Zz]ur\s+(\w+)\s+(?:gewechselt|gegangen|gekommen)', 'nach "zur X gewechselt"', None),
     (r'\b[Bb]ei\s+(\w+)\s+(?:angefangen|gestartet|begonnen)', 'nach "bei X angefangen"', None),
+    # Stores and shopping patterns
+    (r'\b[Bb]ei\s+(\w+)\s+(?:einkaufen|eingekauft|shoppen|kaufen|gekauft)', 'nach "bei X einkaufen"', None),
+    (r'\b[Ii]m\s+(\w+)\s+(?:einkaufen|eingekauft|shoppen|kaufen|gekauft)', 'nach "im X einkaufen"', None),
+    (r'\b[Zz]um\s+(\w+)\s+(?:gehen|gegangen|fahren|gefahren)', 'nach "zum X gehen"', None),
+    # Work role patterns
+    (r'\b[Bb]ei\s+(\w+)\s+als\s+\w+\s+(?:arbeite|arbeitet|arbeiten|tätig|angestellt)', 'nach "bei X als [role]"', None),
+    (r'\b[Dd]er\s+bei\s+(\w+)\s+(?:arbeite|arbeitet|arbeiten|tätig|angestellt)', 'nach "der bei X arbeitet"', None),
+    (r'\b[Dd]ie\s+bei\s+(\w+)\s+(?:arbeite|arbeitet|arbeiten|tätig|angestellt)', 'nach "die bei X arbeitet"', None),
     # Banks and financial institutions
     (r'\b(?:der|die|von\s+der)\s+(\w+)\s+([Bb]ank)\b', 'X Bank', 'Bank'),
     (r'\b(\w+)\s+([Bb]ank)\b', 'X Bank', 'Bank'),
@@ -76,7 +84,7 @@ ENTITY_BLACKLIST = {
     'protokoll', 'workshop', 'meeting', 'termin', 'termine',
     'projektleiter', 'projektleiterin', 'leiter', 'leiterin',
     'abteilung', 'it-abteilung', 'it', 'hr', 'pr',
-    'e-mail', 'email', 'mail', 'tel', 'telefon',
+    'e-mail', 'email', 'mail', 'tel', 'telefon', 'telefonnummer',
     'januar', 'februar', 'märz', 'april', 'mai', 'juni',
     'juli', 'august', 'september', 'oktober', 'november', 'dezember',
     'jan', 'feb', 'mär', 'apr', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dez',
@@ -85,6 +93,14 @@ ENTITY_BLACKLIST = {
     'teilnehmer', 'teilnehmerin', 'kunde', 'kundin', 'kunden',
     'kontakt', 'erreichbar', 'büro', 'office', 'zentrale',
     'seine', 'ihre', 'der', 'die', 'das', 'von', 'vom', 'unter',
+    # Pronouns and common words
+    'mein', 'meine', 'meiner', 'meinem', 'meinen',
+    'dein', 'deine', 'deiner', 'deinem', 'deinen',
+    'sein', 'seine', 'seiner', 'seinem', 'seinen',
+    'ihr', 'ihre', 'ihrer', 'ihrem', 'ihren',
+    # Common verbs and activities
+    'einkaufen', 'arbeiten', 'arbeitet', 'gehen', 'kommen', 'machen',
+    'kaufen', 'verkaufen', 'sprechen', 'sagen', 'fragen',
     # E-Mail variations (with various spacing)
     'seine e-mail', 'seine e - mail', 'seine email', 'seine mail',
     'seinee-mail', 'seineemail',  # after space removal
@@ -254,12 +270,24 @@ def clean_entity_word(word, text, start, end):
         start = start + offset
         end = start + len(word)
 
-    # Remove leading articles
-    for prefix in ['der ', 'die ', 'das ', 'dem ', 'den ', 'von ', 'vom ', 'unter ']:
-        if word.lower().startswith(prefix):
-            word = word[len(prefix):]
-            start = start + len(prefix)
-            break
+    # Remove leading articles and common prefix words
+    prefixes_to_remove = [
+        'der ', 'die ', 'das ', 'dem ', 'den ', 'von ', 'vom ', 'unter ',
+        'ist ', 'sind ', 'war ', 'waren ', 'wird ', 'werden ',
+        'hat ', 'haben ', 'hatte ', 'hatten ',
+        'und ', 'oder ', 'aber ', 'auch ',
+        'herrn ', 'frau ', 'herr ',
+    ]
+
+    changed = True
+    while changed:
+        changed = False
+        for prefix in prefixes_to_remove:
+            if word.lower().startswith(prefix):
+                word = word[len(prefix):]
+                start = start + len(prefix)
+                changed = True
+                break
 
     # Remove trailing punctuation that got included
     while word and word[-1] in '.,;:!?)':
@@ -365,6 +393,27 @@ def find_emails_regex(text):
     return emails
 
 
+def find_titled_names_regex(text):
+    """Find person names with titles like 'Herrn Schmidt', 'Frau Müller'."""
+    # Pattern for names with titles - captures the name after the title
+    title_pattern = r'\b(?:Herrn?|Frau|Dr\.|Prof\.?|Mag\.?)\s+([A-ZÄÖÜ][a-zäöüß]+(?:\s+[A-ZÄÖÜ][a-zäöüß]+)?)'
+    names = []
+    for match in re.finditer(title_pattern, text):
+        name = match.group(1)
+        # Start position is where the name starts (after the title)
+        name_start = match.start(1)
+        name_end = match.end(1)
+        names.append({
+            'word': name,
+            'entity_group': 'PER',
+            'score': 0.95,
+            'start': name_start,
+            'end': name_end,
+            'source': 'regex_title'
+        })
+    return names
+
+
 def anonymize(text, pii_pipeline, org_pipeline, mlm_pipeline):
     """Main anonymization function combining all detection methods."""
 
@@ -373,6 +422,9 @@ def anonymize(text, pii_pipeline, org_pipeline, mlm_pipeline):
 
     # Layer 0: Regex fallback for emails (most reliable)
     email_entities = find_emails_regex(text)
+
+    # Layer 0b: Regex for titled names (Herrn Schmidt, Frau Müller)
+    titled_name_entities = find_titled_names_regex(text)
 
     # Layer 1: PII detection
     pii_entities = pii_pipeline(text)
@@ -386,6 +438,16 @@ def anonymize(text, pii_pipeline, org_pipeline, mlm_pipeline):
     # Add regex-detected emails first (highest priority)
     for e in email_entities:
         all_entities.append(e)
+
+    # Add titled names (high priority)
+    for e in titled_name_entities:
+        overlaps = False
+        for existing in all_entities:
+            if not (e['end'] <= existing['start'] or e['start'] >= existing['end']):
+                overlaps = True
+                break
+        if not overlaps:
+            all_entities.append(e)
 
     for e in pii_entities:
         word, start, end = clean_entity_word(e['word'], text, e['start'], e['end'])
