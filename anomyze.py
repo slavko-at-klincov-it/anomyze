@@ -52,6 +52,10 @@ COMPANY_CONTEXT_PATTERNS = [
     (r'\b[Bb]ei\s+(\w+)\s+(?:einkaufen|eingekauft|shoppen|kaufen|gekauft)', 'nach "bei X einkaufen"', None),
     (r'\b[Ii]m\s+(\w+)\s+(?:einkaufen|eingekauft|shoppen|kaufen|gekauft)', 'nach "im X einkaufen"', None),
     (r'\b[Zz]um\s+(\w+)\s+(?:gehen|gegangen|fahren|gefahren)', 'nach "zum X gehen"', None),
+    # Delivery and business patterns
+    (r'\b[Ll]ieferung\s+(?:an|für|nach)\s+(?:die\s+|den\s+|das\s+)?(\w+)', 'nach "Lieferung an X"', None),
+    (r'\b[Bb]estellung\s+(?:von|bei|für)\s+(?:der\s+|dem\s+)?(\w+)', 'nach "Bestellung von X"', None),
+    (r'\b[Aa]n\s+(\w+)\s+(?:liefern|geliefert|senden|geschickt|soll)', 'nach "an X liefern"', None),
     # Work role patterns
     (r'\b[Bb]ei\s+(\w+)\s+als\s+\w+\s+(?:arbeite|arbeitet|arbeiten|tätig|angestellt)', 'nach "bei X als [role]"', None),
     (r'\b[Dd]er\s+bei\s+(\w+)\s+(?:arbeite|arbeitet|arbeiten|tätig|angestellt)', 'nach "der bei X arbeitet"', None),
@@ -93,6 +97,20 @@ ENTITY_BLACKLIST = {
     'teilnehmer', 'teilnehmerin', 'kunde', 'kundin', 'kunden',
     'kontakt', 'erreichbar', 'büro', 'office', 'zentrale',
     'seine', 'ihre', 'der', 'die', 'das', 'von', 'vom', 'unter',
+    # Titles (should not be detected alone)
+    'herr', 'herrn', 'frau', 'dr', 'dr.', 'mag', 'mag.', 'prof', 'prof.',
+    'ing', 'ing.', 'dipl', 'dipl.', 'dkfm', 'dkfm.',
+    # Document/meeting words
+    'teambesprechung', 'besprechung', 'sitzung', 'konferenz',
+    'protokollführer', 'protokollführerin', 'schriftführer',
+    'kontaktdaten', 'ansprechpartner', 'ansprechpartnerin',
+    'weiters', 'außerdem', 'zusätzlich', 'ferner',
+    # Multi-word false positives (without spaces for matching after space removal)
+    'protokollderteambesprechung', 'seinekontaktdaten', 'ihrekontaktdaten',
+    'meinekontaktdaten', 'unserekontaktdaten',
+    # Role words
+    'kollege', 'kollegen', 'kollegin', 'kolleginnen',
+    'mitarbeiter', 'mitarbeiterin', 'mitarbeiterinnen',
     # Pronouns and common words
     'mein', 'meine', 'meiner', 'meinem', 'meinen',
     'dein', 'deine', 'deiner', 'deinem', 'deinen',
@@ -277,6 +295,9 @@ def clean_entity_word(word, text, start, end):
         'hat ', 'haben ', 'hatte ', 'hatten ',
         'und ', 'oder ', 'aber ', 'auch ',
         'herrn ', 'frau ', 'herr ',
+        'kollegen ', 'kollegin ', 'kollege ',
+        'ehemaligen ', 'ehemaliger ', 'ehemalige ',
+        'unseren ', 'unsere ', 'unser ', 'unserem ',
     ]
 
     changed = True
@@ -394,9 +415,10 @@ def find_emails_regex(text):
 
 
 def find_titled_names_regex(text):
-    """Find person names with titles like 'Herrn Schmidt', 'Frau Müller'."""
-    # Pattern for names with titles - captures the name after the title
-    title_pattern = r'\b(?:Herrn?|Frau|Dr\.|Prof\.?|Mag\.?)\s+([A-ZÄÖÜ][a-zäöüß]+(?:\s+[A-ZÄÖÜ][a-zäöüß]+)?)'
+    """Find person names with titles like 'Herrn Schmidt', 'Frau Mag. Elisabeth Steiner'."""
+    # Pattern for names with titles - handles multiple titles (Herr Dr., Frau Mag., etc.)
+    # Captures full name (first name + last name) after all titles
+    title_pattern = r'\b(?:Herrn?|Frau)\.?\s+(?:(?:Dr|Prof|Mag|Ing|Dipl|DI|DDr)\.?\s+)*([A-ZÄÖÜ][a-zäöüß]+(?:\s+[A-ZÄÖÜ][a-zäöüß]+)?)'
     names = []
     for match in re.finditer(title_pattern, text):
         name = match.group(1)
@@ -414,6 +436,26 @@ def find_titled_names_regex(text):
     return names
 
 
+def find_labeled_names_regex(text):
+    """Find person names after labels like 'Protokollführer:', 'Teilnehmer:'."""
+    # Pattern for labeled names - captures names after role labels
+    label_pattern = r'\b(?:Protokollführer|Schriftführer|Verfasser|Autor|Erstellt von|Bearbeiter|Verantwortlich|Kontakt)(?:in)?:\s*([A-ZÄÖÜ][a-zäöüß]+(?:\s+[A-ZÄÖÜ][a-zäöüß]+)?)'
+    names = []
+    for match in re.finditer(label_pattern, text):
+        name = match.group(1)
+        name_start = match.start(1)
+        name_end = match.end(1)
+        names.append({
+            'word': name,
+            'entity_group': 'PER',
+            'score': 0.95,
+            'start': name_start,
+            'end': name_end,
+            'source': 'regex_label'
+        })
+    return names
+
+
 def anonymize(text, pii_pipeline, org_pipeline, mlm_pipeline):
     """Main anonymization function combining all detection methods."""
 
@@ -425,6 +467,9 @@ def anonymize(text, pii_pipeline, org_pipeline, mlm_pipeline):
 
     # Layer 0b: Regex for titled names (Herrn Schmidt, Frau Müller)
     titled_name_entities = find_titled_names_regex(text)
+
+    # Layer 0c: Regex for labeled names (Protokollführer: Name)
+    labeled_name_entities = find_labeled_names_regex(text)
 
     # Layer 1: PII detection
     pii_entities = pii_pipeline(text)
@@ -441,6 +486,16 @@ def anonymize(text, pii_pipeline, org_pipeline, mlm_pipeline):
 
     # Add titled names (high priority)
     for e in titled_name_entities:
+        overlaps = False
+        for existing in all_entities:
+            if not (e['end'] <= existing['start'] or e['start'] >= existing['end']):
+                overlaps = True
+                break
+        if not overlaps:
+            all_entities.append(e)
+
+    # Add labeled names (high priority)
+    for e in labeled_name_entities:
         overlaps = False
         for existing in all_entities:
             if not (e['end'] <= existing['start'] or e['start'] >= existing['end']):
