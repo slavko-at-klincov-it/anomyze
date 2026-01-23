@@ -2,6 +2,9 @@
 
 **Intelligent PII Anonymizer for German Text**
 
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+
 [anomyze.it](https://anomyze.it)
 
 ---
@@ -26,8 +29,9 @@ Anomyze nutzt **Perplexity-basierte Anomalie-Erkennung**:
 - **3-Schicht-Erkennung** — PII + NER + Anomalie-Detection
 - **100% lokal** — Keine Cloud, keine API-Calls, DSGVO-konform
 - **Findet unbekannte Firmen** — Durch Sprachmodell-Analyse
+- **Python Package** — Einfache Integration in eigene Projekte
+- **CLI Tool** — Batch-Verarbeitung von Dateien
 - **Text-Glättung** — Optional: Transkripte mit lokalem LLM aufbereiten
-- **Encoding-Korrektur** — Repariert kaputte Umlaute aus Transkriptions-Software
 - **Optimiert für Apple Silicon** — MPS-Beschleunigung auf M1/M2/M3
 
 ## Architektur
@@ -47,97 +51,111 @@ Anomyze nutzt **Perplexity-basierte Anomalie-Erkennung**:
 
 ## Installation
 
+### Als Package (empfohlen)
+
+```bash
+pip install anomyze
+```
+
+### Aus Source
+
+```bash
+git clone https://github.com/slavko-at-klincov-it/anomyze.git
+cd anomyze
+pip install -e .
+```
+
 ### Voraussetzungen
 
 - Python 3.10+
-- macOS (Apple Silicon) oder Linux/Windows mit CUDA
-- Optional: [Ollama](https://ollama.ai) für Text-Glättung (`--smooth`)
-
-### Setup
-
-```bash
-# Repository klonen
-git clone https://github.com/your-username/anomyze.git
-cd anomyze
-
-# Dependencies installieren
-pip install -r requirements.txt
-```
-
-### Erster Start
-
-Beim ersten Start werden ~2.5 GB Modelle heruntergeladen:
-
-| Modell | Größe | Funktion |
-|--------|-------|----------|
-| PII-NER German | ~1.1 GB | Persönliche Daten |
-| BERT-NER | ~400 MB | Organisationen |
-| German BERT | ~400 MB | Anomalie-Erkennung |
+- ~2.5 GB Speicher für ML-Modelle (werden automatisch heruntergeladen)
+- Optional: [Ollama](https://ollama.ai) für Text-Glättung
 
 ## Verwendung
 
-### Interaktiver Modus
+### Als Python Library
+
+```python
+from anomyze import anonymize, load_models
+
+# Modelle laden (einmalig)
+pii, org, mlm = load_models()
+
+# Text anonymisieren
+result = anonymize(
+    "Hallo, ich bin Thomas Müller von der Ersten Bank.",
+    pii, org, mlm
+)
+
+print(result.text)
+# → "Hallo, ich bin [PER_1] von der [ORG_1]."
+
+print(result.mapping)
+# → {"[PER_1]": "Thomas Müller", "[ORG_1]": "Ersten Bank"}
+```
+
+### Als CLI Tool
 
 ```bash
-python anomyze.py --interactive
+# Interaktiver Modus
+anomyze --interactive
+
+# Datei verarbeiten
+anomyze input.txt output.txt
+
+# Mit Text-Glättung (benötigt Ollama)
+anomyze input.txt output.txt --smooth
 ```
 
-```
-Enter text (Enter = submit, Esc+Enter = newline, Ctrl+C = exit):
-> Hallo, ich bin Thomas Müller von der Ersten Bank. Bei uns in der Billa kaufe ich immer ein.
+### Ausgabe
 
+```
 Detected 3 entities:
   [PER         ] "Thomas Müller" (score: 0.86, source: pii)
   [ORG_DETECTED] "Ersten Bank" (score: 0.75, source: perplexity)
   [ORG_DETECTED] "Billa" (score: 0.95, source: perplexity)
+
+ANONYMIZED TEXT:
+Hallo, ich bin [PER_1] von der [ORG_1]. Bei [ORG_2] kaufe ich immer ein.
 ```
 
-### Datei-Modus
+## API Reference
 
-```bash
-# Ausgabe im Terminal
-python anomyze.py transcript.txt
+### `anonymize(text, pii_pipeline, org_pipeline, mlm_pipeline)`
 
-# Mit Ausgabedatei
-python anomyze.py transcript.txt anonymized.txt
+Anonymisiert Text und gibt ein `AnonymizeResult` zurück.
+
+```python
+@dataclass
+class AnonymizeResult:
+    text: str                      # Anonymisierter Text
+    mapping: Dict[str, str]        # Placeholder → Original
+    entities: List[Dict]           # Alle erkannten Entitäten
+    original_text: str             # Originaltext
 ```
 
-### Text-Glättung (--smooth)
+### `load_models(device=None, verbose=True)`
 
-Entfernt Füllwörter und korrigiert Grammatik mit einem lokalen LLM:
+Lädt alle ML-Modelle und gibt die Pipelines zurück.
 
-```bash
-# Ollama + Qwen installieren (einmalig)
-brew install ollama
-ollama pull qwen2.5:14b
-
-# Mit Glättung
-python anomyze.py --interactive --smooth
-python anomyze.py transcript.txt output.txt --smooth
+```python
+pii_pipeline, org_pipeline, mlm_pipeline = load_models()
 ```
 
-Bei Datei-Modus mit `--smooth`:
-- `output.txt` — Geglätteter Text
-- `output.raw.txt` — Original anonymisierter Text (vor Glättung)
-- `output.mapping.json` — Mapping für Re-Anonymisierung
+### `Settings`
 
-**Was `--smooth` macht:**
-- Entfernt Füllwörter (ähm, also, halt, ja, mhm, etc.)
-- Korrigiert Grammatik und macht Sätze flüssiger
-- Behält alle Fakten und Platzhalter exakt bei
-- Repariert Encoding-Fehler (kaputte Umlaute)
+Konfiguration über Umgebungsvariablen oder programmatisch:
 
-### Ausgabe
+```python
+from anomyze import Settings, configure
 
-1. **Anonymisierter Text** — PII durch Platzhalter ersetzt
-2. **Mapping-Datei** (`.mapping.json`) — Zum späteren Re-Mapping
-
-```json
-{
-  "[PER_1]": "Thomas Müller",
-  "[ORG_DETECTED_1]": "Ersten Bank",
-  "[ORG_DETECTED_2]": "Billa"
-}
+settings = Settings(
+    pii_threshold=0.7,      # Mindest-Score für PII
+    org_threshold=0.7,      # Mindest-Score für ORG
+    anomaly_threshold=0.5,  # Mindest-Score für Anomalien
+    device="mps",           # Oder "cuda", "cpu"
+)
+configure(settings)
 ```
 
 ## Erkannte Entitäten
@@ -145,7 +163,7 @@ Bei Datei-Modus mit `--smooth`:
 | Kategorie | Typen |
 |-----------|-------|
 | **Personen** | GIVENNAME, SURNAME, PER |
-| **Kontakt** | USERNAME (E-Mail), TELEPHONENUM |
+| **Kontakt** | EMAIL, TELEPHONENUM |
 | **Dokumente** | IDCARDNUM, DATEOFBIRTH |
 | **Orte** | LOC, STREET |
 | **Organisationen** | ORG, ORG_DETECTED |
@@ -161,35 +179,6 @@ Anomyze erkennt Firmen in diesen Kontexten:
 | "Kunde X" | "Unser Kunde **Merkur**" |
 | "X Bank" | "...von der **Ersten Bank**" |
 | "X Versicherung" | "...bei der **Allianz Versicherung**" |
-| "zur X gewechselt" | "...zur **Siemens** gewechselt" |
-
-## Workflow
-
-```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  Transkript     │────▶│    Anomyze      │────▶│  Anonymisiert   │
-│  (sensibel)     │     │    (lokal)      │     │  (sicher)       │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-                                                        │
-                                    ┌───────────────────┤
-                                    ▼                   ▼ (optional)
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  Fertiges       │◀────│  Re-Mapping     │◀────│  --smooth       │
-│  Dokument       │     │  (lokal)        │     │  (Ollama)       │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-                                ▲
-                                │
-                        ┌───────┴───────┐
-                        │  LLM Summary  │
-                        │  (Cloud/API)  │
-                        └───────────────┘
-```
-
-1. **Lokal**: Transkript durch Anomyze anonymisieren
-2. **Lokal**: Optional mit `--smooth` Text glätten (Ollama)
-3. **Lokal**: Mapping-Datei sicher aufbewahren
-4. **Cloud**: Anonymisierten Text an LLM für Zusammenfassung
-5. **Lokal**: Platzhalter durch echte Namen ersetzen
 
 ## Performance
 
@@ -201,32 +190,22 @@ Getestet auf MacBook Pro M3 Pro:
 | 1-5 KB | ~10 Sek |
 | > 10 KB | ~30 Sek |
 
-## Encoding-Korrektur
+## Verwandte Projekte
 
-Anomyze repariert automatisch kaputte Umlaute aus Transkriptions-Software:
+- **[Anomyze Extension](https://github.com/slavko-at-klincov-it/anomyze-extension)** — Browser Extension + API Server für Echtzeit-Anonymisierung
 
-| Fehler | Korrektur |
-|--------|-----------|
-| ‰, Š | ä |
-| ÷ | ö |
-| ¸, ³ | ü |
-| ﬂ, ﬁ | ß |
+## Dokumentation
 
-## Bekannte Einschränkungen
-
-- **Deutsch only** — Optimiert für deutsche Texte
-- **Kontextabhängig** — "Hofer" als Name vs. Supermarkt nicht unterscheidbar
-- **Manuelle Prüfung** — Automatische Erkennung ist nie 100%
-- **Smooth-Timeout** — Text-Glättung hat 2 Min Timeout für sehr lange Texte
+- **[Whitepaper](docs/whitepaper-anomyze.md)** — Ausführliche Dokumentation für IT-Entscheider
+- **[Projekt-Roadmap](docs/PROJECT-TODO.md)** — Entwicklungsplan
 
 ## Lizenz
 
 MIT License
 
-Die verwendeten Modelle haben eigene Lizenzen:
-- [HuggingLil/pii-sensitive-ner-german](https://huggingface.co/HuggingLil/pii-sensitive-ner-german)
-- [dslim/bert-base-NER](https://huggingface.co/dslim/bert-base-NER)
-- [dbmdz/bert-base-german-cased](https://huggingface.co/dbmdz/bert-base-german-cased)
+Die verwendeten ML-Modelle haben eigene Lizenzen:
+- [dslim/bert-base-NER](https://huggingface.co/dslim/bert-base-NER) — Apache 2.0
+- [dbmdz/bert-base-german-cased](https://huggingface.co/dbmdz/bert-base-german-cased) — MIT
 
 ---
 
