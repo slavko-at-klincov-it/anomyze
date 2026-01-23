@@ -196,8 +196,9 @@ Getestet auf MacBook Pro M3 Pro:
 
 ## Dokumentation
 
-- **[Whitepaper](docs/whitepaper-anomyze.md)** — Ausführliche Dokumentation für IT-Entscheider
+- **[Technical Whitepaper](docs/whitepaper-anomyze.md)** — Detaillierte Beschreibung der 3-Schicht-Erkennungsarchitektur
 - **[Projekt-Roadmap](docs/PROJECT-TODO.md)** — Entwicklungsplan
+- **[Enterprise Whitepaper](https://github.com/slavko-at-klincov-it/anomyze-extension/blob/main/docs/whitepaper-enterprise.md)** — Dokumentation für IT-Entscheider (im Extension Repo)
 
 ## Lizenz
 
