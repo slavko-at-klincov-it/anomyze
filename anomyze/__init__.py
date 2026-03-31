@@ -25,31 +25,30 @@ __author__ = "Anomyze Team"
 __license__ = "MIT"
 
 # Core pipeline
-from anomyze.pipeline.orchestrator import (
-    anonymize,
-    AnonymizeResult,
-    PipelineOrchestrator,
-    load_models,
-    get_device,
-    fix_encoding,
-    smooth_text_with_ollama,
-)
-
-# Entity format
-from anomyze.pipeline import DetectedEntity
+# Config
+from anomyze.config.settings import Settings, get_settings
 
 # Patterns
 from anomyze.patterns.at_patterns import (
     COMPANY_CONTEXT_PATTERNS,
-    NORMAL_CONTEXT_WORDS,
     ENTITY_BLACKLIST,
+    NORMAL_CONTEXT_WORDS,
+)
+
+# Entity format
+from anomyze.pipeline import DetectedEntity
+from anomyze.pipeline.orchestrator import (
+    AnonymizeResult,
+    PipelineOrchestrator,
+    anonymize,
+    fix_encoding,
+    get_device,
+    load_models,
+    smooth_text_with_ollama,
 )
 
 # Entity utilities
 from anomyze.pipeline.utils import clean_entity_word, expand_to_word_boundaries
-
-# Config
-from anomyze.config.settings import Settings, get_settings
 
 __all__ = [
     # Core

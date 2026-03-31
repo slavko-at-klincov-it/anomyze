@@ -7,21 +7,16 @@ Usage:
     anomyze --interactive [--smooth] [--channel govgpt|ifg|kapa]
 """
 
-import sys
 import json
+import sys
 from pathlib import Path
-from typing import Optional
 
 from anomyze import __version__
+from anomyze.config.settings import get_settings
 from anomyze.pipeline.orchestrator import (
     PipelineOrchestrator,
-    AnonymizeResult,
-    anonymize,
     smooth_text_with_ollama,
-    load_models,
-    get_device,
 )
-from anomyze.config.settings import get_settings
 
 # Try to import prompt_toolkit for better interactive input
 try:
@@ -55,7 +50,7 @@ def print_banner():
     """)
 
 
-def get_multiline_input() -> Optional[str]:
+def get_multiline_input() -> str | None:
     """Get multiline input using prompt_toolkit or fallback."""
     if PROMPT_TOOLKIT_AVAILABLE:
         bindings = KeyBindings()
@@ -203,7 +198,7 @@ def run_interactive(orchestrator: PipelineOrchestrator, channel: str, smooth_ena
 
 def run_file(
     input_path: Path,
-    output_path: Optional[Path],
+    output_path: Path | None,
     orchestrator: PipelineOrchestrator,
     channel: str,
     smooth_enabled: bool,

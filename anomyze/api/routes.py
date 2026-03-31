@@ -10,19 +10,18 @@ Endpoints:
 """
 
 import uuid
-from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Request
 
 from anomyze.api.models import (
     AnonymizeRequest,
     AnonymizeResponse,
-    DetectedEntityResponse,
-    RedactionProtocolEntry,
     AuditEntryResponse,
-    MappingResponse,
     AuditResponse,
+    DetectedEntityResponse,
     HealthResponse,
+    MappingResponse,
+    RedactionProtocolEntry,
 )
 from anomyze.channels.govgpt import GovGPTResult
 from anomyze.channels.ifg import IFGResult
@@ -92,10 +91,10 @@ async def anonymize(request: Request, body: AnonymizeRequest) -> AnonymizeRespon
 
     # Run pipeline
     original_text = body.text
+    from anomyze.pipeline.context_layer import ContextLayer
+    from anomyze.pipeline.ner_layer import NERLayer
     from anomyze.pipeline.orchestrator import fix_encoding as _fix_encoding
     from anomyze.pipeline.regex_layer import RegexLayer
-    from anomyze.pipeline.ner_layer import NERLayer
-    from anomyze.pipeline.context_layer import ContextLayer
 
     text = body.text
     if settings.fix_encoding:

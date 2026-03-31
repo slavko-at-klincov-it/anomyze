@@ -6,10 +6,9 @@ for word boundary expansion, entity cleaning, normalization,
 and overlap detection.
 """
 
-from typing import Tuple
 
 
-def expand_to_word_boundaries(text: str, start: int, end: int) -> Tuple[int, int]:
+def expand_to_word_boundaries(text: str, start: int, end: int) -> tuple[int, int]:
     """Expand start/end to cover the full word, not just a subword token.
 
     Args:
@@ -27,7 +26,7 @@ def expand_to_word_boundaries(text: str, start: int, end: int) -> Tuple[int, int
     return start, end
 
 
-def clean_entity_word(word: str, text: str, start: int, end: int) -> Tuple[str, int, int]:
+def clean_entity_word(word: str, text: str, start: int, end: int) -> tuple[str, int, int]:
     """Fix subword tokens and clean up entity boundaries.
 
     Expands to full word boundaries, strips whitespace, removes leading

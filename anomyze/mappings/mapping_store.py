@@ -12,7 +12,6 @@ mappings (irreversible by design).
 import json
 import logging
 from pathlib import Path
-from typing import Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -28,8 +27,8 @@ class MappingStore:
             When set, mappings are saved to disk on every store() call.
     """
 
-    def __init__(self, persist_path: Optional[Path] = None):
-        self._store: Dict[str, Dict[str, str]] = {}
+    def __init__(self, persist_path: Path | None = None):
+        self._store: dict[str, dict[str, str]] = {}
         self.persist_path = persist_path
 
         # Load existing mappings from disk if available
@@ -42,7 +41,7 @@ class MappingStore:
             except (json.JSONDecodeError, OSError) as exc:
                 logger.warning("Failed to load mappings from %s: %s", persist_path, exc)
 
-    def store(self, document_id: str, mapping: Dict[str, str]) -> None:
+    def store(self, document_id: str, mapping: dict[str, str]) -> None:
         """Store a mapping for a document.
 
         Args:
@@ -52,7 +51,7 @@ class MappingStore:
         self._store[document_id] = mapping
         self._persist()
 
-    def retrieve(self, document_id: str) -> Optional[Dict[str, str]]:
+    def retrieve(self, document_id: str) -> dict[str, str] | None:
         """Retrieve the mapping for a document.
 
         Args:
@@ -78,7 +77,7 @@ class MappingStore:
             return True
         return False
 
-    def list_documents(self) -> List[str]:
+    def list_documents(self) -> list[str]:
         """List all document IDs with stored mappings.
 
         Returns:

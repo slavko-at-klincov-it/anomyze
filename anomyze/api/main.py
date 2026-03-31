@@ -9,15 +9,14 @@ Creates and configures the FastAPI application with:
 
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Optional
 
 from fastapi import FastAPI
 
 from anomyze.api.routes import router
-from anomyze.pipeline.orchestrator import PipelineOrchestrator
-from anomyze.mappings.mapping_store import MappingStore
 from anomyze.audit.logger import AuditLogger
 from anomyze.config.settings import Settings, get_settings
+from anomyze.mappings.mapping_store import MappingStore
+from anomyze.pipeline.orchestrator import PipelineOrchestrator
 
 
 @asynccontextmanager
@@ -43,7 +42,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-def create_app(settings: Optional[Settings] = None) -> FastAPI:
+def create_app(settings: Settings | None = None) -> FastAPI:
     """Create and configure the FastAPI application.
 
     Args:

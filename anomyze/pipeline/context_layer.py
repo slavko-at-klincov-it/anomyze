@@ -16,14 +16,14 @@ Two detection mechanisms:
    but potentially identifiable through attribute combination.
 """
 
-import re
 import logging
-from typing import List, Any, Optional, Set, Tuple
+import re
+from typing import Any
 
+from anomyze.config.settings import Settings, get_settings
+from anomyze.patterns.at_patterns import COMPANY_CONTEXT_PATTERNS, NORMAL_CONTEXT_WORDS
 from anomyze.pipeline import DetectedEntity
 from anomyze.pipeline.utils import entities_overlap
-from anomyze.patterns.at_patterns import COMPANY_CONTEXT_PATTERNS, NORMAL_CONTEXT_WORDS
-from anomyze.config.settings import Settings, get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -78,10 +78,10 @@ class ContextLayer:
     def process(
         self,
         text: str,
-        existing_entities: List[DetectedEntity],
+        existing_entities: list[DetectedEntity],
         mlm_pipeline: Any,
-        settings: Optional[Settings] = None,
-    ) -> List[DetectedEntity]:
+        settings: Settings | None = None,
+    ) -> list[DetectedEntity]:
         """Detect anomalies and quasi-identifiers.
 
         Combines two detection mechanisms:
@@ -115,12 +115,12 @@ class ContextLayer:
     def _detect_company_anomalies(
         self,
         text: str,
-        existing_entities: List[DetectedEntity],
+        existing_entities: list[DetectedEntity],
         mlm_pipeline: Any,
         settings: Settings,
-    ) -> List[DetectedEntity]:
+    ) -> list[DetectedEntity]:
         """Detect potential company names using perplexity-based anomaly detection."""
-        anomalies: List[DetectedEntity] = []
+        anomalies: list[DetectedEntity] = []
 
         for pattern, description, include_suffix in COMPANY_CONTEXT_PATTERNS:
             for match in re.finditer(pattern, text, re.IGNORECASE):
@@ -206,9 +206,9 @@ class ContextLayer:
     def _detect_quasi_identifiers(
         self,
         text: str,
-        existing_entities: List[DetectedEntity],
+        existing_entities: list[DetectedEntity],
         settings: Settings,
-    ) -> List[DetectedEntity]:
+    ) -> list[DetectedEntity]:
         """Detect passages where quasi-identifier combinations could re-identify a person.
 
         Scans for co-occurring role references (Beschwerdeführer, Antragsteller),
@@ -220,10 +220,10 @@ class ContextLayer:
         → "Graz" already detected as LOC, but the birth year "1985" and the
           role "Beschwerdeführer" in combination make this passage identifying.
         """
-        new_entities: List[DetectedEntity] = []
+        new_entities: list[DetectedEntity] = []
 
         # Collect quasi-identifier signals with their positions
-        signals: List[Tuple[int, int, str, str]] = []  # (start, end, type, word)
+        signals: list[tuple[int, int, str, str]] = []  # (start, end, type, word)
 
         for match in _QUASI_ROLE_PATTERN.finditer(text):
             signals.append((match.start(), match.end(), 'role', match.group()))
@@ -248,9 +248,9 @@ class ContextLayer:
         signals.sort(key=lambda s: s[0])
 
         # Sliding window: check for combinations within _QUASI_WINDOW chars
-        for i, (s_start, s_end, s_type, s_word) in enumerate(signals):
+        for i, (s_start, _s_end, s_type, _s_word) in enumerate(signals):
             # Collect all signal types within the window
-            window_types: Set[str] = {s_type}
+            window_types: set[str] = {s_type}
             window_end = s_start + _QUASI_WINDOW
 
             for j in range(i + 1, len(signals)):
@@ -277,7 +277,7 @@ class ContextLayer:
                 continue
 
             # Only flag the signals that aren't already detected entities
-            for sig_start, sig_end, sig_type, sig_word in signals[i:]:
+            for sig_start, sig_end, _sig_type, sig_word in signals[i:]:
                 if sig_start > window_end:
                     break
 

@@ -6,25 +6,24 @@ and returns detected entities with high-confidence scores.
 This is the first and fastest layer in the pipeline.
 """
 
-from typing import List
 
-from anomyze.pipeline import DetectedEntity
-from anomyze.pipeline.utils import entities_overlap
 from anomyze.patterns.at_patterns import (
+    find_address_regex,
+    find_aktenzahl_regex,
+    find_birth_date_regex,
     find_emails_regex,
-    find_titled_names_regex,
-    find_labeled_names_regex,
     find_ibans_regex,
+    find_id_card_regex,
+    find_labeled_names_regex,
+    find_license_plate_regex,
+    find_passport_regex,
+    find_phone_regex,
     find_svnr_regex,
     find_tax_number_regex,
-    find_birth_date_regex,
-    find_aktenzahl_regex,
-    find_passport_regex,
-    find_id_card_regex,
-    find_license_plate_regex,
-    find_phone_regex,
-    find_address_regex,
+    find_titled_names_regex,
 )
+from anomyze.pipeline import DetectedEntity
+from anomyze.pipeline.utils import entities_overlap
 
 
 class RegexLayer:
@@ -35,7 +34,7 @@ class RegexLayer:
     to known formats.
     """
 
-    def process(self, text: str) -> List[DetectedEntity]:
+    def process(self, text: str) -> list[DetectedEntity]:
         """Run all regex-based detectors and return deduplicated entities.
 
         The order of detectors matters for overlap resolution:
@@ -47,7 +46,7 @@ class RegexLayer:
         Returns:
             List of detected entities, deduplicated by position.
         """
-        all_entities: List[DetectedEntity] = []
+        all_entities: list[DetectedEntity] = []
 
         # Run all finder functions in priority order
         finders = [

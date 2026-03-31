@@ -9,12 +9,12 @@ Entities are cleaned, filtered by threshold and blacklist,
 and deduplicated against previously detected entities.
 """
 
-from typing import List, Any, Optional
+from typing import Any
 
+from anomyze.config.settings import Settings, get_settings
+from anomyze.patterns.at_patterns import is_blacklisted
 from anomyze.pipeline import DetectedEntity
 from anomyze.pipeline.utils import clean_entity_word, entities_overlap
-from anomyze.patterns.at_patterns import is_blacklisted
-from anomyze.config.settings import Settings, get_settings
 
 
 class NERLayer:
@@ -28,11 +28,11 @@ class NERLayer:
     def process(
         self,
         text: str,
-        existing_entities: List[DetectedEntity],
+        existing_entities: list[DetectedEntity],
         pii_pipeline: Any,
         org_pipeline: Any,
-        settings: Optional[Settings] = None,
-    ) -> List[DetectedEntity]:
+        settings: Settings | None = None,
+    ) -> list[DetectedEntity]:
         """Run NER models and return filtered, deduplicated entities.
 
         Args:
@@ -48,7 +48,7 @@ class NERLayer:
         if settings is None:
             settings = get_settings()
 
-        new_entities: List[DetectedEntity] = []
+        new_entities: list[DetectedEntity] = []
         all_known = list(existing_entities)
 
         # Layer 1: PII detection (names, emails, phones, dates)

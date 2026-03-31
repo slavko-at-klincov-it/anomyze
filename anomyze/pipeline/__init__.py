@@ -5,7 +5,7 @@ Provides the 3-stage detection pipeline (Regex, NER, Context)
 and the unified DetectedEntity format used across all layers.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 @dataclass

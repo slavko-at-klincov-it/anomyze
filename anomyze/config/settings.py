@@ -5,9 +5,8 @@ Provides centralized settings for all pipeline components,
 channel configuration, audit logging, and API server.
 """
 
-from dataclasses import dataclass
-from typing import Optional
 import os
+from dataclasses import dataclass
 
 
 @dataclass
@@ -36,7 +35,7 @@ class Settings:
     use_anomaly_detection: bool = True
 
     # Device settings (auto-detected if None)
-    device: Optional[str] = None
+    device: str | None = None
 
     # Smoothing (Ollama)
     smooth_model: str = "qwen2.5:14b"
@@ -48,14 +47,14 @@ class Settings:
     # KAPA-specific
     kapa_review_threshold: float = 0.85
     audit_enabled: bool = False
-    audit_log_path: Optional[str] = None
+    audit_log_path: str | None = None
 
     # API configuration
     api_host: str = "0.0.0.0"
     api_port: int = 8000
 
     # Mapping persistence
-    mapping_persist_path: Optional[str] = None
+    mapping_persist_path: str | None = None
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -89,7 +88,7 @@ class Settings:
 
 
 # Global settings instance
-_settings: Optional[Settings] = None
+_settings: Settings | None = None
 
 
 def get_settings() -> Settings:

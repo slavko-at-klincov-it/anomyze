@@ -12,12 +12,10 @@ by authorized users.
 """
 
 from dataclasses import dataclass, field
-from typing import List, Dict, Optional
 
-from anomyze.pipeline import DetectedEntity
 from anomyze.channels.base import BaseChannel, ChannelResult
 from anomyze.config.settings import Settings
-
+from anomyze.pipeline import DetectedEntity
 
 # Map internal entity_group names to user-facing placeholder types
 ENTITY_GROUP_TO_PLACEHOLDER = {
@@ -51,7 +49,7 @@ class GovGPTResult(ChannelResult):
         original_text: The original text before any processing.
     """
 
-    mapping: Dict[str, str] = field(default_factory=dict)
+    mapping: dict[str, str] = field(default_factory=dict)
     original_text: str = ""
 
     @property
@@ -71,7 +69,7 @@ class GovGPTChannel(BaseChannel):
     def format_output(
         self,
         text: str,
-        entities: List[DetectedEntity],
+        entities: list[DetectedEntity],
         settings: Settings,
         original_text: str = "",
     ) -> GovGPTResult:
@@ -99,9 +97,9 @@ class GovGPTChannel(BaseChannel):
         sorted_entities = sorted(entities, key=lambda e: e.start)
 
         # Build placeholder mapping
-        type_counters: Dict[str, int] = {}
-        text_to_placeholder: Dict[str, str] = {}
-        mapping: Dict[str, str] = {}
+        type_counters: dict[str, int] = {}
+        text_to_placeholder: dict[str, str] = {}
+        mapping: dict[str, str] = {}
 
         for entity in sorted_entities:
             original = entity.word.strip()

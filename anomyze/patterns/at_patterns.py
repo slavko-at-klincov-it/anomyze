@@ -19,16 +19,14 @@ Contains:
 """
 
 import re
-from typing import List, Tuple, Optional, Dict, Any
 
 from anomyze.pipeline import DetectedEntity
-
 
 # ---------------------------------------------------------------------------
 # Company context patterns for perplexity-based detection
 # Format: (regex_pattern, description, include_suffix)
 # ---------------------------------------------------------------------------
-COMPANY_CONTEXT_PATTERNS: List[Tuple[str, str, Optional[str]]] = [
+COMPANY_CONTEXT_PATTERNS: list[tuple[str, str, str | None]] = [
     (r'\b[Bb]ei\s+uns\s+(?:in\s+)?(?:der\s+|dem\s+)?(\w+)', 'nach "bei uns in"', None),
     (r'\b[Aa]rbeite[tn]?\s+(?:bei|für)\s+(?:der\s+|dem\s+)?(\w+)', 'nach "arbeite bei"', None),
     (r'\b[Bb]ei\s+(?:der\s+|dem\s+)?(\w+)\s+(?:arbeite|angestellt|beschäftigt)',
@@ -125,8 +123,8 @@ ENTITY_BLACKLIST: set = {
     # Pronouns and common words
     'mein', 'meine', 'meiner', 'meinem', 'meinen',
     'dein', 'deine', 'deiner', 'deinem', 'deinen',
-    'sein', 'seine', 'seiner', 'seinem', 'seinen',
-    'ihr', 'ihre', 'ihrer', 'ihrem', 'ihren',
+    'sein', 'seiner', 'seinem', 'seinen',
+    'ihr', 'ihrer', 'ihrem', 'ihren',
     # Common verbs and activities
     'einkaufen', 'arbeiten', 'arbeitet', 'gehen', 'kommen', 'machen',
     'kaufen', 'verkaufen', 'sprechen', 'sagen', 'fragen',
@@ -135,8 +133,7 @@ ENTITY_BLACKLIST: set = {
     'seinee-mail', 'seineemail',
     'ihre e-mail', 'ihre email', 'ihreemail',
     'meine e-mail', 'meine email', 'meineemail',
-    'e-mail', 'e - mail', 'email', 'mail',
-    'nächster', 'nächste', 'nächstes', 'letzter', 'letzte', 'letztes',
+    'e - mail', 'nächster', 'nächste', 'nächstes', 'letzter', 'letzte', 'letztes',
     # Short fragments that are often subword errors
     'te', 'er', 'en', 'el', 'ho', 'an', 'in', 'um', 'zu',
     # Austrian administrative terms (should not be detected as PII)
@@ -285,7 +282,7 @@ PHONE_PATTERN_AT = re.compile(
 # Finder functions — each returns List[DetectedEntity]
 # ---------------------------------------------------------------------------
 
-def find_emails_regex(text: str) -> List[DetectedEntity]:
+def find_emails_regex(text: str) -> list[DetectedEntity]:
     """Find email addresses using regex."""
     entities = []
     for match in EMAIL_PATTERN.finditer(text):
@@ -300,7 +297,7 @@ def find_emails_regex(text: str) -> List[DetectedEntity]:
     return entities
 
 
-def find_titled_names_regex(text: str) -> List[DetectedEntity]:
+def find_titled_names_regex(text: str) -> list[DetectedEntity]:
     """Find person names with titles like 'Herrn Schmidt', 'Frau Mag. Elisabeth Steiner'."""
     entities = []
     for match in TITLED_NAME_PATTERN.finditer(text):
@@ -316,7 +313,7 @@ def find_titled_names_regex(text: str) -> List[DetectedEntity]:
     return entities
 
 
-def find_labeled_names_regex(text: str) -> List[DetectedEntity]:
+def find_labeled_names_regex(text: str) -> list[DetectedEntity]:
     """Find person names after labels like 'Protokollführer:', 'Erstellt von:'."""
     entities = []
     for match in LABELED_NAME_PATTERN.finditer(text):
@@ -332,7 +329,7 @@ def find_labeled_names_regex(text: str) -> List[DetectedEntity]:
     return entities
 
 
-def find_ibans_regex(text: str) -> List[DetectedEntity]:
+def find_ibans_regex(text: str) -> list[DetectedEntity]:
     """Find IBAN numbers using regex."""
     entities = []
     for match in IBAN_PATTERN.finditer(text):
@@ -365,7 +362,7 @@ def _validate_svnr_date(day: str, month: str, year: str) -> bool:
         return False
 
 
-def find_svnr_regex(text: str) -> List[DetectedEntity]:
+def find_svnr_regex(text: str) -> list[DetectedEntity]:
     """Find Austrian Sozialversicherungsnummern (SVNr).
 
     Format: XXXX DDMMYY — 4-digit running number + 6-digit birthdate.
@@ -387,7 +384,7 @@ def find_svnr_regex(text: str) -> List[DetectedEntity]:
     return entities
 
 
-def find_tax_number_regex(text: str) -> List[DetectedEntity]:
+def find_tax_number_regex(text: str) -> list[DetectedEntity]:
     """Find Austrian Steuernummern.
 
     Format varies by Finanzamt: XX-XXX/XXXX or XXX-XXXX/XXXX.
@@ -405,7 +402,7 @@ def find_tax_number_regex(text: str) -> List[DetectedEntity]:
     return entities
 
 
-def find_birth_date_regex(text: str) -> List[DetectedEntity]:
+def find_birth_date_regex(text: str) -> list[DetectedEntity]:
     """Find birth dates in DD.MM.YYYY format and variants.
 
     Validates day (1-31) and month (1-12) ranges.
@@ -423,7 +420,7 @@ def find_birth_date_regex(text: str) -> List[DetectedEntity]:
     return entities
 
 
-def find_aktenzahl_regex(text: str) -> List[DetectedEntity]:
+def find_aktenzahl_regex(text: str) -> list[DetectedEntity]:
     """Find Austrian Aktenzahlen / Geschaeftszahlen.
 
     Matches administrative file numbers like GZ BMI-2024/0815,
@@ -442,7 +439,7 @@ def find_aktenzahl_regex(text: str) -> List[DetectedEntity]:
     return entities
 
 
-def find_passport_regex(text: str) -> List[DetectedEntity]:
+def find_passport_regex(text: str) -> list[DetectedEntity]:
     """Find Austrian passport numbers (context-gated).
 
     Only matches when preceded by context keywords like 'Reisepass',
@@ -468,7 +465,7 @@ def find_passport_regex(text: str) -> List[DetectedEntity]:
     return entities
 
 
-def find_id_card_regex(text: str) -> List[DetectedEntity]:
+def find_id_card_regex(text: str) -> list[DetectedEntity]:
     """Find Austrian Personalausweis numbers (context-gated).
 
     Only matches when preceded by context keywords like 'Personalausweis',
@@ -492,7 +489,7 @@ def find_id_card_regex(text: str) -> List[DetectedEntity]:
     return entities
 
 
-def find_license_plate_regex(text: str) -> List[DetectedEntity]:
+def find_license_plate_regex(text: str) -> list[DetectedEntity]:
     """Find Austrian KFZ-Kennzeichen.
 
     Matches Austrian license plate formats with Bundesland/Bezirk prefixes.
@@ -511,7 +508,7 @@ def find_license_plate_regex(text: str) -> List[DetectedEntity]:
     return entities
 
 
-def find_phone_regex(text: str) -> List[DetectedEntity]:
+def find_phone_regex(text: str) -> list[DetectedEntity]:
     """Find Austrian phone numbers.
 
     Matches:
@@ -537,7 +534,7 @@ def find_phone_regex(text: str) -> List[DetectedEntity]:
     return entities
 
 
-def find_address_regex(text: str) -> List[DetectedEntity]:
+def find_address_regex(text: str) -> list[DetectedEntity]:
     """Find Austrian addresses (street + house number, PLZ + Ort).
 
     Detects patterns like:
@@ -550,7 +547,7 @@ def find_address_regex(text: str) -> List[DetectedEntity]:
     Combines adjacent street + PLZ/Ort matches into a single ADRESSE entity
     when they appear together (e.g., "Straße 29/3, 1070 Wien").
     """
-    entities: List[DetectedEntity] = []
+    entities: list[DetectedEntity] = []
 
     # Find street + house number matches from both patterns
     street_spans = []
@@ -575,7 +572,7 @@ def find_address_regex(text: str) -> List[DetectedEntity]:
     used_plz = set()
     for s_start, s_end, s_word in street_spans:
         merged = False
-        for i, (p_start, p_end, p_word) in enumerate(plz_spans):
+        for i, (p_start, p_end, _p_word) in enumerate(plz_spans):
             gap = p_start - s_end
             if 0 <= gap <= 5:
                 # Adjacent: merge into one ADRESSE entity

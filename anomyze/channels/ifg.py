@@ -17,12 +17,11 @@ Behavior:
 """
 
 from dataclasses import dataclass, field
-from typing import List, Dict, Optional
 
-from anomyze.pipeline import DetectedEntity
 from anomyze.channels.base import BaseChannel, ChannelResult
 from anomyze.channels.govgpt import ENTITY_GROUP_TO_PLACEHOLDER
 from anomyze.config.settings import Settings
+from anomyze.pipeline import DetectedEntity
 
 
 @dataclass
@@ -61,7 +60,7 @@ class IFGResult(ChannelResult):
         redaction_protocol: Summary of redacted categories.
     """
 
-    redaction_protocol: List[RedactionEntry] = field(default_factory=list)
+    redaction_protocol: list[RedactionEntry] = field(default_factory=list)
 
 
 class IFGChannel(BaseChannel):
@@ -74,7 +73,7 @@ class IFGChannel(BaseChannel):
     def format_output(
         self,
         text: str,
-        entities: List[DetectedEntity],
+        entities: list[DetectedEntity],
         settings: Settings,
         original_text: str = "",
     ) -> IFGResult:
@@ -101,7 +100,7 @@ class IFGChannel(BaseChannel):
         valid_entities = [e for e in entities if e.score >= settings.anomaly_threshold]
 
         # Build redaction protocol (category stats)
-        category_stats: Dict[str, Dict] = {}
+        category_stats: dict[str, dict] = {}
         for entity in valid_entities:
             category = ENTITY_GROUP_TO_PLACEHOLDER.get(
                 entity.entity_group, entity.entity_group

@@ -12,20 +12,20 @@ Responsibilities:
 4. Delegates to output channels for formatting
 """
 
+import logging
 import re
 import subprocess
-import logging
-from dataclasses import dataclass, field
-from typing import List, Dict, Any, Optional, Tuple
+from dataclasses import dataclass
+from typing import Any
 
 import torch
 from transformers import pipeline as hf_pipeline
 
-from anomyze.pipeline import DetectedEntity
-from anomyze.pipeline.regex_layer import RegexLayer
-from anomyze.pipeline.ner_layer import NERLayer
-from anomyze.pipeline.context_layer import ContextLayer
 from anomyze.config.settings import Settings, get_settings
+from anomyze.pipeline import DetectedEntity
+from anomyze.pipeline.context_layer import ContextLayer
+from anomyze.pipeline.ner_layer import NERLayer
+from anomyze.pipeline.regex_layer import RegexLayer
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +69,7 @@ def fix_encoding(text: str) -> str:
 # ---------------------------------------------------------------------------
 # Device detection
 # ---------------------------------------------------------------------------
-def get_device(settings: Optional[Settings] = None) -> Tuple[str, str]:
+def get_device(settings: Settings | None = None) -> tuple[str, str]:
     """Detect the best available device for inference.
 
     Priority: MPS (Apple Silicon) > CUDA (NVIDIA) > CPU.
@@ -110,7 +110,7 @@ class ModelManager:
     for subsequent calls. Supports PII, NER/ORG, and MLM models.
     """
 
-    def __init__(self, settings: Optional[Settings] = None):
+    def __init__(self, settings: Settings | None = None):
         self.settings = settings or get_settings()
         self._pii_pipeline = None
         self._org_pipeline = None
@@ -171,7 +171,7 @@ class ModelManager:
             )
         return self._mlm_pipeline
 
-    def load_all(self, verbose: bool = True) -> Tuple[Any, Any, Any]:
+    def load_all(self, verbose: bool = True) -> tuple[Any, Any, Any]:
         """Load all three pipelines.
 
         Returns:
@@ -194,10 +194,10 @@ class ModelManager:
 
 
 # Global model manager instance
-_model_manager: Optional[ModelManager] = None
+_model_manager: ModelManager | None = None
 
 
-def get_model_manager(settings: Optional[Settings] = None) -> ModelManager:
+def get_model_manager(settings: Settings | None = None) -> ModelManager:
     """Get the global model manager instance."""
     global _model_manager
     if _model_manager is None:
@@ -206,10 +206,10 @@ def get_model_manager(settings: Optional[Settings] = None) -> ModelManager:
 
 
 def load_models(
-    device: Optional[str] = None,
+    device: str | None = None,
     verbose: bool = True,
-    settings: Optional[Settings] = None,
-) -> Tuple[Any, Any, Any]:
+    settings: Settings | None = None,
+) -> tuple[Any, Any, Any]:
     """Load all detection models.
 
     Convenience function for backwards compatibility.
@@ -325,8 +325,8 @@ class AnonymizeResult:
     """
 
     text: str
-    mapping: Dict[str, str]
-    entities: List[DetectedEntity]
+    mapping: dict[str, str]
+    entities: list[DetectedEntity]
     original_text: str = ""
 
     @property
@@ -350,14 +350,14 @@ class PipelineOrchestrator:
     detection (Regex → NER → Context) → channel formatting.
     """
 
-    def __init__(self, settings: Optional[Settings] = None):
+    def __init__(self, settings: Settings | None = None):
         self.settings = settings or get_settings()
         self.model_manager = ModelManager(self.settings)
         self.regex_layer = RegexLayer()
         self.ner_layer = NERLayer()
         self.context_layer = ContextLayer()
 
-    def load_models(self, verbose: bool = True) -> Tuple[Any, Any, Any]:
+    def load_models(self, verbose: bool = True) -> tuple[Any, Any, Any]:
         """Load all detection models.
 
         Args:
@@ -370,7 +370,7 @@ class PipelineOrchestrator:
             print(f"Device: {self.model_manager.device_name}\n")
         return self.model_manager.load_all(verbose)
 
-    def detect(self, text: str) -> Tuple[str, List[DetectedEntity]]:
+    def detect(self, text: str) -> tuple[str, list[DetectedEntity]]:
         """Run all 3 pipeline stages and return detected entities.
 
         This method runs preprocessing and all detection layers but
@@ -453,7 +453,7 @@ def anonymize(
     pii_pipeline: Any,
     org_pipeline: Any,
     mlm_pipeline: Any,
-    settings: Optional[Settings] = None,
+    settings: Settings | None = None,
 ) -> AnonymizeResult:
     """Main anonymization function combining all detection methods.
 
@@ -479,7 +479,7 @@ def anonymize(
     if settings.fix_encoding:
         text = fix_encoding(text)
 
-    all_entities: List[DetectedEntity] = []
+    all_entities: list[DetectedEntity] = []
 
     # Stage 1: Regex
     if settings.use_regex_fallback:

@@ -10,14 +10,12 @@ IMPORTANT: Context snippets are sanitized — they show the placeholder,
 not the original PII, to prevent audit log leakage.
 """
 
-import json
 import csv
 import io
+import json
 import logging
-from dataclasses import dataclass, field, asdict
-from datetime import datetime, timezone
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -49,8 +47,8 @@ class AuditEntry:
     action: str
     placeholder: str
     context_snippet: str
-    reviewer: Optional[str] = None
-    review_decision: Optional[str] = None
+    reviewer: str | None = None
+    review_decision: str | None = None
 
     def to_dict(self, include_pii: bool = False) -> dict:
         """Convert to dictionary for serialization.
@@ -88,8 +86,8 @@ class AuditLogger:
     a JSON log file. Supports export in JSON and CSV formats.
     """
 
-    def __init__(self, log_path: Optional[Path] = None):
-        self._entries: List[AuditEntry] = []
+    def __init__(self, log_path: Path | None = None):
+        self._entries: list[AuditEntry] = []
         self.log_path = log_path
 
         # Load existing entries from disk if available
@@ -112,7 +110,7 @@ class AuditLogger:
         self._entries.append(entry)
         self._persist()
 
-    def log_batch(self, entries: List[AuditEntry]) -> None:
+    def log_batch(self, entries: list[AuditEntry]) -> None:
         """Log multiple audit entries at once.
 
         Args:
@@ -121,7 +119,7 @@ class AuditLogger:
         self._entries.extend(entries)
         self._persist()
 
-    def get_entries(self, document_id: str) -> List[AuditEntry]:
+    def get_entries(self, document_id: str) -> list[AuditEntry]:
         """Get all audit entries for a specific document.
 
         Args:
@@ -132,7 +130,7 @@ class AuditLogger:
         """
         return [e for e in self._entries if e.document_id == document_id]
 
-    def get_flagged(self, document_id: Optional[str] = None) -> List[AuditEntry]:
+    def get_flagged(self, document_id: str | None = None) -> list[AuditEntry]:
         """Get all entries flagged for human review.
 
         Args:

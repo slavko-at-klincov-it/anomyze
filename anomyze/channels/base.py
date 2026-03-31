@@ -6,11 +6,10 @@ and implement their own format_output logic.
 """
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from typing import List, Dict, Any, Optional
+from dataclasses import dataclass
 
-from anomyze.pipeline import DetectedEntity
 from anomyze.config.settings import Settings
+from anomyze.pipeline import DetectedEntity
 
 
 @dataclass
@@ -25,7 +24,7 @@ class ChannelResult:
     """
 
     text: str
-    entities: List[DetectedEntity]
+    entities: list[DetectedEntity]
     channel: str
 
     @property
@@ -45,7 +44,7 @@ class BaseChannel(ABC):
     def format_output(
         self,
         text: str,
-        entities: List[DetectedEntity],
+        entities: list[DetectedEntity],
         settings: Settings,
         original_text: str = "",
     ) -> ChannelResult:

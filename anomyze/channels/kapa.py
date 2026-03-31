@@ -15,16 +15,15 @@ Behavior:
   source layer, and sanitized context snippet.
 """
 
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import List, Dict, Optional
-import uuid
 
-from anomyze.pipeline import DetectedEntity
+from anomyze.audit.logger import AuditEntry
 from anomyze.channels.base import BaseChannel, ChannelResult
 from anomyze.channels.govgpt import ENTITY_GROUP_TO_PLACEHOLDER
-from anomyze.audit.logger import AuditLogger, AuditEntry
 from anomyze.config.settings import Settings
+from anomyze.pipeline import DetectedEntity
 
 
 @dataclass
@@ -39,10 +38,10 @@ class KAPAResult(ChannelResult):
         document_id: Unique document identifier for audit tracking.
     """
 
-    mapping: Dict[str, str] = field(default_factory=dict)
+    mapping: dict[str, str] = field(default_factory=dict)
     original_text: str = ""
-    flagged_for_review: List[str] = field(default_factory=list)
-    audit_entries: List[AuditEntry] = field(default_factory=list)
+    flagged_for_review: list[str] = field(default_factory=list)
+    audit_entries: list[AuditEntry] = field(default_factory=list)
     document_id: str = ""
 
     @property
@@ -87,10 +86,10 @@ class KAPAChannel(BaseChannel):
     def format_output(
         self,
         text: str,
-        entities: List[DetectedEntity],
+        entities: list[DetectedEntity],
         settings: Settings,
         original_text: str = "",
-        document_id: Optional[str] = None,
+        document_id: str | None = None,
     ) -> KAPAResult:
         """Replace PII, build audit trail, and flag uncertain entities.
 
@@ -123,11 +122,11 @@ class KAPAChannel(BaseChannel):
         review_threshold = settings.kapa_review_threshold
 
         # Build placeholder mapping (same logic as GovGPT)
-        type_counters: Dict[str, int] = {}
-        text_to_placeholder: Dict[str, str] = {}
-        mapping: Dict[str, str] = {}
-        flagged: List[str] = []
-        audit_entries: List[AuditEntry] = []
+        type_counters: dict[str, int] = {}
+        text_to_placeholder: dict[str, str] = {}
+        mapping: dict[str, str] = {}
+        flagged: list[str] = []
+        audit_entries: list[AuditEntry] = []
 
         now = datetime.now(timezone.utc).isoformat()
 
