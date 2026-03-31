@@ -129,7 +129,7 @@ class ContextLayer:
                 word_end = match.end(1)
 
                 # If pattern includes suffix (like "Bank"), extend the word
-                if include_suffix and match.lastindex >= 2:
+                if include_suffix and match.lastindex is not None and match.lastindex >= 2:
                     suffix = match.group(2)
                     word = word + " " + suffix
                     word_end = match.end(2)

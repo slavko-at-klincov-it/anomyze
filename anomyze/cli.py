@@ -77,7 +77,7 @@ def get_multiline_input() -> str | None:
                 key_bindings=bindings,
                 prompt_continuation='  ',
             )
-            return text
+            return str(text)
         except (EOFError, KeyboardInterrupt):
             return None
     else:

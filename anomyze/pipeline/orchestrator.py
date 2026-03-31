@@ -112,24 +112,28 @@ class ModelManager:
 
     def __init__(self, settings: Settings | None = None):
         self.settings = settings or get_settings()
-        self._pii_pipeline = None
-        self._org_pipeline = None
-        self._mlm_pipeline = None
-        self._device = None
-        self._device_name = None
+        self._pii_pipeline: Any = None
+        self._org_pipeline: Any = None
+        self._mlm_pipeline: Any = None
+        self._device: str | None = None
+        self._device_name: str | None = None
+
+    def _ensure_device(self) -> None:
+        if self._device is None:
+            self._device, self._device_name = get_device(self.settings)
 
     @property
     def device(self) -> str:
         """Get the compute device (lazily detected)."""
-        if self._device is None:
-            self._device, self._device_name = get_device(self.settings)
+        self._ensure_device()
+        assert self._device is not None
         return self._device
 
     @property
     def device_name(self) -> str:
         """Get the human-readable device description."""
-        if self._device_name is None:
-            self._device, self._device_name = get_device(self.settings)
+        self._ensure_device()
+        assert self._device_name is not None
         return self._device_name
 
     def load_pii_pipeline(self, verbose: bool = True) -> Any:
@@ -425,11 +429,12 @@ class PipelineOrchestrator:
             ValueError: If the channel name is unknown.
         """
         from anomyze.channels import GovGPTChannel, IFGChannel, KAPAChannel
+        from anomyze.channels.base import BaseChannel
 
         original_text = text
         text, entities = self.detect(text)
 
-        channels = {
+        channels: dict[str, type[BaseChannel]] = {
             "govgpt": GovGPTChannel,
             "ifg": IFGChannel,
             "kapa": KAPAChannel,
@@ -441,7 +446,7 @@ class PipelineOrchestrator:
                 f"Unknown channel: '{channel}'. Must be one of: {', '.join(channels)}"
             )
 
-        channel_impl = channel_cls()
+        channel_impl = channel_cls()  # type: ignore[abstract]
         return channel_impl.format_output(text, entities, self.settings, original_text)
 
 
@@ -509,4 +514,9 @@ def anonymize(
     from anomyze.channels.govgpt import GovGPTChannel
     channel = GovGPTChannel()
     result = channel.format_output(text, all_entities, settings, original_text)
-    return result
+    return AnonymizeResult(
+        text=result.text,
+        mapping=result.mapping,
+        entities=result.entities,
+        original_text=result.original_text,
+    )

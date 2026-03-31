@@ -23,6 +23,7 @@ from anomyze.api.models import (
     MappingResponse,
     RedactionProtocolEntry,
 )
+from anomyze.channels.base import ChannelResult
 from anomyze.channels.govgpt import GovGPTResult
 from anomyze.channels.ifg import IFGResult
 from anomyze.channels.kapa import KAPAResult
@@ -127,21 +128,16 @@ async def anonymize(request: Request, body: AnonymizeRequest) -> AnonymizeRespon
     from anomyze.channels.ifg import IFGChannel
     from anomyze.channels.kapa import KAPAChannel
 
-    channel_map = {
-        "govgpt": GovGPTChannel,
-        "ifg": IFGChannel,
-        "kapa": KAPAChannel,
-    }
-
-    channel_cls = channel_map[body.channel]
-    channel_impl = channel_cls()
-
+    result: ChannelResult
     if body.channel == "kapa":
-        result = channel_impl.format_output(
+        kapa_channel = KAPAChannel()
+        result = kapa_channel.format_output(
             text, entities, settings, original_text, document_id
         )
+    elif body.channel == "ifg":
+        result = IFGChannel().format_output(text, entities, settings, original_text)
     else:
-        result = channel_impl.format_output(text, entities, settings, original_text)
+        result = GovGPTChannel().format_output(text, entities, settings, original_text)
 
     # Store mapping if applicable
     mapping_store = request.app.state.mapping_store
