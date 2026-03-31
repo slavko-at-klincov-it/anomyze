@@ -3,8 +3,8 @@
 Command-line interface for Anomyze.
 
 Usage:
-    anomyze <input.txt> [output.txt] [--smooth]
-    anomyze --interactive [--smooth]
+    anomyze <input.txt> [output.txt] [--smooth] [--channel govgpt|ifg|kapa]
+    anomyze --interactive [--smooth] [--channel govgpt|ifg|kapa]
 """
 
 import sys
@@ -13,9 +13,15 @@ from pathlib import Path
 from typing import Optional
 
 from anomyze import __version__
-from anomyze.core import anonymize, smooth_text_with_ollama, AnonymizeResult
-from anomyze.models import load_models, get_device
-from anomyze.config import get_settings
+from anomyze.pipeline.orchestrator import (
+    PipelineOrchestrator,
+    AnonymizeResult,
+    anonymize,
+    smooth_text_with_ollama,
+    load_models,
+    get_device,
+)
+from anomyze.config.settings import get_settings
 
 # Try to import prompt_toolkit for better interactive input
 try:
@@ -27,22 +33,25 @@ except ImportError:
     PROMPT_TOOLKIT_AVAILABLE = False
 
 
+VALID_CHANNELS = ("govgpt", "ifg", "kapa")
+
+
 def print_banner():
     """Print Anomyze banner."""
     print("""
-    ╔═══════════════════════════════════════════════════════════╗
-    ║                                                           ║
-    ║     █████╗ ███╗   ██╗ ██████╗ ███╗   ███╗██╗   ██╗███████╗║
-    ║    ██╔══██╗████╗  ██║██╔═══██╗████╗ ████║╚██╗ ██╔╝██╔════╝║
-    ║    ███████║██╔██╗ ██║██║   ██║██╔████╔██║ ╚████╔╝ █████╗  ║
-    ║    ██╔══██║██║╚██╗██║██║   ██║██║╚██╔╝██║  ╚██╔╝  ██╔══╝  ║
-    ║    ██║  ██║██║ ╚████║╚██████╔╝██║ ╚═╝ ██║   ██║   ███████╗║
-    ║    ╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝     ╚═╝   ╚═╝   ╚══════╝║
-    ║                                                           ║
-    ║           Intelligent PII Anonymizer for German           ║
-    ║                    https://anomyze.it                     ║
-    ║                                                           ║
-    ╚═══════════════════════════════════════════════════════════╝
+    \u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557
+    \u2551                                                           \u2551
+    \u2551     \u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2557   \u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2557   \u2588\u2588\u2588\u2557\u2588\u2588\u2557   \u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2551
+    \u2551    \u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2557  \u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2551\u255a\u2588\u2588\u2557 \u2588\u2588\u2554\u255d\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255d\u2551
+    \u2551    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551\u2588\u2588\u2554\u2588\u2588\u2557 \u2588\u2588\u2551\u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2554\u2588\u2588\u2588\u2588\u2554\u2588\u2588\u2551 \u255a\u2588\u2588\u2588\u2588\u2554\u255d \u2588\u2588\u2588\u2588\u2588\u2557  \u2551
+    \u2551    \u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2551\u2588\u2588\u2551\u255a\u2588\u2588\u2557\u2588\u2588\u2551\u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2551\u255a\u2588\u2588\u2554\u255d\u2588\u2588\u2551  \u255a\u2588\u2588\u2554\u255d  \u2588\u2588\u2554\u2550\u2550\u255d  \u2551
+    \u2551    \u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2551 \u255a\u2588\u2588\u2588\u2588\u2551\u255a\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255d\u2588\u2588\u2551 \u255a\u2550\u255d \u2588\u2588\u2551   \u2588\u2588\u2551   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2551
+    \u2551    \u255a\u2550\u255d  \u255a\u2550\u255d\u255a\u2550\u255d  \u255a\u2550\u2550\u2550\u255d \u255a\u2550\u2550\u2550\u2550\u2550\u255d \u255a\u2550\u255d     \u255a\u2550\u255d   \u255a\u2550\u255d   \u255a\u2550\u2550\u2550\u2550\u2550\u2550\u255d\u2551
+    \u2551                                                           \u2551
+    \u2551     Souver\u00e4ne KI-Anonymisierungsschicht f\u00fcr \u00d6sterreich    \u2551
+    \u2551                    https://anomyze.it                     \u2551
+    \u2551                                                           \u2551
+    \u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d
     """)
 
 
@@ -90,25 +99,48 @@ def get_multiline_input() -> Optional[str]:
         return "\n".join(lines)
 
 
-def print_result(result: AnonymizeResult, verbose: bool = True):
+def print_result(result, verbose: bool = True):
     """Print anonymization result."""
-    if verbose:
-        print(f"\nDetected {result.entity_count} entities:")
+    if verbose and hasattr(result, 'entities'):
+        print(f"\nDetected {len(result.entities)} entities:")
         for e in result.entities:
-            source_info = e['source']
-            if source_info == 'perplexity':
-                source_info = f"perplexity ({e.get('context', '')})"
-            print(f"  [{e['entity_group']:12}] \"{e['word']}\" "
-                  f"(score: {e['score']:.2f}, source: {source_info})")
+            if hasattr(e, 'source'):
+                source_info = e.source
+                if source_info == 'perplexity':
+                    source_info = f"perplexity ({getattr(e, 'context', '')})"
+                print(f"  [{e.entity_group:12}] \"{e.word}\" "
+                      f"(score: {e.score:.2f}, source: {source_info})")
+            else:
+                source_info = e.get('source', 'unknown')
+                print(f"  [{e.get('entity_group', '?'):12}] \"{e.get('word', '?')}\" "
+                      f"(score: {e.get('score', 0):.2f}, source: {source_info})")
 
     print("\n" + "=" * 60)
     print("MAPPING")
     print("=" * 60)
-    if result.mapping:
-        for placeholder, original in result.mapping.items():
+    mapping = getattr(result, 'mapping', {})
+    if mapping:
+        for placeholder, original in mapping.items():
             print(f"  {placeholder:30} -> {original}")
     else:
-        print("  (no PII detected)")
+        print("  (no mapping / irreversible redaction)")
+
+    # Show redaction protocol for IFG channel
+    if hasattr(result, 'redaction_protocol') and result.redaction_protocol:
+        print("\n" + "=" * 60)
+        print("REDACTION PROTOCOL")
+        print("=" * 60)
+        for entry in result.redaction_protocol:
+            print(f"  {entry.category:20} {entry.count}x "
+                  f"(confidence: {entry.min_confidence:.2f}-{entry.max_confidence:.2f})")
+
+    # Show flagged entities for KAPA channel
+    if hasattr(result, 'flagged_for_review') and result.flagged_for_review:
+        print("\n" + "=" * 60)
+        print("FLAGGED FOR REVIEW")
+        print("=" * 60)
+        for flag in result.flagged_for_review:
+            print(f"  {flag}")
 
     print("\n" + "=" * 60)
     print("ANONYMIZED TEXT")
@@ -116,10 +148,10 @@ def print_result(result: AnonymizeResult, verbose: bool = True):
     print(result.text)
 
 
-def run_interactive(pii_pipeline, org_pipeline, mlm_pipeline, smooth_enabled: bool):
+def run_interactive(orchestrator: PipelineOrchestrator, channel: str, smooth_enabled: bool):
     """Run interactive mode."""
     print("=" * 60)
-    print("Interactive Mode")
+    print(f"Interactive Mode — Channel: {channel.upper()}")
     if PROMPT_TOOLKIT_AVAILABLE:
         print("Enter        → Text absenden")
         print("Esc + Enter  → Neue Zeile")
@@ -148,14 +180,17 @@ def run_interactive(pii_pipeline, org_pipeline, mlm_pipeline, smooth_enabled: bo
                 continue
 
             print("\nProcessing...")
-            result = anonymize(text, pii_pipeline, org_pipeline, mlm_pipeline)
+            result = orchestrator.process(text, channel=channel)
             print_result(result)
 
-            if smooth_enabled:
+            if smooth_enabled and hasattr(result, 'text'):
+                settings = get_settings()
                 print("\n" + "=" * 60)
                 print("SMOOTHING TEXT (Ollama)...")
                 print("=" * 60)
-                smoothed = smooth_text_with_ollama(result.text)
+                smoothed = smooth_text_with_ollama(
+                    result.text, settings.smooth_model, settings.smooth_timeout
+                )
                 print("\n" + "=" * 60)
                 print("SMOOTHED TEXT")
                 print("=" * 60)
@@ -169,10 +204,9 @@ def run_interactive(pii_pipeline, org_pipeline, mlm_pipeline, smooth_enabled: bo
 def run_file(
     input_path: Path,
     output_path: Optional[Path],
-    pii_pipeline,
-    org_pipeline,
-    mlm_pipeline,
-    smooth_enabled: bool
+    orchestrator: PipelineOrchestrator,
+    channel: str,
+    smooth_enabled: bool,
 ):
     """Process a file."""
     if not input_path.exists():
@@ -184,30 +218,38 @@ def run_file(
     print(f"Reading: {input_path}")
     text = input_path.read_text(encoding="utf-8")
     print(f"Text length: {len(text):,} characters")
+    print(f"Channel: {channel.upper()}")
 
     print("Processing...")
-    result = anonymize(text, pii_pipeline, org_pipeline, mlm_pipeline)
+    result = orchestrator.process(text, channel=channel)
 
-    print(f"\nFound {result.unique_entity_count} unique entities")
+    mapping = getattr(result, 'mapping', {})
+    unique_count = len(mapping) if mapping else 0
+    print(f"\nFound {unique_count} unique entities")
 
     print("\n" + "=" * 60)
     print("MAPPING")
     print("=" * 60)
-    for placeholder, original in result.mapping.items():
-        print(f"  {placeholder:30} -> {original}")
-
-    mapping_path.write_text(
-        json.dumps(result.mapping, indent=2, ensure_ascii=False),
-        encoding="utf-8"
-    )
-    print(f"\nMapping saved to: {mapping_path}")
+    if mapping:
+        for placeholder, original in mapping.items():
+            print(f"  {placeholder:30} -> {original}")
+        mapping_path.write_text(
+            json.dumps(mapping, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        print(f"\nMapping saved to: {mapping_path}")
+    else:
+        print("  (irreversible redaction — no mapping)")
 
     final_text = result.text
     if smooth_enabled:
+        settings = get_settings()
         print("\n" + "=" * 60)
         print("SMOOTHING TEXT (Ollama)...")
         print("=" * 60)
-        final_text = smooth_text_with_ollama(result.text)
+        final_text = smooth_text_with_ollama(
+            result.text, settings.smooth_model, settings.smooth_timeout
+        )
         print("Smoothing complete.")
 
     if output_path:
@@ -231,9 +273,24 @@ def run_file(
 def main():
     """Main entry point for CLI."""
     args = sys.argv[1:]
+
+    # Parse flags
     smooth_enabled = "--smooth" in args
     if smooth_enabled:
         args.remove("--smooth")
+
+    channel = "govgpt"
+    if "--channel" in args:
+        idx = args.index("--channel")
+        if idx + 1 < len(args):
+            channel = args[idx + 1].lower()
+            if channel not in VALID_CHANNELS:
+                print(f"Error: Invalid channel '{channel}'. Must be one of: {', '.join(VALID_CHANNELS)}")
+                sys.exit(1)
+            args = args[:idx] + args[idx + 2:]
+        else:
+            print("Error: --channel requires a value (govgpt, ifg, kapa)")
+            sys.exit(1)
 
     if len(args) < 1:
         print_banner()
@@ -241,17 +298,23 @@ def main():
     Version {__version__}
 
     Usage:
-      anomyze <input.txt> [output.txt] [--smooth]
-      anomyze --interactive [--smooth]
+      anomyze <input.txt> [output.txt] [--smooth] [--channel govgpt|ifg|kapa]
+      anomyze --interactive [--smooth] [--channel govgpt|ifg|kapa]
       python -m anomyze <input.txt> [output.txt] [--smooth]
 
     Options:
-      --smooth    Smooth text with local LLM (Ollama + Qwen)
+      --smooth              Smooth text with local LLM (Ollama + Qwen)
+      --channel <channel>   Output channel: govgpt (default), ifg, kapa
 
-    Detection Layers:
-      1. PII Model      → Names, emails, phone numbers
-      2. NER Model      → Known companies, locations
-      3. Anomaly Check  → Unknown companies via perplexity
+    Channels:
+      govgpt    Reversible placeholders + mapping (for GovGPT/ELAK-KI)
+      ifg       Irreversible redaction (for data.gv.at publication)
+      kapa      Placeholders + audit trail (for parliamentary inquiries)
+
+    Detection Pipeline:
+      1. Regex Patterns   → Austrian-specific formats (SVNr, IBAN, KFZ, ...)
+      2. NER Models       → Names, organizations, locations
+      3. Anomaly Detection→ Unknown entities via perplexity analysis
         """)
         sys.exit(1)
 
@@ -259,18 +322,18 @@ def main():
 
     if smooth_enabled:
         print("    Smooth Mode: ON (Ollama + Qwen)\n")
+    print(f"    Channel: {channel.upper()}\n")
 
-    device, device_name = get_device()
-    print(f"    Device: {device_name}\n")
-
-    pii_pipeline, org_pipeline, mlm_pipeline = load_models(device)
+    # Initialize orchestrator
+    orchestrator = PipelineOrchestrator()
+    orchestrator.load_models(verbose=True)
 
     if args[0] == "--interactive":
-        run_interactive(pii_pipeline, org_pipeline, mlm_pipeline, smooth_enabled)
+        run_interactive(orchestrator, channel, smooth_enabled)
     else:
         input_path = Path(args[0])
         output_path = Path(args[1]) if len(args) > 1 else None
-        run_file(input_path, output_path, pii_pipeline, org_pipeline, mlm_pipeline, smooth_enabled)
+        run_file(input_path, output_path, orchestrator, channel, smooth_enabled)
 
 
 if __name__ == "__main__":

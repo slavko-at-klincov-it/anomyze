@@ -1,17 +1,25 @@
 """
-Entity processing utilities for Anomyze.
+Entity processing utilities for the Anomyze pipeline.
 
-Handles:
-- Word boundary expansion
-- Entity cleaning and normalization
-- Prefix/suffix removal
+Provides shared utility functions used by all pipeline layers
+for word boundary expansion, entity cleaning, normalization,
+and overlap detection.
 """
 
 from typing import Tuple
 
 
 def expand_to_word_boundaries(text: str, start: int, end: int) -> Tuple[int, int]:
-    """Expand start/end to cover the full word, not just a subword token."""
+    """Expand start/end to cover the full word, not just a subword token.
+
+    Args:
+        text: The full source text.
+        start: Current start position.
+        end: Current end position.
+
+    Returns:
+        Tuple of (expanded_start, expanded_end).
+    """
     while start > 0 and text[start - 1].isalnum():
         start -= 1
     while end < len(text) and text[end].isalnum():
@@ -20,17 +28,19 @@ def expand_to_word_boundaries(text: str, start: int, end: int) -> Tuple[int, int
 
 
 def clean_entity_word(word: str, text: str, start: int, end: int) -> Tuple[str, int, int]:
-    """
-    Fix subword tokens and clean up entity boundaries.
+    """Fix subword tokens and clean up entity boundaries.
+
+    Expands to full word boundaries, strips whitespace, removes leading
+    articles and common German prefix words, and removes trailing punctuation.
 
     Args:
-        word: The detected entity word
-        text: The full text
-        start: Start position in text
-        end: End position in text
+        word: The detected entity word.
+        text: The full source text.
+        start: Start position in text.
+        end: End position in text.
 
     Returns:
-        Tuple of (cleaned_word, new_start, new_end)
+        Tuple of (cleaned_word, new_start, new_end).
     """
     # Always expand to full word boundaries
     new_start, new_end = expand_to_word_boundaries(text, start, end)
@@ -87,5 +97,15 @@ def normalize_entity(word: str) -> str:
 
 
 def entities_overlap(e1_start: int, e1_end: int, e2_start: int, e2_end: int) -> bool:
-    """Check if two entity spans overlap."""
+    """Check if two entity spans overlap.
+
+    Args:
+        e1_start: Start of first entity.
+        e1_end: End of first entity.
+        e2_start: Start of second entity.
+        e2_end: End of second entity.
+
+    Returns:
+        True if the spans overlap.
+    """
     return not (e1_end <= e2_start or e1_start >= e2_end)

@@ -1,0 +1,22 @@
+services:
+  anomyze:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - model-cache:/home/anomyze/.cache/huggingface
+    environment:
+      - ANOMYZE_DEVICE=cpu
+      - ANOMYZE_API_HOST=0.0.0.0
+      - ANOMYZE_API_PORT=8000
+      - ANOMYZE_DEFAULT_CHANNEL=govgpt
+      - ANOMYZE_AUDIT_ENABLED=true
+    deploy:
+      resources:
+        limits:
+          memory: 6G
+    restart: unless-stopped
+
+volumes:
+  model-cache:
+    driver: local

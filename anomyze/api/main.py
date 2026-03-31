@@ -1,0 +1,77 @@
+"""
+FastAPI application factory for Anomyze.
+
+Creates and configures the FastAPI application with:
+- Model preloading on startup
+- Mapping store and audit logger initialization
+- API route registration
+"""
+
+from contextlib import asynccontextmanager
+from pathlib import Path
+from typing import Optional
+
+from fastapi import FastAPI
+
+from anomyze.api.routes import router
+from anomyze.pipeline.orchestrator import PipelineOrchestrator
+from anomyze.mappings.mapping_store import MappingStore
+from anomyze.audit.logger import AuditLogger
+from anomyze.config.settings import Settings, get_settings
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan: load models on startup."""
+    settings = app.state.settings
+    orchestrator = PipelineOrchestrator(settings)
+    orchestrator.load_models(verbose=True)
+    app.state.orchestrator = orchestrator
+
+    # Initialize mapping store
+    persist_path = None
+    if settings.mapping_persist_path:
+        persist_path = Path(settings.mapping_persist_path)
+    app.state.mapping_store = MappingStore(persist_path=persist_path)
+
+    # Initialize audit logger
+    audit_path = None
+    if settings.audit_log_path:
+        audit_path = Path(settings.audit_log_path)
+    app.state.audit_logger = AuditLogger(log_path=audit_path)
+
+    yield
+
+
+def create_app(settings: Optional[Settings] = None) -> FastAPI:
+    """Create and configure the FastAPI application.
+
+    Args:
+        settings: Application settings. Uses global settings if None.
+
+    Returns:
+        Configured FastAPI application instance.
+    """
+    if settings is None:
+        settings = get_settings()
+
+    app = FastAPI(
+        title="Anomyze API",
+        description=(
+            "Souveräne KI-Anonymisierungsschicht für die österreichische "
+            "Bundesverwaltung. Filtert KI-generierten Output — erkennt und "
+            "anonymisiert personenbezogene Daten (PII), bevor sie das "
+            "System verlassen."
+        ),
+        version="2.0.0",
+        lifespan=lifespan,
+    )
+
+    app.state.settings = settings
+    app.include_router(router, prefix="/api/v1")
+
+    return app
+
+
+# Default application instance for uvicorn
+app = create_app()
