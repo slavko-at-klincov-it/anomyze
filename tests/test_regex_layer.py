@@ -16,6 +16,7 @@ from anomyze.patterns.at_patterns import (
     find_id_card_regex,
     find_license_plate_regex,
     find_phone_regex,
+    find_address_regex,
     is_blacklisted,
     ENTITY_BLACKLIST,
 )
@@ -465,6 +466,159 @@ class TestPhoneRegex:
 
 
 # ---------------------------------------------------------------------------
+# Address tests
+# ---------------------------------------------------------------------------
+class TestAddressRegex:
+    """Tests for Austrian address detection."""
+
+    def test_street_with_house_number(self):
+        text = "wohnhaft in Schottenfeldgasse 29/3"
+        result = find_address_regex(text)
+        assert len(result) >= 1
+        assert any(e.entity_group == "ADRESSE" for e in result)
+        assert any("Schottenfeldgasse 29/3" in e.word for e in result)
+
+    def test_strasse_format(self):
+        text = "Mariahilfer Straße 45"
+        result = find_address_regex(text)
+        assert len(result) >= 1
+        assert any("Mariahilfer Straße 45" in e.word for e in result)
+
+    def test_weg(self):
+        text = "Adresse: Waldweg 7a"
+        result = find_address_regex(text)
+        assert len(result) >= 1
+
+    def test_platz(self):
+        text = "am Stephansplatz 1"
+        result = find_address_regex(text)
+        assert len(result) >= 1
+
+    def test_ring(self):
+        text = "Burgring 12"
+        result = find_address_regex(text)
+        assert len(result) >= 1
+
+    def test_plz_ort(self):
+        text = "Adresse:\nSchottenfeldgasse 29/3, 1070 Wien"
+        result = find_address_regex(text)
+        # Should find street AND merge with PLZ+Ort
+        addr_entities = [e for e in result if e.entity_group == "ADRESSE"]
+        assert len(addr_entities) >= 1
+        # At least one entity should span the full address
+        full = [e for e in addr_entities if "1070" in e.word and "Wien" in e.word]
+        assert len(full) >= 1 or len(addr_entities) >= 2  # merged or separate
+
+    def test_standalone_plz_ort(self):
+        text = "Zustelladresse:\n8010 Graz"
+        result = find_address_regex(text)
+        assert len(result) >= 1
+        assert any("8010" in e.word and "Graz" in e.word for e in result)
+
+    def test_compound_street_name(self):
+        text = "Franz-Josefs-Kai 27"
+        result = find_address_regex(text)
+        assert len(result) >= 1
+
+    def test_house_number_with_apartment(self):
+        text = "Schottenfeldgasse 29/3/17"
+        result = find_address_regex(text)
+        assert len(result) >= 1
+
+    def test_no_address(self):
+        text = "Kein Adresshinweis in diesem Text."
+        result = find_address_regex(text)
+        assert len(result) == 0
+
+
+# ---------------------------------------------------------------------------
+# Quasi-identifier tests
+# ---------------------------------------------------------------------------
+class TestQuasiIdentifiers:
+    """Tests for quasi-identifier combination detection."""
+
+    def test_role_plus_location_plus_age(self):
+        """Classic quasi-identifier: role + location + birth year."""
+        from anomyze.pipeline.context_layer import ContextLayer
+        from anomyze.pipeline import DetectedEntity
+        from anomyze.config.settings import Settings
+        from unittest.mock import MagicMock
+
+        text = "der Beschwerdeführer aus Graz, geboren 1985, legte Einspruch ein"
+        # Simulate LOC "Graz" already detected by NER
+        existing = [
+            DetectedEntity(word="Graz", entity_group="LOC", score=0.90,
+                           start=28, end=32, source="org"),
+        ]
+
+        layer = ContextLayer()
+        mock_mlm = MagicMock(side_effect=Exception("no model"))
+        result = layer.process(text, existing, mock_mlm, Settings())
+
+        quasi = [e for e in result if e.entity_group == "QUASI_ID"]
+        assert len(quasi) >= 1, "Should flag quasi-identifiers"
+        assert any("Kombination" in e.context for e in quasi)
+
+    def test_no_quasi_id_when_person_detected(self):
+        """No flagging when a PER entity is already in the window."""
+        from anomyze.pipeline.context_layer import ContextLayer
+        from anomyze.pipeline import DetectedEntity
+        from anomyze.config.settings import Settings
+        from unittest.mock import MagicMock
+
+        text = "Maria Gruber aus Graz, geboren 1985"
+        existing = [
+            DetectedEntity(word="Maria Gruber", entity_group="PER", score=0.95,
+                           start=0, end=12, source="pii"),
+            DetectedEntity(word="Graz", entity_group="LOC", score=0.90,
+                           start=17, end=21, source="org"),
+        ]
+
+        layer = ContextLayer()
+        mock_mlm = MagicMock(side_effect=Exception("no model"))
+        result = layer.process(text, existing, mock_mlm, Settings())
+
+        quasi = [e for e in result if e.entity_group == "QUASI_ID"]
+        assert len(quasi) == 0, "Should NOT flag when PER entity present"
+
+    def test_single_signal_no_flag(self):
+        """A single quasi-identifier alone should not be flagged."""
+        from anomyze.pipeline.context_layer import ContextLayer
+        from anomyze.pipeline import DetectedEntity
+        from anomyze.config.settings import Settings
+        from unittest.mock import MagicMock
+
+        text = "der Beschwerdeführer legte Einspruch ein"
+
+        layer = ContextLayer()
+        mock_mlm = MagicMock(side_effect=Exception("no model"))
+        result = layer.process(text, [], mock_mlm, Settings())
+
+        quasi = [e for e in result if e.entity_group == "QUASI_ID"]
+        assert len(quasi) == 0, "Single signal should not trigger"
+
+    def test_age_reference(self):
+        """45-jährige + location should flag."""
+        from anomyze.pipeline.context_layer import ContextLayer
+        from anomyze.pipeline import DetectedEntity
+        from anomyze.config.settings import Settings
+        from unittest.mock import MagicMock
+
+        text = "die 45-jährige Antragstellerin aus Linz"
+        existing = [
+            DetectedEntity(word="Linz", entity_group="LOC", score=0.90,
+                           start=35, end=39, source="org"),
+        ]
+
+        layer = ContextLayer()
+        mock_mlm = MagicMock(side_effect=Exception("no model"))
+        result = layer.process(text, existing, mock_mlm, Settings())
+
+        quasi = [e for e in result if e.entity_group == "QUASI_ID"]
+        assert len(quasi) >= 1
+
+
+# ---------------------------------------------------------------------------
 # RegexLayer integration tests
 # ---------------------------------------------------------------------------
 class TestRegexLayerIntegration:
@@ -487,6 +641,7 @@ class TestRegexLayerIntegration:
         assert "AKTENZAHL" in groups, "Should detect Aktenzahl"
         assert "GEBURTSDATUM" in groups, "Should detect birth date"
         assert "SVN" in groups, "Should detect SVNr"
+        assert "ADRESSE" in groups, "Should detect address"
         assert "TELEFON" in groups, "Should detect phone number"
         assert "KFZ" in groups, "Should detect license plate"
 

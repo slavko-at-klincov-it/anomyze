@@ -1,17 +1,24 @@
 """
 Stage 3: Context-based anomaly detection.
 
-Uses perplexity-based analysis with a Masked Language Model (MLM)
-to detect potential company/organization names that are not covered
-by regex or NER models.
+Two detection mechanisms:
 
-Core idea: In "bei uns in der Küche" → "Küche" is expected (normal word).
-           In "bei uns in der Siemens" → "Siemens" is unexpected → likely a company.
+1. **Perplexity-based company detection**: Uses a Masked Language Model (MLM)
+   to detect potential company/organization names that are not covered
+   by regex or NER models.
+   Core idea: In "bei uns in der Küche" → "Küche" is expected.
+              In "bei uns in der Siemens" → "Siemens" is unexpected → likely a company.
+
+2. **Quasi-identifier detection**: Identifies passages where combinations
+   of individually harmless attributes (role + location + date/age) could
+   re-identify a person even without a name being present.
+   Example: "der Beschwerdeführer aus Graz, geboren 1985" — no name,
+   but potentially identifiable through attribute combination.
 """
 
 import re
 import logging
-from typing import List, Any, Optional
+from typing import List, Any, Optional, Set, Tuple
 
 from anomyze.pipeline import DetectedEntity
 from anomyze.pipeline.utils import entities_overlap
@@ -19,6 +26,45 @@ from anomyze.patterns.at_patterns import COMPANY_CONTEXT_PATTERNS, NORMAL_CONTEX
 from anomyze.config.settings import Settings, get_settings
 
 logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Quasi-identifier patterns
+# ---------------------------------------------------------------------------
+
+# Role/title words that refer to a specific person without naming them
+_QUASI_ROLE_PATTERN = re.compile(
+    r'\b(?:der|die|dem|den|des)\s+'
+    r'(Beschwerdeführer(?:in)?|Antragsteller(?:in)?|Betroffene[rnm]?'
+    r'|Kläger(?:in)?|Beklagte[rnm]?|Berufungswerber(?:in)?'
+    r'|Beschuldigte[rnm]?|Verdächtige[rnm]?|Zeugin|Zeuge[n]?'
+    r'|Geschädigte[rnm]?|Versicherte[rnm]?|Pensionist(?:in)?'
+    r'|Bedienstete[rnm]?|Beamt(?:e[rnm]?|in)'
+    r'|Patientin|Patient(?:en)?|Mandantin|Mandant(?:en)?'
+    r'|Mieterin|Mieter[sn]?|Bewohner(?:in)?'
+    r'|Lehrerin|Lehrer[sn]?|Schüler(?:in)?)\b',
+    re.UNICODE
+)
+
+# Age/birth year references (not full dates — those are caught by regex layer)
+_QUASI_AGE_PATTERN = re.compile(
+    r'\b(?:'
+    r'(?:geboren|geb\.?)\s+(?:im\s+(?:Jahr\s+)?)?(\d{4})'   # geboren 1985, geb. im Jahr 1985
+    r'|(\d{1,3})\s*[-–]?\s*[Jj]ähr(?:ig(?:e[rnms]?)?|ige[rnms]?)'  # 45-jährig, 45-jährige
+    r'|[Jj]ahrgang\s+(\d{4})'                                  # Jahrgang 1985
+    r'|[Aa]lter\s+(?:von\s+)?(\d{1,3})'                       # Alter von 45
+    r')\b'
+)
+
+# Gender markers that narrow identification
+_QUASI_GENDER_PATTERN = re.compile(
+    r'\b(?:die\s+(?:weibliche|männliche)|der\s+(?:männliche|weibliche)'
+    r'|(?:eine?\s+)?(?:Frau|Mann|Dame|Herr)'
+    r')\b',
+    re.UNICODE
+)
+
+# Proximity window (characters) within which quasi-identifiers combine
+_QUASI_WINDOW = 200
 
 
 class ContextLayer:
@@ -36,7 +82,11 @@ class ContextLayer:
         mlm_pipeline: Any,
         settings: Optional[Settings] = None,
     ) -> List[DetectedEntity]:
-        """Detect potential company names using perplexity-based anomaly detection.
+        """Detect anomalies and quasi-identifiers.
+
+        Combines two detection mechanisms:
+        1. Perplexity-based company name detection via MLM
+        2. Quasi-identifier combination detection
 
         Args:
             text: The input text to analyze.
@@ -45,11 +95,31 @@ class ContextLayer:
             settings: Configuration settings.
 
         Returns:
-            List of new entities detected via anomaly analysis.
+            List of new entities detected via anomaly/quasi-identifier analysis.
         """
         if settings is None:
             settings = get_settings()
 
+        # 1. Perplexity-based company detection
+        anomalies = self._detect_company_anomalies(
+            text, existing_entities, mlm_pipeline, settings
+        )
+
+        # 2. Quasi-identifier combination detection
+        all_known = list(existing_entities) + anomalies
+        quasi_entities = self._detect_quasi_identifiers(text, all_known, settings)
+        anomalies.extend(quasi_entities)
+
+        return anomalies
+
+    def _detect_company_anomalies(
+        self,
+        text: str,
+        existing_entities: List[DetectedEntity],
+        mlm_pipeline: Any,
+        settings: Settings,
+    ) -> List[DetectedEntity]:
+        """Detect potential company names using perplexity-based anomaly detection."""
         anomalies: List[DetectedEntity] = []
 
         for pattern, description, include_suffix in COMPANY_CONTEXT_PATTERNS:
@@ -132,3 +202,111 @@ class ContextLayer:
                     continue
 
         return anomalies
+
+    def _detect_quasi_identifiers(
+        self,
+        text: str,
+        existing_entities: List[DetectedEntity],
+        settings: Settings,
+    ) -> List[DetectedEntity]:
+        """Detect passages where quasi-identifier combinations could re-identify a person.
+
+        Scans for co-occurring role references (Beschwerdeführer, Antragsteller),
+        location mentions, and age/birth year references. When 2+ quasi-identifier
+        types appear within a proximity window without an associated PER entity,
+        the undetected attributes are flagged.
+
+        Example: "der Beschwerdeführer aus Graz, geboren 1985"
+        → "Graz" already detected as LOC, but the birth year "1985" and the
+          role "Beschwerdeführer" in combination make this passage identifying.
+        """
+        new_entities: List[DetectedEntity] = []
+
+        # Collect quasi-identifier signals with their positions
+        signals: List[Tuple[int, int, str, str]] = []  # (start, end, type, word)
+
+        for match in _QUASI_ROLE_PATTERN.finditer(text):
+            signals.append((match.start(), match.end(), 'role', match.group()))
+
+        for match in _QUASI_AGE_PATTERN.finditer(text):
+            signals.append((match.start(), match.end(), 'age', match.group()))
+
+        for match in _QUASI_GENDER_PATTERN.finditer(text):
+            signals.append((match.start(), match.end(), 'gender', match.group()))
+
+        # Also count already-detected LOC and GEBURTSDATUM entities as signals
+        for entity in existing_entities:
+            if entity.entity_group in ('LOC', 'ADRESSE'):
+                signals.append((entity.start, entity.end, 'location', entity.word))
+            elif entity.entity_group == 'GEBURTSDATUM':
+                signals.append((entity.start, entity.end, 'age', entity.word))
+
+        if len(signals) < 2:
+            return new_entities
+
+        # Sort signals by position
+        signals.sort(key=lambda s: s[0])
+
+        # Sliding window: check for combinations within _QUASI_WINDOW chars
+        for i, (s_start, s_end, s_type, s_word) in enumerate(signals):
+            # Collect all signal types within the window
+            window_types: Set[str] = {s_type}
+            window_end = s_start + _QUASI_WINDOW
+
+            for j in range(i + 1, len(signals)):
+                o_start, o_end, o_type, o_word = signals[j]
+                if o_start > window_end:
+                    break
+                window_types.add(o_type)
+
+            # A combination of 2+ different quasi-identifier types is suspicious
+            if len(window_types) < 2:
+                continue
+
+            # Check if there's already a PER entity in this window
+            has_person = any(
+                e.entity_group == 'PER'
+                and e.start >= s_start - 50
+                and e.start <= window_end + 50
+                for e in existing_entities
+            )
+
+            # If a person name IS detected, the regular anonymization handles it.
+            # Quasi-identifier flagging is for cases WITHOUT a detected name.
+            if has_person:
+                continue
+
+            # Only flag the signals that aren't already detected entities
+            for sig_start, sig_end, sig_type, sig_word in signals[i:]:
+                if sig_start > window_end:
+                    break
+
+                # Skip if this span is already covered by an existing entity
+                if any(
+                    entities_overlap(sig_start, sig_end, e.start, e.end)
+                    for e in existing_entities
+                ):
+                    continue
+
+                # Skip if we already flagged this span
+                if any(
+                    entities_overlap(sig_start, sig_end, e.start, e.end)
+                    for e in new_entities
+                ):
+                    continue
+
+                # Flag this quasi-identifier for review
+                new_entities.append(DetectedEntity(
+                    word=sig_word,
+                    entity_group='QUASI_ID',
+                    score=0.70,
+                    start=sig_start,
+                    end=sig_end,
+                    source='quasi_id',
+                    context=f"Quasi-Identifikator: {', '.join(sorted(window_types))} in Kombination",
+                ))
+
+            # Only flag the first window occurrence to avoid duplicates
+            break
+
+        return new_entities

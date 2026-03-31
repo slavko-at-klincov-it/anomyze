@@ -23,6 +23,7 @@ from anomyze.patterns.at_patterns import (
     find_id_card_regex,
     find_license_plate_regex,
     find_phone_regex,
+    find_address_regex,
 )
 
 
@@ -55,6 +56,7 @@ class RegexLayer:
             find_svnr_regex,
             find_ibans_regex,
             find_birth_date_regex,
+            find_address_regex,
             find_titled_names_regex,
             find_labeled_names_regex,
             find_license_plate_regex,

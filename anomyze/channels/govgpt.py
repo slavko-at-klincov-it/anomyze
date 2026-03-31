@@ -36,6 +36,7 @@ ENTITY_GROUP_TO_PLACEHOLDER = {
     'KFZ': 'KFZ',
     'TELEFON': 'TELEFON',
     'ADRESSE': 'ADRESSE',
+    'QUASI_ID': 'QUASI_ID',
     'DATE': 'DATUM',
     'PHONE': 'TELEFON',
 }
