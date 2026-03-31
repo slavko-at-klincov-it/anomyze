@@ -21,7 +21,8 @@ KI-generierter Output
 ┌─────────────────────┐
 │  Stufe 1: Regex     │  Österreich-spezifische Muster
 │  (regex_layer.py)   │  SVNr, IBAN, KFZ, Aktenzahl, Geburtsdaten,
-│                     │  Telefon, Email, Reisepass, Steuernummer
+│                     │  Telefon, Email, Reisepass, Steuernummer,
+│                     │  Adressen (Straße+Nr, PLZ+Ort)
 └─────────┬───────────┘
           ▼
 ┌─────────────────────┐
@@ -31,8 +32,10 @@ KI-generierter Output
 └─────────┬───────────┘
           ▼
 ┌─────────────────────┐
-│  Stufe 3: Kontext   │  Perplexitäts-basierte Anomalie-Erkennung
-│  (context_layer.py) │  Erkennt unbekannte Firmennamen via MLM
+│  Stufe 3: Kontext   │  a) Perplexitäts-basierte Anomalie-Erkennung
+│  (context_layer.py) │     Erkennt unbekannte Firmennamen via MLM
+│                     │  b) Quasi-Identifikator-Check
+│                     │     Flaggt Kombinationen (Rolle+Ort+Alter)
 └─────────┬───────────┘
           ▼
 ┌─────────────────────┐
@@ -79,7 +82,7 @@ anomyze/
 │   ├── orchestrator.py     3-Stufen-Steuerung + ModelManager
 │   ├── regex_layer.py      Stufe 1: Regex-Erkennung
 │   ├── ner_layer.py        Stufe 2: NER-Modelle
-│   ├── context_layer.py    Stufe 3: Anomalie-Erkennung
+│   ├── context_layer.py    Stufe 3: Anomalie + Quasi-Identifikatoren
 │   └── utils.py            Entity-Utilities (Overlap, Cleaning)
 ├── channels/               3-Kanal-Output
 │   ├── base.py             Abstrakte Basis-Klasse
@@ -114,6 +117,7 @@ Alle Modelle laufen 100% lokal — kein Cloud-Call, kein API-Call nach außen.
 | PERSON | Maria Gruber | NER + Regex (Titel) |
 | ORGANISATION | Bundesministerium für Inneres | NER + Perplexität |
 | ORT | Wien, Graz | NER |
+| ADRESSE | Schottenfeldgasse 29/3, 1070 Wien | Regex (Straße+Nr, PLZ+Ort) |
 | EMAIL | m.gruber@gmail.com | Regex |
 | IBAN | AT61 1904 3002 3457 3201 | Regex |
 | SVNR | 1234 140387 | Regex + Datumsvalidierung |
@@ -124,3 +128,21 @@ Alle Modelle laufen 100% lokal — kein Cloud-Call, kein API-Call nach außen.
 | PERSONALAUSWEIS | AB123456CD | Regex (kontext-gesteuert) |
 | KFZ | W-34567B | Regex (Bezirk-Codes) |
 | TELEFON | +43 664 1234567 | Regex |
+| QUASI_ID | "der Beschwerdeführer aus Graz, geboren 1985" | Kontext (Kombinations-Check) |
+
+## Quasi-Identifikator-Erkennung
+
+Einzelne Datenpunkte (Ort, Geburtsjahr, Berufsbezeichnung) sind für sich genommen nicht identifizierend. In Kombination können sie eine Person aber eindeutig bestimmen — auch ohne dass ein Name genannt wird.
+
+**Beispiel:** "der Beschwerdeführer aus Graz, geboren 1985" — kein Name, aber möglicherweise identifizierbar.
+
+Der Context-Layer erkennt solche Kombinationen:
+
+| Signal-Typ | Beispiele |
+|-----------|-----------|
+| Rolle | Beschwerdeführer, Antragstellerin, Betroffener, Zeuge, Patientin |
+| Ort | Bereits erkannte LOC/ADRESSE-Entitäten |
+| Alter/Geburtsjahr | "geboren 1985", "45-jährige", "Jahrgang 1972" |
+| Geschlecht | "die weibliche", "ein Mann" |
+
+**Logik:** Wenn 2+ Signal-Typen innerhalb von 200 Zeichen auftreten und **kein** PER-Entity im selben Fenster erkannt wurde, werden die nicht-erkannten Signale als QUASI_ID geflaggt (Konfidenz 0.70). Im KAPA-Kanal landen sie automatisch im `[PRÜFEN:...]`-Bereich zur manuellen Prüfung.

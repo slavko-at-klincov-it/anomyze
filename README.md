@@ -15,7 +15,8 @@ Anomyze ist der **Output-Filter** der "Public AI"-Initiative. Die KI-Tools (GovG
 
 - **3-Stufen-Pipeline:** Regex → NER → Perplexitäts-Anomalie-Erkennung
 - **3 Ausgabe-Kanäle:** GovGPT (reversibel), IFG (irreversibel), KAPA (mit Audit-Trail)
-- **Österreich-spezifisch:** SVNr, IBAN, KFZ-Kennzeichen, Aktenzahlen, Steuernummern, Verwaltungssprache
+- **Österreich-spezifisch:** Adressen, SVNr, IBAN, KFZ-Kennzeichen, Aktenzahlen, Steuernummern, Verwaltungssprache
+- **Quasi-Identifikator-Check:** Erkennt re-identifizierende Attribut-Kombinationen (Rolle + Ort + Alter)
 - **100% lokal:** Kein Cloud-Call, kein API-Call nach außen
 - **REST API:** FastAPI-basiert, Docker-ready
 - **DSGVO-konform:** Privacy by Default, irreversible Schwärzung für IFG
@@ -99,6 +100,7 @@ docker-compose up --build
 
 | Typ | Format | Beispiel |
 |-----|--------|----------|
+| Adresse | Straße Nr, PLZ Ort | Schottenfeldgasse 29/3, 1070 Wien |
 | SVNr | XXXX DDMMYY | 1234 140387 |
 | IBAN | ATxx xxxx xxxx xxxx xxxx | AT61 1904 3002 3457 3201 |
 | KFZ | Bezirk-Ziffern-Buchstaben | W-34567B |
@@ -116,7 +118,11 @@ HuggingFace Transformer-Modelle für Personennamen, Organisationen und Orte.
 
 ### Stufe 3: Kontext (context_layer.py)
 
-Perplexitäts-basierte Anomalie-Erkennung: Erkennt unbekannte Firmennamen, die weder durch Regex noch NER abgedeckt sind.
+Zwei Erkennungsmechanismen:
+
+1. **Perplexitäts-basierte Anomalie-Erkennung:** Erkennt unbekannte Firmennamen, die weder durch Regex noch NER abgedeckt sind.
+
+2. **Quasi-Identifikator-Check:** Erkennt Passagen, in denen Kombinationen aus Rolle (Beschwerdeführer), Ort und Alter/Geburtsjahr eine Person identifizierbar machen — auch ohne dass ein Name genannt wird. Beispiel: "der Beschwerdeführer aus Graz, geboren 1985".
 
 ## 3 Ausgabe-Kanäle
 

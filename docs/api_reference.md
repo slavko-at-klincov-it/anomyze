@@ -10,7 +10,7 @@ http://localhost:8000/api/v1
 
 ### POST /anonymize
 
-Anonymize text using one of three output channels.
+Filter KI-generated output through the specified channel.
 
 **Request Body:**
 ```json
@@ -86,7 +86,7 @@ Anonymize text using one of three output channels.
   "entities": [...],
   "entity_count": 2,
   "mapping": {"[PERSON_1]": "Maria Gruber"},
-  "flagged_for_review": ["[PRÜFEN:ORGANISATION_1]"],
+  "flagged_for_review": ["[PRÜFEN:QUASI_ID_1]"],
   "audit_trail": [
     {
       "timestamp": "2026-03-31T10:00:00+00:00",
@@ -100,6 +100,31 @@ Anonymize text using one of three output channels.
     }
   ]
 }
+```
+
+**Quasi-Identifikatoren im KAPA-Kanal:**
+
+Passagen mit Kombinationen aus Rolle + Ort + Alter (ohne erkannten Namen) werden als `QUASI_ID` mit Konfidenz 0.70 erkannt und automatisch zur manuellen Prüfung geflaggt (`[PRÜFEN:QUASI_ID_N]`).
+
+**Erkannte Entity-Typen:**
+
+| entity_group | Placeholder | Erkennung |
+|---|---|---|
+| PER | PERSON | NER + Regex (Titel) |
+| ORG / ORG_DETECTED | ORGANISATION | NER + Perplexität |
+| LOC | ORT | NER |
+| ADRESSE | ADRESSE | Regex (Straße+Nr, PLZ+Ort) |
+| EMAIL | EMAIL | Regex |
+| IBAN | IBAN | Regex |
+| SVN | SVNR | Regex + Datumsvalidierung |
+| STEUERNUMMER | STEUERNUMMER | Regex |
+| GEBURTSDATUM | GEBURTSDATUM | Regex |
+| AKTENZAHL | AKTENZAHL | Regex |
+| REISEPASS | REISEPASS | Regex (kontext-gesteuert) |
+| PERSONALAUSWEIS | PERSONALAUSWEIS | Regex (kontext-gesteuert) |
+| KFZ | KFZ | Regex (Bezirk-Codes) |
+| TELEFON | TELEFON | Regex |
+| QUASI_ID | QUASI_ID | Kontext (Kombinations-Check) |
 ```
 
 ### GET /health
