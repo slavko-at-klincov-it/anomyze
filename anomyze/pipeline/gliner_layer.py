@@ -12,7 +12,6 @@ from typing import Any
 from anomyze.config.settings import Settings, get_settings
 from anomyze.patterns import is_blacklisted
 from anomyze.pipeline import DetectedEntity
-from anomyze.pipeline.utils import entities_overlap
 
 logger = logging.getLogger(__name__)
 
@@ -41,20 +40,21 @@ class GLiNERLayer:
     def process(
         self,
         text: str,
-        existing_entities: list[DetectedEntity],
         gliner_model: Any,
         settings: Settings | None = None,
     ) -> list[DetectedEntity]:
-        """Run GLiNER zero-shot NER and return filtered entities.
+        """Run GLiNER zero-shot NER and return detected entities.
+
+        Returns all entities that pass threshold and blacklist checks.
+        Overlap deduplication is handled by the ensemble layer.
 
         Args:
             text: The input text to analyze.
-            existing_entities: Entities already detected by previous layers.
             gliner_model: Loaded GLiNER model instance.
             settings: Configuration settings.
 
         Returns:
-            List of new entities detected by GLiNER.
+            List of entities detected by GLiNER.
         """
         if settings is None:
             settings = get_settings()
@@ -63,7 +63,6 @@ class GLiNERLayer:
             return []
 
         new_entities: list[DetectedEntity] = []
-        all_known = list(existing_entities)
 
         try:
             entities = gliner_model.predict_entities(
@@ -89,9 +88,6 @@ class GLiNERLayer:
 
             entity_group = _GLINER_LABEL_MAP.get(label, label.upper())
 
-            if any(entities_overlap(start, end, ex.start, ex.end) for ex in all_known):
-                continue
-
             entity = DetectedEntity(
                 word=word,
                 entity_group=entity_group,
@@ -101,6 +97,5 @@ class GLiNERLayer:
                 source="gliner",
             )
             new_entities.append(entity)
-            all_known.append(entity)
 
         return new_entities

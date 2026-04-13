@@ -43,6 +43,7 @@ class DetectedEntity:
     context: str = ""
     anomaly_score: float = 0.0
     placeholder: str = ""
+    sources: tuple[str, ...] = ()
 
     def to_dict(self) -> dict:
         """Convert to dictionary for serialization."""
@@ -53,6 +54,7 @@ class DetectedEntity:
             "start": self.start,
             "end": self.end,
             "source": self.source,
+            "sources": list(self.sources) if self.sources else [self.source],
             "context": self.context,
             "anomaly_score": self.anomaly_score,
             "placeholder": self.placeholder,

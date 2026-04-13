@@ -24,6 +24,7 @@ from transformers import pipeline as hf_pipeline
 from anomyze.config.settings import Settings, get_settings
 from anomyze.pipeline import DetectedEntity
 from anomyze.pipeline.context_layer import ContextLayer
+from anomyze.pipeline.ensemble import merge_entities
 from anomyze.pipeline.ner_layer import NERLayer
 from anomyze.pipeline.regex_layer import RegexLayer
 
@@ -410,18 +411,18 @@ class PipelineOrchestrator:
         if self.settings.fix_encoding:
             text = fix_encoding(text)
 
+        raw_entities: list[DetectedEntity] = []
+
         # Stage 1: Regex-based detection
-        entities = []
         if self.settings.use_regex_fallback:
-            entities = self.regex_layer.process(text)
+            raw_entities.extend(self.regex_layer.process(text))
 
         # Stage 2: NER model detection
         pii = self.model_manager.load_pii_pipeline(verbose=False)
         org = self.model_manager.load_org_pipeline(verbose=False)
-        ner_entities = self.ner_layer.process(
-            text, entities, pii, org, self.settings
+        raw_entities.extend(
+            self.ner_layer.process(text, pii, org, self.settings)
         )
-        entities.extend(ner_entities)
 
         # Stage 2b: GLiNER zero-shot NER
         if self.settings.use_gliner:
@@ -429,12 +430,14 @@ class PipelineOrchestrator:
             if self._gliner_layer is None:
                 self._gliner_layer = GLiNERLayer()
             gliner_model = self.model_manager.load_gliner_model(verbose=False)
-            gliner_entities = self._gliner_layer.process(
-                text, entities, gliner_model, self.settings
+            raw_entities.extend(
+                self._gliner_layer.process(text, gliner_model, self.settings)
             )
-            entities.extend(gliner_entities)
 
-        # Stage 3: Context/anomaly detection
+        # Ensemble: merge overlapping entities from all sources
+        entities = merge_entities(raw_entities, text)
+
+        # Stage 3: Context/anomaly detection (uses merged entities)
         if self.settings.use_anomaly_detection:
             mlm = self.model_manager.load_mlm_pipeline(verbose=False)
             context_entities = self.context_layer.process(
@@ -515,17 +518,21 @@ def anonymize(
     if settings.fix_encoding:
         text = fix_encoding(text)
 
-    all_entities: list[DetectedEntity] = []
+    raw_entities: list[DetectedEntity] = []
 
     # Stage 1: Regex
     if settings.use_regex_fallback:
         regex_layer = RegexLayer()
-        all_entities = regex_layer.process(text)
+        raw_entities.extend(regex_layer.process(text))
 
     # Stage 2: NER
     ner_layer = NERLayer()
-    ner_entities = ner_layer.process(text, all_entities, pii_pipeline, org_pipeline, settings)
-    all_entities.extend(ner_entities)
+    raw_entities.extend(
+        ner_layer.process(text, pii_pipeline, org_pipeline, settings)
+    )
+
+    # Ensemble: merge overlapping entities
+    all_entities = merge_entities(raw_entities, text)
 
     # Stage 3: Context
     if settings.use_anomaly_detection:

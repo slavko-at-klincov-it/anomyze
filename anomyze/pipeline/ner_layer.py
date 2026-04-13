@@ -14,7 +14,7 @@ from typing import Any
 from anomyze.config.settings import Settings, get_settings
 from anomyze.patterns import is_blacklisted
 from anomyze.pipeline import DetectedEntity
-from anomyze.pipeline.utils import clean_entity_word, entities_overlap
+from anomyze.pipeline.utils import clean_entity_word
 
 # Label normalization: different NER models use different label schemes.
 # xlm-roberta-large-ner-hrl uses B-PER/I-PER, dslim uses PER, etc.
@@ -27,6 +27,7 @@ _LABEL_NORMALIZE: dict[str, str] = {
     "I-LOC": "LOC",
     "B-MISC": "MISC",
     "I-MISC": "MISC",
+    "USERNAME": "EMAIL",
 }
 
 _ACCEPTED_ORG_LABELS = frozenset({"ORG", "LOC", "PER"})
@@ -48,28 +49,28 @@ class NERLayer:
     def process(
         self,
         text: str,
-        existing_entities: list[DetectedEntity],
         pii_pipeline: Any,
         org_pipeline: Any,
         settings: Settings | None = None,
     ) -> list[DetectedEntity]:
-        """Run NER models and return filtered, deduplicated entities.
+        """Run NER models and return detected entities.
+
+        Returns all entities that pass threshold and blacklist checks.
+        Overlap deduplication is handled by the ensemble layer.
 
         Args:
             text: The input text to analyze.
-            existing_entities: Entities already detected by previous layers.
             pii_pipeline: HuggingFace PII detection pipeline.
             org_pipeline: HuggingFace NER/ORG detection pipeline.
             settings: Configuration settings.
 
         Returns:
-            List of new entities detected by the NER models.
+            List of entities detected by the NER models.
         """
         if settings is None:
             settings = get_settings()
 
         new_entities: list[DetectedEntity] = []
-        all_known = list(existing_entities)
 
         # Layer 1: PII detection (names, emails, phones, dates)
         pii_entities = pii_pipeline(text)
@@ -79,8 +80,6 @@ class NERLayer:
             if e['score'] < settings.pii_threshold:
                 continue
             if is_blacklisted(word):
-                continue
-            if any(entities_overlap(start, end, ex.start, ex.end) for ex in all_known):
                 continue
 
             entity = DetectedEntity(
@@ -92,7 +91,6 @@ class NERLayer:
                 source='pii',
             )
             new_entities.append(entity)
-            all_known.append(entity)
 
         # Layer 2: ORG/NER detection (organizations, locations, persons)
         org_entities = org_pipeline(text)
@@ -106,8 +104,6 @@ class NERLayer:
 
             if is_blacklisted(word):
                 continue
-            if any(entities_overlap(start, end, ex.start, ex.end) for ex in all_known):
-                continue
             if e['score'] < settings.org_threshold:
                 continue
 
@@ -120,6 +116,5 @@ class NERLayer:
                 source='org',
             )
             new_entities.append(entity)
-            all_known.append(entity)
 
         return new_entities

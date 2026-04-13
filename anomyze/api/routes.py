@@ -102,17 +102,20 @@ async def anonymize(request: Request, body: AnonymizeRequest) -> AnonymizeRespon
         text = _fix_encoding(text)
 
     # Stage 1: Regex
-    entities = []
+    raw_entities: list = []
     if settings.use_regex_fallback:
         regex_layer = RegexLayer()
-        entities = regex_layer.process(text)
+        raw_entities.extend(regex_layer.process(text))
 
     # Stage 2: NER
     ner_layer = NERLayer()
     pii_pl = orchestrator.model_manager.load_pii_pipeline(verbose=False)
     org_pl = orchestrator.model_manager.load_org_pipeline(verbose=False)
-    ner_entities = ner_layer.process(text, entities, pii_pl, org_pl, settings)
-    entities.extend(ner_entities)
+    raw_entities.extend(ner_layer.process(text, pii_pl, org_pl, settings))
+
+    # Ensemble: merge overlapping entities
+    from anomyze.pipeline.ensemble import merge_entities
+    entities = merge_entities(raw_entities, text)
 
     # Stage 3: Context
     if settings.use_anomaly_detection:
