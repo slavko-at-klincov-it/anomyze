@@ -34,7 +34,7 @@ from anomyze import (
     get_settings,
 )
 
-from anomyze.patterns.at_patterns import (
+from anomyze.patterns import (
     find_emails_regex,
     find_titled_names_regex,
     find_labeled_names_regex,

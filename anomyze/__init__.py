@@ -29,7 +29,7 @@ __license__ = "MIT"
 from anomyze.config.settings import Settings, get_settings
 
 # Patterns
-from anomyze.patterns.at_patterns import (
+from anomyze.patterns import (
     COMPANY_CONTEXT_PATTERNS,
     ENTITY_BLACKLIST,
     NORMAL_CONTEXT_WORDS,

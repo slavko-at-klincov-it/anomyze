@@ -115,6 +115,7 @@ class ModelManager:
         self._pii_pipeline: Any = None
         self._org_pipeline: Any = None
         self._mlm_pipeline: Any = None
+        self._gliner_model: Any = None
         self._device: str | None = None
         self._device_name: str | None = None
 
@@ -175,8 +176,24 @@ class ModelManager:
             )
         return self._mlm_pipeline
 
+    def load_gliner_model(self, verbose: bool = True) -> Any:
+        """Load the GLiNER zero-shot NER model."""
+        if self._gliner_model is None and self.settings.use_gliner:
+            try:
+                from gliner import GLiNER
+                if verbose:
+                    print("Loading GLiNER model...")
+                self._gliner_model = GLiNER.from_pretrained(
+                    self.settings.gliner_model
+                )
+            except ImportError:
+                logger.warning("GLiNER not installed, skipping zero-shot NER")
+            except Exception:
+                logger.warning("Failed to load GLiNER model", exc_info=True)
+        return self._gliner_model
+
     def load_all(self, verbose: bool = True) -> tuple[Any, Any, Any]:
-        """Load all three pipelines.
+        """Load all pipelines.
 
         Returns:
             Tuple of (pii_pipeline, org_pipeline, mlm_pipeline).
@@ -184,6 +201,8 @@ class ModelManager:
         pii = self.load_pii_pipeline(verbose)
         org = self.load_org_pipeline(verbose)
         mlm = self.load_mlm_pipeline(verbose)
+        if self.settings.use_gliner:
+            self.load_gliner_model(verbose)
         if verbose:
             print("All models loaded.\n")
         return pii, org, mlm
@@ -360,6 +379,7 @@ class PipelineOrchestrator:
         self.regex_layer = RegexLayer()
         self.ner_layer = NERLayer()
         self.context_layer = ContextLayer()
+        self._gliner_layer: Any = None
 
     def load_models(self, verbose: bool = True) -> tuple[Any, Any, Any]:
         """Load all detection models.
@@ -402,6 +422,17 @@ class PipelineOrchestrator:
             text, entities, pii, org, self.settings
         )
         entities.extend(ner_entities)
+
+        # Stage 2b: GLiNER zero-shot NER
+        if self.settings.use_gliner:
+            from anomyze.pipeline.gliner_layer import GLiNERLayer
+            if self._gliner_layer is None:
+                self._gliner_layer = GLiNERLayer()
+            gliner_model = self.model_manager.load_gliner_model(verbose=False)
+            gliner_entities = self._gliner_layer.process(
+                text, entities, gliner_model, self.settings
+            )
+            entities.extend(gliner_entities)
 
         # Stage 3: Context/anomaly detection
         if self.settings.use_anomaly_detection:

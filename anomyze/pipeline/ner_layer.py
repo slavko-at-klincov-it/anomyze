@@ -12,9 +12,29 @@ and deduplicated against previously detected entities.
 from typing import Any
 
 from anomyze.config.settings import Settings, get_settings
-from anomyze.patterns.at_patterns import is_blacklisted
+from anomyze.patterns import is_blacklisted
 from anomyze.pipeline import DetectedEntity
 from anomyze.pipeline.utils import clean_entity_word, entities_overlap
+
+# Label normalization: different NER models use different label schemes.
+# xlm-roberta-large-ner-hrl uses B-PER/I-PER, dslim uses PER, etc.
+_LABEL_NORMALIZE: dict[str, str] = {
+    "B-PER": "PER",
+    "I-PER": "PER",
+    "B-ORG": "ORG",
+    "I-ORG": "ORG",
+    "B-LOC": "LOC",
+    "I-LOC": "LOC",
+    "B-MISC": "MISC",
+    "I-MISC": "MISC",
+}
+
+_ACCEPTED_ORG_LABELS = frozenset({"ORG", "LOC", "PER"})
+
+
+def _normalize_label(label: str) -> str:
+    """Normalize entity label across different model schemes."""
+    return _LABEL_NORMALIZE.get(label, label)
 
 
 class NERLayer:
@@ -65,7 +85,7 @@ class NERLayer:
 
             entity = DetectedEntity(
                 word=word,
-                entity_group=e['entity_group'],
+                entity_group=_normalize_label(e['entity_group']),
                 score=e['score'],
                 start=start,
                 end=end,
@@ -76,7 +96,10 @@ class NERLayer:
 
         # Layer 2: ORG/NER detection (organizations, locations, persons)
         org_entities = org_pipeline(text)
-        org_entities = [e for e in org_entities if e['entity_group'] in ('ORG', 'LOC', 'PER')]
+        org_entities = [
+            e for e in org_entities
+            if _normalize_label(e['entity_group']) in _ACCEPTED_ORG_LABELS
+        ]
 
         for e in org_entities:
             word, start, end = clean_entity_word(e['word'], text, e['start'], e['end'])
@@ -90,7 +113,7 @@ class NERLayer:
 
             entity = DetectedEntity(
                 word=word,
-                entity_group=e['entity_group'],
+                entity_group=_normalize_label(e['entity_group']),
                 score=e['score'],
                 start=start,
                 end=end,

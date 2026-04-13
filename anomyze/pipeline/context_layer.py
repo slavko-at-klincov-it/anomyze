@@ -21,7 +21,7 @@ import re
 from typing import Any
 
 from anomyze.config.settings import Settings, get_settings
-from anomyze.patterns.at_patterns import COMPANY_CONTEXT_PATTERNS, NORMAL_CONTEXT_WORDS
+from anomyze.patterns import COMPANY_CONTEXT_PATTERNS, NORMAL_CONTEXT_WORDS
 from anomyze.pipeline import DetectedEntity
 from anomyze.pipeline.utils import entities_overlap
 

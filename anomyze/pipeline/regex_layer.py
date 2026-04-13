@@ -7,7 +7,7 @@ This is the first and fastest layer in the pipeline.
 """
 
 
-from anomyze.patterns.at_patterns import (
+from anomyze.patterns import (
     find_address_regex,
     find_aktenzahl_regex,
     find_birth_date_regex,
