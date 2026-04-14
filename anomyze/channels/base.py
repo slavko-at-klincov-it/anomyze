@@ -10,6 +10,7 @@ from dataclasses import dataclass
 
 from anomyze.config.settings import Settings
 from anomyze.pipeline import DetectedEntity
+from anomyze.pipeline.quality_check import QualityReport
 
 
 @dataclass
@@ -21,11 +22,13 @@ class ChannelResult:
         entities: List of all detected entities.
         entity_count: Total number of detected entities.
         channel: Name of the channel that produced this result.
+        quality_report: Optional post-anonymization quality check report.
     """
 
     text: str
     entities: list[DetectedEntity]
     channel: str
+    quality_report: QualityReport | None = None
 
     @property
     def entity_count(self) -> int:

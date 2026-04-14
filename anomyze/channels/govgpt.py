@@ -17,6 +17,7 @@ from anomyze.channels.base import BaseChannel, ChannelResult
 from anomyze.config.settings import Settings
 from anomyze.pipeline import DetectedEntity
 from anomyze.pipeline.entity_resolver import resolve_entities
+from anomyze.pipeline.quality_check import check_output
 
 # Map internal entity_group names to user-facing placeholder types
 ENTITY_GROUP_TO_PLACEHOLDER = {
@@ -160,10 +161,16 @@ class GovGPTChannel(BaseChannel):
 
             result = before + replacement + after
 
+        quality_report = (
+            check_output(result, sorted_entities)
+            if settings.run_quality_check else None
+        )
+
         return GovGPTResult(
             text=result,
             entities=sorted_entities,
             channel="govgpt",
             mapping=mapping,
             original_text=original_text,
+            quality_report=quality_report,
         )

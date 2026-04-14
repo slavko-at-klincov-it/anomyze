@@ -25,6 +25,7 @@ from anomyze.channels.govgpt import ENTITY_GROUP_TO_PLACEHOLDER
 from anomyze.config.settings import Settings
 from anomyze.pipeline import DetectedEntity
 from anomyze.pipeline.entity_resolver import resolve_entities
+from anomyze.pipeline.quality_check import check_output
 
 
 @dataclass
@@ -213,6 +214,11 @@ class KAPAChannel(BaseChannel):
 
             result = before + replacement + after
 
+        quality_report = (
+            check_output(result, sorted_entities)
+            if settings.run_quality_check else None
+        )
+
         return KAPAResult(
             text=result,
             entities=sorted_entities,
@@ -222,4 +228,5 @@ class KAPAChannel(BaseChannel):
             flagged_for_review=flagged,
             audit_entries=audit_entries,
             document_id=document_id,
+            quality_report=quality_report,
         )

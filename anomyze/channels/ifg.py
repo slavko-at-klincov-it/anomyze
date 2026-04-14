@@ -22,6 +22,7 @@ from anomyze.channels.base import BaseChannel, ChannelResult
 from anomyze.channels.govgpt import ENTITY_GROUP_TO_PLACEHOLDER
 from anomyze.config.settings import Settings
 from anomyze.pipeline import DetectedEntity
+from anomyze.pipeline.quality_check import check_output
 
 
 @dataclass
@@ -154,6 +155,13 @@ class IFGChannel(BaseChannel):
 
             result = before + replacement + after
 
+        # Quality check runs on the pre-sanitized entities so it can
+        # verify original words are no longer present in the output.
+        quality_report = (
+            check_output(result, valid_entities)
+            if settings.run_quality_check else None
+        )
+
         # Clear entity words from result entities for DSGVO compliance
         # The protocol has category counts but never the original values
         sanitized_entities = []
@@ -173,4 +181,5 @@ class IFGChannel(BaseChannel):
             entities=sanitized_entities,
             channel="ifg",
             redaction_protocol=protocol,
+            quality_report=quality_report,
         )

@@ -37,6 +37,7 @@ class Settings:
     use_regex_fallback: bool = True
     use_anomaly_detection: bool = True
     use_gliner: bool = True
+    run_quality_check: bool = True
 
     # GLiNER entity types (zero-shot, configurable)
     gliner_entity_types: tuple[str, ...] = (
