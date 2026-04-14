@@ -16,6 +16,7 @@ from dataclasses import dataclass, field
 from anomyze.channels.base import BaseChannel, ChannelResult
 from anomyze.config.settings import Settings
 from anomyze.pipeline import DetectedEntity
+from anomyze.pipeline.entity_resolver import resolve_entities
 
 # Map internal entity_group names to user-facing placeholder types
 ENTITY_GROUP_TO_PLACEHOLDER = {
@@ -96,12 +97,15 @@ class GovGPTChannel(BaseChannel):
         # Sort by position
         sorted_entities = sorted(entities, key=lambda e: e.start)
 
+        # Resolve entity references (link variations of the same entity)
+        canonical_keys = resolve_entities(sorted_entities)
+
         # Build placeholder mapping
         type_counters: dict[str, int] = {}
-        text_to_placeholder: dict[str, str] = {}
+        key_to_placeholder: dict[tuple[str, str], str] = {}
         mapping: dict[str, str] = {}
 
-        for entity in sorted_entities:
+        for entity, ckey in zip(sorted_entities, canonical_keys, strict=True):
             original = entity.word.strip()
             entity_type = ENTITY_GROUP_TO_PLACEHOLDER.get(
                 entity.entity_group, entity.entity_group
@@ -111,18 +115,23 @@ class GovGPTChannel(BaseChannel):
             if not original or score < settings.anomaly_threshold:
                 continue
 
-            normalized = original.lower()
+            lookup = (entity_type, ckey)
 
-            if normalized not in text_to_placeholder:
+            if lookup not in key_to_placeholder:
                 if entity_type not in type_counters:
                     type_counters[entity_type] = 0
                 type_counters[entity_type] += 1
 
                 placeholder = f"[{entity_type}_{type_counters[entity_type]}]"
-                text_to_placeholder[normalized] = placeholder
+                key_to_placeholder[lookup] = placeholder
                 mapping[placeholder] = original
+            else:
+                # Keep the longest variant in the mapping (most informative)
+                placeholder = key_to_placeholder[lookup]
+                if len(original) > len(mapping[placeholder]):
+                    mapping[placeholder] = original
 
-            entity.placeholder = text_to_placeholder[normalized]
+            entity.placeholder = key_to_placeholder[lookup]
 
         # Apply replacements (reverse order to preserve positions)
         result = text

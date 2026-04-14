@@ -24,6 +24,7 @@ from anomyze.channels.base import BaseChannel, ChannelResult
 from anomyze.channels.govgpt import ENTITY_GROUP_TO_PLACEHOLDER
 from anomyze.config.settings import Settings
 from anomyze.pipeline import DetectedEntity
+from anomyze.pipeline.entity_resolver import resolve_entities
 
 
 @dataclass
@@ -121,16 +122,19 @@ class KAPAChannel(BaseChannel):
         sorted_entities = sorted(entities, key=lambda e: e.start)
         review_threshold = settings.kapa_review_threshold
 
+        # Resolve entity references (link variations of the same entity)
+        canonical_keys = resolve_entities(sorted_entities)
+
         # Build placeholder mapping (same logic as GovGPT)
         type_counters: dict[str, int] = {}
-        text_to_placeholder: dict[str, str] = {}
+        key_to_placeholder: dict[tuple[str, str], str] = {}
         mapping: dict[str, str] = {}
         flagged: list[str] = []
         audit_entries: list[AuditEntry] = []
 
         now = datetime.now(timezone.utc).isoformat()
 
-        for entity in sorted_entities:
+        for entity, ckey in zip(sorted_entities, canonical_keys, strict=True):
             original = entity.word.strip()
             entity_type = ENTITY_GROUP_TO_PLACEHOLDER.get(
                 entity.entity_group, entity.entity_group
@@ -140,9 +144,9 @@ class KAPAChannel(BaseChannel):
             if not original or score < settings.anomaly_threshold:
                 continue
 
-            normalized = original.lower()
+            lookup = (entity_type, ckey)
 
-            if normalized not in text_to_placeholder:
+            if lookup not in key_to_placeholder:
                 if entity_type not in type_counters:
                     type_counters[entity_type] = 0
                 type_counters[entity_type] += 1
@@ -156,10 +160,15 @@ class KAPAChannel(BaseChannel):
                 else:
                     placeholder = f"[{base_placeholder}]"
 
-                text_to_placeholder[normalized] = placeholder
+                key_to_placeholder[lookup] = placeholder
                 mapping[placeholder] = original
+            else:
+                placeholder = key_to_placeholder[lookup]
+                # Keep the longest variant in the mapping (most informative)
+                if len(original) > len(mapping[placeholder]):
+                    mapping[placeholder] = original
 
-            entity.placeholder = text_to_placeholder[normalized]
+            entity.placeholder = key_to_placeholder[lookup]
 
             # Build audit entry
             action = "flagged_for_review" if score < review_threshold else "anonymized"
