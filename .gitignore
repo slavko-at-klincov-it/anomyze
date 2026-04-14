@@ -42,3 +42,6 @@ anonymized*.txt
 
 # HuggingFace model cache
 .cache/
+
+# Claude Code worktrees
+.claude/

@@ -116,6 +116,11 @@ async def anonymize(request: Request, body: AnonymizeRequest) -> AnonymizeRespon
     org_pl = orchestrator.model_manager.load_org_pipeline(verbose=False)
     raw_entities.extend(ner_layer.process(text, pii_pl, org_pl, settings))
 
+    # Stage 2c: Presidio-compatible local recognizers (AT-specific)
+    if settings.use_presidio_compat:
+        from anomyze.pipeline.presidio_compat_layer import PresidioCompatLayer
+        raw_entities.extend(PresidioCompatLayer().process(text, settings))
+
     # Ensemble: merge overlapping entities
     from anomyze.pipeline.ensemble import merge_entities
     entities = merge_entities(raw_entities, text)

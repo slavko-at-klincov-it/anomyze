@@ -382,6 +382,7 @@ class PipelineOrchestrator:
         self.ner_layer = NERLayer()
         self.context_layer = ContextLayer()
         self._gliner_layer: Any = None
+        self._presidio_layer: Any = None
 
     def load_models(self, verbose: bool = True) -> tuple[Any, Any, Any]:
         """Load all detection models.
@@ -435,6 +436,15 @@ class PipelineOrchestrator:
             gliner_model = self.model_manager.load_gliner_model(verbose=False)
             raw_entities.extend(
                 self._gliner_layer.process(text, gliner_model, self.settings)
+            )
+
+        # Stage 2c: Presidio-compatible local recognizers (AT-specific)
+        if self.settings.use_presidio_compat:
+            from anomyze.pipeline.presidio_compat_layer import PresidioCompatLayer
+            if self._presidio_layer is None:
+                self._presidio_layer = PresidioCompatLayer()
+            raw_entities.extend(
+                self._presidio_layer.process(text, self.settings)
             )
 
         # Ensemble: merge overlapping entities from all sources

@@ -28,6 +28,7 @@ class Settings:
     pii_threshold: float = 0.7
     org_threshold: float = 0.7
     gliner_threshold: float = 0.4
+    presidio_threshold: float = 0.4
     anomaly_threshold: float = 0.5
     perplexity_threshold: float = 0.3
 
@@ -37,6 +38,7 @@ class Settings:
     use_regex_fallback: bool = True
     use_anomaly_detection: bool = True
     use_gliner: bool = True
+    use_presidio_compat: bool = True
     run_quality_check: bool = True
 
     # GLiNER entity types (zero-shot, configurable)
