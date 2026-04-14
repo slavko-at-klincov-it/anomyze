@@ -7,6 +7,7 @@ from anomyze.pipeline.recognizers import (
     ATFirmenbuchRecognizer,
     ATIBANRecognizer,
     ATKFZRecognizer,
+    ATNameRecognizer,
     ATPassportRecognizer,
     ATSVNRRecognizer,
     Pattern,
@@ -214,6 +215,44 @@ class TestATAktenzahlRecognizer:
         r = ATAktenzahlRecognizer()
         results = r.analyze("Zl 567/2023")
         assert len(results) >= 1
+
+
+class TestATNameRecognizer:
+    """Test AT first/last name detection using the dictionary."""
+
+    def test_known_firstname(self) -> None:
+        r = ATNameRecognizer()
+        results = r.analyze("Maria war hier")
+        # Only "Maria" matches; "war"/"hier" are below capitalization
+        # threshold or not in the dictionary
+        texts = [res.text for res in results]
+        assert "Maria" in texts
+        assert "war" not in texts
+        assert "hier" not in texts
+
+    def test_known_lastname(self) -> None:
+        r = ATNameRecognizer()
+        results = r.analyze("Herr Huber kam")
+        words = {res.text for res in results}
+        assert "Huber" in words
+
+    def test_unknown_word_not_matched(self) -> None:
+        r = ATNameRecognizer()
+        # "Xzxquonk" is not in the dictionary → no result
+        results = r.analyze("Xzxquonk sprach")
+        assert results == []
+
+    def test_non_name_capitalized_not_matched(self) -> None:
+        r = ATNameRecognizer()
+        # Capitalized words that happen to start a sentence must not
+        # be flagged as names (they are not in the AT name dictionary)
+        results = r.analyze("Hier arbeitet jemand")
+        assert results == []
+
+    def test_short_words_skipped(self) -> None:
+        r = ATNameRecognizer()
+        # Pattern requires 3+ lowercase chars after capital
+        assert r.analyze("Am") == []
 
 
 class TestPresidioCompatLayer:

@@ -5,6 +5,7 @@ from anomyze.pipeline.recognizers.austrian import (
     ATFirmenbuchRecognizer,
     ATIBANRecognizer,
     ATKFZRecognizer,
+    ATNameRecognizer,
     ATPassportRecognizer,
     ATSVNRRecognizer,
 )
@@ -24,4 +25,5 @@ __all__ = [
     "ATFirmenbuchRecognizer",
     "ATPassportRecognizer",
     "ATAktenzahlRecognizer",
+    "ATNameRecognizer",
 ]

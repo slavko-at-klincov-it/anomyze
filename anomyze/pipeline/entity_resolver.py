@@ -9,6 +9,7 @@ key so the output channel groups them under one placeholder.
 import re
 
 from anomyze.pipeline import DetectedEntity
+from anomyze.pipeline.phonetic import cologne_phonetic
 
 # Austrian/German personal titles (academic, honorific, aristocratic).
 # Tokens are matched case-insensitively after dot/comma stripping.
@@ -103,14 +104,21 @@ def canonical_key(entity: DetectedEntity) -> str:
     return key if key else word.lower()
 
 
+def _phonetic_tokens(key: str) -> list[str]:
+    """Encode each token of a canonical key to its Kölner Phonetik code."""
+    return [cologne_phonetic(tok) for tok in key.split() if tok]
+
+
 def resolve_entities(entities: list[DetectedEntity]) -> list[str]:
     """Compute canonical keys with partial PER matching.
 
-    Two passes:
+    Three passes:
     1. Compute the canonical key per entity (title/suffix/article stripping).
-    2. Link single-token PER mentions to multi-token PER mentions in
-       the same document — but only when the match is unambiguous
-       (exactly one candidate full name contains the single token).
+    2. Link single-token PER mentions to multi-token PER mentions by
+       literal substring match, but only when unambiguous.
+    3. Phonetic fallback — if literal match failed, compare Kölner
+       Phonetik codes so "Mueller" links to "Müller Huber" and
+       "Meier" links to "Mayer".
 
     Args:
         entities: List of detected entities.
@@ -126,6 +134,9 @@ def resolve_entities(entities: list[DetectedEntity]) -> list[str]:
         if e.entity_group == 'PER' and ' ' in keys[i] and keys[i] not in multi_token_per:
             multi_token_per.append(keys[i])
 
+    # Precompute phonetic codes for multi-token keys
+    multi_phonetic = {m: _phonetic_tokens(m) for m in multi_token_per}
+
     # Link single-token PER mentions to a unique multi-token match
     for i, e in enumerate(entities):
         if e.entity_group != 'PER':
@@ -134,8 +145,23 @@ def resolve_entities(entities: list[DetectedEntity]) -> list[str]:
         if not single or ' ' in single:
             continue
 
+        # Literal match first
         candidates = [m for m in multi_token_per if single in m.split()]
         if len(candidates) == 1:
             keys[i] = candidates[0]
+            continue
+        if len(candidates) > 1:
+            continue  # ambiguous — don't link
+
+        # Phonetic fallback: compare encoded codes
+        single_code = cologne_phonetic(single)
+        if not single_code:
+            continue
+        phonetic_candidates = [
+            m for m, codes in multi_phonetic.items()
+            if single_code in codes
+        ]
+        if len(phonetic_candidates) == 1:
+            keys[i] = phonetic_candidates[0]
 
     return keys

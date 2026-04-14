@@ -15,6 +15,7 @@ from anomyze.pipeline.recognizers import (
     ATFirmenbuchRecognizer,
     ATIBANRecognizer,
     ATKFZRecognizer,
+    ATNameRecognizer,
     ATPassportRecognizer,
     ATSVNRRecognizer,
     PatternRecognizer,
@@ -28,6 +29,7 @@ _ENTITY_TYPE_MAP: dict[str, str] = {
     "AT_FIRMENBUCH": "FIRMENBUCH",
     "AT_PASSPORT": "REISEPASS",
     "AT_AKTENZAHL": "AKTENZAHL",
+    "AT_NAME": "PER",
 }
 
 
@@ -39,6 +41,7 @@ def _default_recognizers() -> list[PatternRecognizer]:
         ATFirmenbuchRecognizer(),
         ATPassportRecognizer(),
         ATAktenzahlRecognizer(),
+        ATNameRecognizer(),
     ]
 
 

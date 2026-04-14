@@ -175,6 +175,38 @@ class TestResolveEntitiesPER:
         assert keys[1] == "klaus"
 
 
+class TestResolveEntitiesPhonetic:
+    """Test phonetic fallback in PER resolution."""
+
+    def test_umlaut_variant_linked(self) -> None:
+        # "Mueller" should link to "Müller Huber" via phonetic match
+        ents = [_per("Müller Huber"), _per("Mueller")]
+        keys = resolve_entities(ents)
+        assert keys[0] == keys[1] == "müller huber"
+
+    def test_meyer_variant_linked(self) -> None:
+        # "Mayer" should link to "Meier Gruber" (same phonetic code)
+        ents = [_per("Meier Gruber"), _per("Mayer")]
+        keys = resolve_entities(ents)
+        assert keys[0] == keys[1] == "meier gruber"
+
+    def test_phonetic_ambiguity_not_linked(self) -> None:
+        # Two phonetically-compatible full names → don't link
+        ents = [
+            _per("Müller Huber"),
+            _per("Müller Gruber"),
+            _per("Mueller"),
+        ]
+        keys = resolve_entities(ents)
+        assert keys[2] == "mueller"  # stays as-is
+
+    def test_literal_match_preferred_over_phonetic(self) -> None:
+        # If literal match exists, use it over phonetic
+        ents = [_per("Maria Huber"), _per("Huber")]
+        keys = resolve_entities(ents)
+        assert keys[0] == keys[1] == "maria huber"
+
+
 class TestResolveEntitiesORG:
     """Test ORG-specific resolution."""
 

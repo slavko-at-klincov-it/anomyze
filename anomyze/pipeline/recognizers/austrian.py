@@ -6,7 +6,12 @@ Firmenbuchnummer) and demonstrates context-aware confidence scoring.
 
 import re
 
-from anomyze.pipeline.recognizers.base import Pattern, PatternRecognizer
+from anomyze.patterns.at_names import is_at_firstname, is_at_lastname
+from anomyze.pipeline.recognizers.base import (
+    Pattern,
+    PatternRecognizer,
+    RecognizerResult,
+)
 
 
 class ATSVNRRecognizer(PatternRecognizer):
@@ -119,3 +124,44 @@ class ATAktenzahlRecognizer(PatternRecognizer):
         ),
     ]
     context = ["geschäftszahl", "aktenzahl", "akt", "verfahrenszahl"]
+
+
+class ATNameRecognizer(PatternRecognizer):
+    """Austrian first/last name recognition using curated name dictionary.
+
+    Scans capitalized words and emits a result only when the word is
+    an exact match (case-insensitive) against the AT first- or last-name
+    dictionary. Phonetic matching is deliberately NOT applied here —
+    it is too broad without context and would flag common verbs like
+    "hier" or "dort" that happen to share a Kölner code with a name.
+    Phonetic fuzziness is applied during entity resolution instead,
+    where full-name context disambiguates matches.
+    """
+
+    supported_entity = "AT_NAME"
+    patterns = [
+        Pattern(
+            name="capitalized",
+            regex=r"\b[A-ZÄÖÜ][a-zäöüß]{2,}\b",
+            score=0.0,  # actual score assigned per-match in analyze()
+        ),
+    ]
+    _EXACT_SCORE = 0.7
+
+    def analyze(self, text: str) -> list[RecognizerResult]:
+        """Override to score only literal name-dictionary matches."""
+        results: list[RecognizerResult] = []
+        for compiled, _pattern in self._compiled:
+            for match in compiled.finditer(text):
+                word = match.group()
+                if not (is_at_firstname(word) or is_at_lastname(word)):
+                    continue
+                results.append(RecognizerResult(
+                    entity_type=self.supported_entity,
+                    start=match.start(),
+                    end=match.end(),
+                    score=self._EXACT_SCORE,
+                    text=word,
+                    recognizer_name=type(self).__name__,
+                ))
+        return results
