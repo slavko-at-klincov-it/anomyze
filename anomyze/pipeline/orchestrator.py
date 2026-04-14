@@ -26,6 +26,7 @@ from anomyze.pipeline import DetectedEntity
 from anomyze.pipeline.context_layer import ContextLayer
 from anomyze.pipeline.ensemble import merge_entities
 from anomyze.pipeline.ner_layer import NERLayer
+from anomyze.pipeline.normalizer import normalize_adversarial
 from anomyze.pipeline.regex_layer import RegexLayer
 
 logger = logging.getLogger(__name__)
@@ -410,6 +411,8 @@ class PipelineOrchestrator:
         # Preprocessing: fix encoding issues
         if self.settings.fix_encoding:
             text = fix_encoding(text)
+        if self.settings.use_adversarial_normalization:
+            text = normalize_adversarial(text)
 
         raw_entities: list[DetectedEntity] = []
 
@@ -517,6 +520,8 @@ def anonymize(
     # Preprocessing
     if settings.fix_encoding:
         text = fix_encoding(text)
+    if settings.use_adversarial_normalization:
+        text = normalize_adversarial(text)
 
     raw_entities: list[DetectedEntity] = []
 

@@ -94,12 +94,15 @@ async def anonymize(request: Request, body: AnonymizeRequest) -> AnonymizeRespon
     original_text = body.text
     from anomyze.pipeline.context_layer import ContextLayer
     from anomyze.pipeline.ner_layer import NERLayer
+    from anomyze.pipeline.normalizer import normalize_adversarial
     from anomyze.pipeline.orchestrator import fix_encoding as _fix_encoding
     from anomyze.pipeline.regex_layer import RegexLayer
 
     text = body.text
     if settings.fix_encoding:
         text = _fix_encoding(text)
+    if settings.use_adversarial_normalization:
+        text = normalize_adversarial(text)
 
     # Stage 1: Regex
     raw_entities: list = []

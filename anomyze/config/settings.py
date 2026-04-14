@@ -33,6 +33,7 @@ class Settings:
 
     # Processing options
     fix_encoding: bool = True
+    use_adversarial_normalization: bool = True
     use_regex_fallback: bool = True
     use_anomaly_detection: bool = True
     use_gliner: bool = True
