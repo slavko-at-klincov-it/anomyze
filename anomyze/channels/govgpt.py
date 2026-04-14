@@ -87,12 +87,16 @@ class GovGPTChannel(BaseChannel):
             GovGPTResult with anonymized text and mapping.
         """
         if not entities:
+            quality_report = (
+                check_output(text, []) if settings.run_quality_check else None
+            )
             return GovGPTResult(
                 text=text,
                 entities=[],
                 channel="govgpt",
                 mapping={},
                 original_text=original_text,
+                quality_report=quality_report,
             )
 
         # Sort by position

@@ -90,11 +90,15 @@ class IFGChannel(BaseChannel):
             IFGResult with redacted text and protocol.
         """
         if not entities:
+            quality_report = (
+                check_output(text, []) if settings.run_quality_check else None
+            )
             return IFGResult(
                 text=text,
                 entities=[],
                 channel="ifg",
                 redaction_protocol=[],
+                quality_report=quality_report,
             )
 
         # Filter entities by threshold

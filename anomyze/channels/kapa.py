@@ -109,6 +109,9 @@ class KAPAChannel(BaseChannel):
             document_id = str(uuid.uuid4())
 
         if not entities:
+            quality_report = (
+                check_output(text, []) if settings.run_quality_check else None
+            )
             return KAPAResult(
                 text=text,
                 entities=[],
@@ -118,6 +121,7 @@ class KAPAChannel(BaseChannel):
                 flagged_for_review=[],
                 audit_entries=[],
                 document_id=document_id,
+                quality_report=quality_report,
             )
 
         sorted_entities = sorted(entities, key=lambda e: e.start)
