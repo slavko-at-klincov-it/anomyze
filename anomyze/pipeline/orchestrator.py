@@ -15,8 +15,10 @@ Responsibilities:
 import logging
 import re
 import subprocess
+import time
+from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Iterator
 
 import torch
 from transformers import pipeline as hf_pipeline
@@ -29,6 +31,26 @@ from anomyze.pipeline.ensemble import merge_entities
 from anomyze.pipeline.ner_layer import NERLayer
 from anomyze.pipeline.normalizer import normalize_adversarial
 from anomyze.pipeline.regex_layer import RegexLayer
+
+try:
+    from anomyze.api import metrics as _metrics
+except Exception:  # pragma: no cover - core orchestrator must work even
+    # without the API extra installed (e.g. CLI-only deployments).
+    _metrics = None  # type: ignore[assignment]
+
+
+@contextmanager
+def _stage_timer(stage: str) -> Iterator[None]:
+    """Time a pipeline stage and forward to the Prometheus histogram."""
+    start = time.perf_counter()
+    try:
+        yield
+    finally:
+        if _metrics is not None:
+            try:
+                _metrics.record_stage_duration(stage, time.perf_counter() - start)
+            except Exception:  # pragma: no cover
+                pass
 
 logger = logging.getLogger(__name__)
 
@@ -140,6 +162,12 @@ class ModelManager:
         assert self._device_name is not None
         return self._device_name
 
+    def _hf_kwargs(self, revision: str) -> dict[str, Any]:
+        """Return ``from_pretrained`` kwargs honouring the optional pin."""
+        if revision:
+            return {"model_kwargs": {"revision": revision}, "revision": revision}
+        return {}
+
     def load_pii_pipeline(self, verbose: bool = True) -> Any:
         """Load the PII detection pipeline."""
         if self._pii_pipeline is None:
@@ -150,6 +178,7 @@ class ModelManager:
                 model=self.settings.pii_model,
                 aggregation_strategy="simple",
                 device=self.device,
+                **self._hf_kwargs(self.settings.pii_model_revision),
             )
         return self._pii_pipeline
 
@@ -163,6 +192,7 @@ class ModelManager:
                 model=self.settings.org_model,
                 aggregation_strategy="simple",
                 device=self.device,
+                **self._hf_kwargs(self.settings.org_model_revision),
             )
         return self._org_pipeline
 
@@ -176,6 +206,7 @@ class ModelManager:
                 model=self.settings.mlm_model,
                 device=self.device,
                 top_k=50,
+                **self._hf_kwargs(self.settings.mlm_model_revision),
             )
         return self._mlm_pipeline
 
@@ -186,8 +217,12 @@ class ModelManager:
                 from gliner import GLiNER
                 if verbose:
                     print("Loading GLiNER model...")
+                gliner_kwargs: dict[str, Any] = {}
+                if self.settings.gliner_model_revision:
+                    gliner_kwargs["revision"] = self.settings.gliner_model_revision
                 self._gliner_model = GLiNER.from_pretrained(
-                    self.settings.gliner_model
+                    self.settings.gliner_model,
+                    **gliner_kwargs,
                 )
             except ImportError:
                 logger.warning("GLiNER not installed, skipping zero-shot NER")
@@ -423,14 +458,16 @@ class PipelineOrchestrator:
 
         # Stage 1: Regex-based detection
         if self.settings.use_regex_fallback:
-            raw_entities.extend(self.regex_layer.process(text))
+            with _stage_timer("regex"):
+                raw_entities.extend(self.regex_layer.process(text))
 
         # Stage 2: NER model detection
         pii = self.model_manager.load_pii_pipeline(verbose=False)
         org = self.model_manager.load_org_pipeline(verbose=False)
-        raw_entities.extend(
-            self.ner_layer.process(text, pii, org, self.settings)
-        )
+        with _stage_timer("ner"):
+            raw_entities.extend(
+                self.ner_layer.process(text, pii, org, self.settings)
+            )
 
         # Stage 2b: GLiNER zero-shot NER
         if self.settings.use_gliner:
@@ -438,21 +475,24 @@ class PipelineOrchestrator:
             if self._gliner_layer is None:
                 self._gliner_layer = GLiNERLayer()
             gliner_model = self.model_manager.load_gliner_model(verbose=False)
-            raw_entities.extend(
-                self._gliner_layer.process(text, gliner_model, self.settings)
-            )
+            with _stage_timer("gliner"):
+                raw_entities.extend(
+                    self._gliner_layer.process(text, gliner_model, self.settings)
+                )
 
         # Stage 2c: Presidio-compatible local recognizers (AT-specific)
         if self.settings.use_presidio_compat:
             from anomyze.pipeline.presidio_compat_layer import PresidioCompatLayer
             if self._presidio_layer is None:
                 self._presidio_layer = PresidioCompatLayer()
-            raw_entities.extend(
-                self._presidio_layer.process(text, self.settings)
-            )
+            with _stage_timer("presidio"):
+                raw_entities.extend(
+                    self._presidio_layer.process(text, self.settings)
+                )
 
         # Ensemble: merge overlapping entities from all sources
-        entities = merge_entities(raw_entities, text)
+        with _stage_timer("ensemble"):
+            entities = merge_entities(raw_entities, text)
 
         # Filter Austrian legal whitelist (statute codes, authorities).
         # Applied before Context-Layer so quasi-identifier checks don't
@@ -462,9 +502,10 @@ class PipelineOrchestrator:
         # Stage 3: Context/anomaly detection (uses merged entities)
         if self.settings.use_anomaly_detection:
             mlm = self.model_manager.load_mlm_pipeline(verbose=False)
-            context_entities = self.context_layer.process(
-                text, entities, mlm, self.settings
-            )
+            with _stage_timer("context"):
+                context_entities = self.context_layer.process(
+                    text, entities, mlm, self.settings
+                )
             entities.extend(context_entities)
 
         # Sort by position

@@ -21,7 +21,12 @@ class SettingsOverride(BaseModel):
 class AnonymizeRequest(BaseModel):
     """Request body for the /anonymize endpoint."""
 
-    text: str = Field(..., min_length=1, description="Text to anonymize")
+    text: str = Field(
+        ...,
+        min_length=1,
+        max_length=50_000,
+        description="Text to anonymize (max 50,000 characters)",
+    )
     channel: Literal["govgpt", "ifg", "kapa"] = Field(
         "govgpt", description="Output channel"
     )

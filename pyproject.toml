@@ -53,6 +53,14 @@ api = [
     "fastapi>=0.104.0",
     "uvicorn>=0.24.0",
 ]
+observability = [
+    "structlog>=24.1.0",
+    "prometheus-fastapi-instrumentator>=7.0.0",
+]
+hardening = [
+    "slowapi>=0.1.9",
+    "secure>=0.3.0",
+]
 dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",

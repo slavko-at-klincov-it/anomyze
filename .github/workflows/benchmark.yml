@@ -1,0 +1,64 @@
+name: Benchmark
+
+# Full PII benchmark — runs sequentially because each pytest / benchmark
+# process loads several GB of HuggingFace models. Triggered manually
+# via "Run workflow" or on every release tag, never on every PR.
+on:
+  workflow_dispatch:
+    inputs:
+      dataset:
+        description: Dataset filename under benchmarks/datasets/
+        required: false
+        default: smoke_at.json
+      regression_baseline:
+        description: Optional baseline file under benchmarks/history/
+        required: false
+        default: ""
+  release:
+    types: [published]
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest-4-cores
+    timeout-minutes: 90
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cache HuggingFace models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-models-${{ runner.os }}-${{ hashFiles('anomyze/config/settings.py') }}
+          restore-keys: hf-models-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: pip install -e ".[api]"
+
+      - name: Run benchmark
+        env:
+          DATASET: ${{ github.event.inputs.dataset || 'smoke_at.json' }}
+        run: |
+          mkdir -p benchmarks/history
+          OUT="benchmarks/history/$(date -u +%Y-%m-%d)_${GITHUB_SHA::8}.json"
+          python -m anomyze.benchmark "benchmarks/datasets/${DATASET}" --json > "${OUT}"
+          echo "REPORT_PATH=${OUT}" >> "$GITHUB_ENV"
+
+      - name: Regression check
+        if: github.event.inputs.regression_baseline != ''
+        run: |
+          python -m anomyze.benchmark.regression_check \
+            "benchmarks/history/${{ github.event.inputs.regression_baseline }}" \
+            "${REPORT_PATH}"
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-report
+          path: ${{ env.REPORT_PATH }}
+          retention-days: 90

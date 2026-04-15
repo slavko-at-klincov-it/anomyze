@@ -4,6 +4,69 @@ All notable changes are documented in this file.
 
 ## [Unreleased]
 
+### Phase 3 — Production Readiness, Compliance, Benchmark CI
+
+#### Added
+- Optional dependency groups in `pyproject.toml`:
+  - `observability` — `structlog>=24.1.0`,
+    `prometheus-fastapi-instrumentator>=7.0.0`.
+  - `hardening` — `slowapi>=0.1.9`, `secure>=0.3.0`.
+- `anomyze/api/logging_config.py` — structlog-based JSON logger that
+  falls back to stdlib logging when structlog is not installed. Never
+  emits raw text or entity words; only `document_id`, `channel`,
+  `entity_count`, `duration_ms`, `layer`.
+- `anomyze/api/metrics.py` — Prometheus instrumentation (no-op without
+  the optional dep). Exposes `/metrics` and emits:
+  - `anomyze_entity_detected_total{category,layer,channel}`
+  - `anomyze_pipeline_stage_duration_seconds{stage}`
+  - `anomyze_confidence_score{category,layer}`
+  - `anomyze_channel_requests_total{channel}`
+  - `anomyze_model_loaded`
+- `anomyze/api/hardening.py` — opt-in API hardening: `slowapi`
+  rate-limit middleware, `secure` security headers, and an always-on
+  `BodySizeLimitMiddleware` (default 500 KB).
+- Per-stage timing (`time.perf_counter()`) wrapped around every
+  pipeline stage in `orchestrator.py` and forwarded to the Prometheus
+  histogram.
+- `anomyze/pipeline/model_integrity.py` — SHA256 manifest validator
+  (`config/model_hashes.json`) for the cached HuggingFace snapshots.
+- `scripts/prefetch_models.py` — air-gap-friendly pre-fetcher for the
+  configured pii / org / mlm / gliner models with optional revision
+  pinning.
+- `anomyze/benchmark/regression_check.py` — release gate. Compares a
+  fresh JSON benchmark report against a baseline; fails when overall
+  F1 drops by more than the configured absolute / relative threshold
+  or when any critical category (default `SVN, IBAN, EMAIL`) falls
+  below 0.95 recall.
+- `.github/workflows/benchmark.yml` — manual / on-release benchmark
+  job. Sequential (no matrix), caches HF models, optionally runs the
+  regression gate, uploads the report artifact (90-day retention).
+- `RetentionPolicy` dataclass and `AuditLogger.enforce_retention()` /
+  `AuditLogger.forget()` for DSGVO Art. 5 (1) e and Art. 17 support.
+  PII is wiped after 7 days; entries hard-deleted after 7 years.
+- `docs/compliance/` skeleton documents:
+  - `README.md` — index and intent.
+  - `dpia.md` — Datenschutz-Folgenabschätzung template (Art. 35).
+  - `avv_template.md` — Auftragsverarbeitungsvertrag (Art. 28).
+  - `retention_policy.md` — channel-specific retention durations.
+  - `loeschkonzept.md` — operative Löschanweisung.
+  - `ropa.md` — Verzeichnis von Verarbeitungstätigkeiten (Art. 30).
+- New tests: `test_model_integrity.py`, `test_regression_check.py`,
+  `test_audit_retention.py` (covering both `forget()` and
+  `enforce_retention()` including idempotency).
+
+#### Changed
+- `Settings`: new `pii_model_revision`, `org_model_revision`,
+  `mlm_model_revision`, `gliner_model_revision`,
+  `fail_on_model_integrity_mismatch`. Empty string keeps the
+  legacy "track latest" behaviour.
+- `ModelManager.load_*_pipeline` honour the optional revision pin and
+  pass it through to `from_pretrained`.
+- API request size capped: `AnonymizeRequest.text` `max_length=50_000`
+  characters; body-size middleware rejects payloads > 500 KB.
+- API factory now configures structured logging, installs the
+  Prometheus instrumentator and the hardening middleware on startup.
+
 ### Phase 2 — Core Detection, Robustness, Re-Identification, Benchmark
 
 #### Added

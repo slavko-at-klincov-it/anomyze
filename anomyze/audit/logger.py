@@ -14,10 +14,32 @@ import csv
 import io
 import json
 import logging
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class RetentionPolicy:
+    """Audit-log retention policy.
+
+    Implements DSGVO Art. 5(1)(e) Speicherbegrenzung in three tiers:
+
+    * ``pii_redact_after_days`` — after this many days the original
+      ``entity_word`` is wiped (set to ``"[REDACTED]"``); the audit
+      entry itself is retained for accountability.
+    * ``max_age_days`` — soft retention used by external rotation
+      tooling. Not enforced automatically, but exposed via
+      ``enforce_retention()``.
+    * ``hard_delete_after_days`` — entries older than this are
+      removed entirely. Defaults to seven years (BAO).
+    """
+
+    pii_redact_after_days: int = 7
+    max_age_days: int = 90
+    hard_delete_after_days: int = 7 * 365
 
 
 @dataclass
@@ -86,9 +108,14 @@ class AuditLogger:
     a JSON log file. Supports export in JSON and CSV formats.
     """
 
-    def __init__(self, log_path: Path | None = None):
+    def __init__(
+        self,
+        log_path: Path | None = None,
+        retention: RetentionPolicy | None = None,
+    ):
         self._entries: list[AuditEntry] = []
         self.log_path = log_path
+        self.retention = retention or RetentionPolicy()
 
         # Load existing entries from disk if available
         if log_path and log_path.exists():
@@ -200,3 +227,58 @@ class AuditLogger:
                 )
             except OSError as exc:
                 logger.error("Failed to persist audit log to %s: %s", self.log_path, exc)
+
+    # ------------------------------------------------------------------
+    # DSGVO retention helpers
+    # ------------------------------------------------------------------
+
+    def forget(self, document_id: str) -> int:
+        """Delete every entry for ``document_id`` (Art. 17 DSGVO)."""
+        before = len(self._entries)
+        self._entries = [e for e in self._entries if e.document_id != document_id]
+        removed = before - len(self._entries)
+        if removed:
+            self._persist()
+        return removed
+
+    def enforce_retention(self, now: datetime | None = None) -> dict[str, int]:
+        """Apply the configured ``RetentionPolicy``.
+
+        * Redacts the ``entity_word`` field of entries older than
+          ``pii_redact_after_days``.
+        * Hard-deletes entries older than ``hard_delete_after_days``.
+        * Returns a ``{redacted, deleted}`` summary suitable for
+          operational logging.
+        """
+        if now is None:
+            now = datetime.now(timezone.utc)
+
+        redact_threshold = self.retention.pii_redact_after_days
+        delete_threshold = self.retention.hard_delete_after_days
+
+        kept: list[AuditEntry] = []
+        redacted = 0
+        deleted = 0
+
+        for entry in self._entries:
+            try:
+                ts = datetime.fromisoformat(entry.timestamp)
+            except ValueError:
+                kept.append(entry)
+                continue
+            if ts.tzinfo is None:
+                ts = ts.replace(tzinfo=timezone.utc)
+            age_days = (now - ts).total_seconds() / 86400.0
+
+            if age_days > delete_threshold:
+                deleted += 1
+                continue
+            if age_days > redact_threshold and entry.entity_word != "[REDACTED]":
+                entry.entity_word = "[REDACTED]"
+                redacted += 1
+            kept.append(entry)
+
+        self._entries = kept
+        if redacted or deleted:
+            self._persist()
+        return {"redacted": redacted, "deleted": deleted}

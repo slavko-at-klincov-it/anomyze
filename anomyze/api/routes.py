@@ -13,6 +13,7 @@ import uuid
 
 from fastapi import APIRouter, HTTPException, Request
 
+from anomyze.api import metrics
 from anomyze.api.models import (
     AnonymizeRequest,
     AnonymizeResponse,
@@ -58,6 +59,7 @@ async def anonymize(request: Request, body: AnonymizeRequest) -> AnonymizeRespon
     """
     orchestrator = request.app.state.orchestrator
     document_id = body.document_id or str(uuid.uuid4())
+    metrics.record_channel_request(body.channel)
 
     # Apply per-request settings overrides
     settings = Settings(
@@ -159,6 +161,15 @@ async def anonymize(request: Request, body: AnonymizeRequest) -> AnonymizeRespon
     if isinstance(result, KAPAResult) and result.audit_entries:
         audit_logger = request.app.state.audit_logger
         audit_logger.log_batch(result.audit_entries)
+
+    # Emit per-entity Prometheus counters (no PII labels).
+    for ent in result.entities:
+        metrics.record_entity(
+            category=ent.entity_group,
+            layer=ent.source,
+            channel=body.channel,
+            score=ent.score,
+        )
 
     # Build response
     entity_responses = [

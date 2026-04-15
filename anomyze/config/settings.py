@@ -24,6 +24,20 @@ class Settings:
     mlm_model: str = "dbmdz/bert-base-german-cased"
     gliner_model: str = "urchade/gliner_large-v2.1"
 
+    # Optional model revisions (HF git SHA or tag). When set, the
+    # ``ModelManager`` pins ``from_pretrained`` to that exact revision
+    # for reproducibility — empty string means "track latest" (legacy
+    # behaviour, not recommended for production).
+    pii_model_revision: str = ""
+    org_model_revision: str = ""
+    mlm_model_revision: str = ""
+    gliner_model_revision: str = ""
+
+    # Hard-fail when a configured pin doesn't match the downloaded
+    # checkpoint (after model_integrity check). When False the API
+    # falls back to "degraded mode" with regex + Presidio-compat only.
+    fail_on_model_integrity_mismatch: bool = False
+
     # Detection thresholds
     pii_threshold: float = 0.7
     org_threshold: float = 0.7

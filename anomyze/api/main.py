@@ -12,6 +12,8 @@ from pathlib import Path
 
 from fastapi import FastAPI
 
+from anomyze.api import hardening, metrics
+from anomyze.api.logging_config import configure_logging, get_logger
 from anomyze.api.routes import router
 from anomyze.audit.logger import AuditLogger
 from anomyze.config.settings import Settings, get_settings
@@ -23,9 +25,13 @@ from anomyze.pipeline.orchestrator import PipelineOrchestrator
 async def lifespan(app: FastAPI):
     """Application lifespan: load models on startup."""
     settings = app.state.settings
+    log = get_logger("anomyze.api")
+
+    log.info("anomyze.startup", message="loading models")
     orchestrator = PipelineOrchestrator(settings)
     orchestrator.load_models(verbose=True)
     app.state.orchestrator = orchestrator
+    metrics.set_model_loaded(orchestrator.model_manager.is_loaded())
 
     # Initialize mapping store
     persist_path = None
@@ -39,7 +45,9 @@ async def lifespan(app: FastAPI):
         audit_path = Path(settings.audit_log_path)
     app.state.audit_logger = AuditLogger(log_path=audit_path)
 
+    log.info("anomyze.startup.complete", message="ready")
     yield
+    log.info("anomyze.shutdown")
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -53,6 +61,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     """
     if settings is None:
         settings = get_settings()
+
+    configure_logging()
 
     app = FastAPI(
         title="Anomyze API",
@@ -68,6 +78,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app.state.settings = settings
     app.include_router(router, prefix="/api/v1")
+    metrics.install(app)
+    hardening.install(app)
 
     return app
 
