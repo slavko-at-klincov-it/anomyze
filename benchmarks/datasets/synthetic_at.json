@@ -1,0 +1,312 @@
+[
+  {
+    "id": "syn-001",
+    "text": "Bitte kontaktieren Sie Frau Maria Huber unter maria.huber@example.at.",
+    "entities": [
+      {
+        "start": 28,
+        "end": 39,
+        "type": "PER"
+      },
+      {
+        "start": 46,
+        "end": 68,
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "syn-002",
+    "text": "IBAN: AT00 0000 0000 0000 0001 lautet auf den Kontoinhaber.",
+    "entities": [
+      {
+        "start": 6,
+        "end": 30,
+        "type": "IBAN"
+      }
+    ]
+  },
+  {
+    "id": "syn-003",
+    "text": "SVNR: 1234 010190 (Geburtsdatum im SVN enthalten).",
+    "entities": [
+      {
+        "start": 6,
+        "end": 17,
+        "type": "SVN"
+      }
+    ]
+  },
+  {
+    "id": "syn-004",
+    "text": "Telefonisch erreichbar unter +43 660 1234567 von 9 bis 17 Uhr.",
+    "entities": [
+      {
+        "start": 29,
+        "end": 44,
+        "type": "TELEFON"
+      }
+    ]
+  },
+  {
+    "id": "syn-005",
+    "text": "Das Kennzeichen W-12345B wurde beim Parken notiert.",
+    "entities": [
+      {
+        "start": 16,
+        "end": 24,
+        "type": "KFZ"
+      }
+    ]
+  },
+  {
+    "id": "syn-006",
+    "text": "Wir verweisen auf die Geschäftszahl GZ 2024/0001-IV/6.",
+    "entities": [
+      {
+        "start": 36,
+        "end": 53,
+        "type": "AKTENZAHL"
+      }
+    ]
+  },
+  {
+    "id": "syn-007",
+    "text": "Der Reisepass mit Passnummer P1234567 ist abgelaufen.",
+    "entities": [
+      {
+        "start": 29,
+        "end": 37,
+        "type": "REISEPASS"
+      }
+    ]
+  },
+  {
+    "id": "syn-008",
+    "text": "Die Firmenbuchnummer FN 123456 a gehört zur GmbH.",
+    "entities": [
+      {
+        "start": 21,
+        "end": 32,
+        "type": "FIRMENBUCH"
+      }
+    ]
+  },
+  {
+    "id": "syn-009",
+    "text": "Wohnadresse: Opernring 1, 1010 Wien.",
+    "entities": [
+      {
+        "start": 13,
+        "end": 35,
+        "type": "ADRESSE"
+      }
+    ]
+  },
+  {
+    "id": "syn-010",
+    "text": "Herr Thomas Gruber lebt in Lindenweg 7, 8010 Graz.",
+    "entities": [
+      {
+        "start": 5,
+        "end": 18,
+        "type": "PER"
+      },
+      {
+        "start": 27,
+        "end": 49,
+        "type": "ADRESSE"
+      }
+    ]
+  },
+  {
+    "id": "syn-011",
+    "text": "Anfragen an office@test.gv.at oder +43 1 5123456.",
+    "entities": [
+      {
+        "start": 12,
+        "end": 29,
+        "type": "EMAIL"
+      },
+      {
+        "start": 35,
+        "end": 48,
+        "type": "TELEFON"
+      }
+    ]
+  },
+  {
+    "id": "syn-012",
+    "text": "Überweisung an AT12 0000 0000 0000 0099 war fällig.",
+    "entities": [
+      {
+        "start": 15,
+        "end": 39,
+        "type": "IBAN"
+      }
+    ]
+  },
+  {
+    "id": "syn-013",
+    "text": "Die Akte Az BMI-1/567/2024 wurde dem Landesgericht zugewiesen.",
+    "entities": [
+      {
+        "start": 9,
+        "end": 26,
+        "type": "AKTENZAHL"
+      }
+    ]
+  },
+  {
+    "id": "syn-014",
+    "text": "Frau Eva Wagner unterschrieb den Vertrag am 3. März.",
+    "entities": [
+      {
+        "start": 5,
+        "end": 15,
+        "type": "PER"
+      }
+    ]
+  },
+  {
+    "id": "syn-015",
+    "text": "Der Fuhrparkleiter meldet das Kennzeichen G-ABC 1.",
+    "entities": [
+      {
+        "start": 42,
+        "end": 49,
+        "type": "KFZ"
+      }
+    ]
+  },
+  {
+    "id": "syn-016",
+    "text": "Kontakt: j.meier@example.at, SVNR 9876 150389.",
+    "entities": [
+      {
+        "start": 9,
+        "end": 27,
+        "type": "EMAIL"
+      },
+      {
+        "start": 34,
+        "end": 45,
+        "type": "SVN"
+      }
+    ]
+  },
+  {
+    "id": "syn-017",
+    "text": "Die Firma wurde unter FN 654321 z registriert.",
+    "entities": [
+      {
+        "start": 22,
+        "end": 33,
+        "type": "FIRMENBUCH"
+      }
+    ]
+  },
+  {
+    "id": "syn-018",
+    "text": "Lieferanschrift: Hauptplatz 3, 4020 Linz.",
+    "entities": [
+      {
+        "start": 17,
+        "end": 40,
+        "type": "ADRESSE"
+      }
+    ]
+  },
+  {
+    "id": "syn-019",
+    "text": "Bitte rufen Sie Johann Gruber unter +43 664 9876543 zurück.",
+    "entities": [
+      {
+        "start": 16,
+        "end": 29,
+        "type": "PER"
+      },
+      {
+        "start": 36,
+        "end": 51,
+        "type": "TELEFON"
+      }
+    ]
+  },
+  {
+    "id": "syn-020",
+    "text": "Der Bescheid mit Zl 2023/12/345 ist rechtskräftig.",
+    "entities": [
+      {
+        "start": 17,
+        "end": 31,
+        "type": "AKTENZAHL"
+      }
+    ]
+  },
+  {
+    "id": "syn-021",
+    "text": "Reisepass U7654321 von Herrn Peter Fischer.",
+    "entities": [
+      {
+        "start": 10,
+        "end": 18,
+        "type": "REISEPASS"
+      },
+      {
+        "start": 29,
+        "end": 42,
+        "type": "PER"
+      }
+    ]
+  },
+  {
+    "id": "syn-022",
+    "text": "Die Übersetzungsagentur sitzt am Stephansplatz 5, 1010 Wien.",
+    "entities": [
+      {
+        "start": 33,
+        "end": 59,
+        "type": "ADRESSE"
+      }
+    ]
+  },
+  {
+    "id": "syn-023",
+    "text": "Kennzeichen S-7890Z fiel im Verkehr auf.",
+    "entities": [
+      {
+        "start": 12,
+        "end": 19,
+        "type": "KFZ"
+      }
+    ]
+  },
+  {
+    "id": "syn-024",
+    "text": "Rückfragen an support@test.gv.at.",
+    "entities": [
+      {
+        "start": 14,
+        "end": 32,
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "syn-025",
+    "text": "Konto AT44 0000 1234 0000 5678, Inhaber Anna Pichler.",
+    "entities": [
+      {
+        "start": 6,
+        "end": 30,
+        "type": "IBAN"
+      },
+      {
+        "start": 40,
+        "end": 52,
+        "type": "PER"
+      }
+    ]
+  }
+]

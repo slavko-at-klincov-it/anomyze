@@ -1,0 +1,243 @@
+[
+  {
+    "id": "real-001-bescheid",
+    "text": "BESCHEID\n\nGeschäftszahl: GZ 2024/4567-III/2\nDatum: 12.02.2024\n\nIn der Verwaltungssache des Herrn Franz Berger, geboren am 14.05.1978, wohnhaft Schmidgasse 12, 1080 Wien, vertreten durch RA Karl Gruber, ergeht folgender Bescheid:\n\nDer Antrag auf Zulassung des Kraftfahrzeugs mit Kennzeichen W-78901A wird stattgegeben.\n\nKontakt: franz.berger@example.at, Telefon +43 1 5551234.\nSozialversicherungsnummer: 4567 140578.",
+    "entities": [
+      {
+        "start": 25,
+        "end": 43,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 97,
+        "end": 109,
+        "type": "PER"
+      },
+      {
+        "start": 143,
+        "end": 168,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 189,
+        "end": 200,
+        "type": "PER"
+      },
+      {
+        "start": 290,
+        "end": 298,
+        "type": "KFZ"
+      },
+      {
+        "start": 328,
+        "end": 351,
+        "type": "EMAIL"
+      },
+      {
+        "start": 361,
+        "end": 374,
+        "type": "TELEFON"
+      },
+      {
+        "start": 403,
+        "end": 414,
+        "type": "SVN"
+      }
+    ]
+  },
+  {
+    "id": "real-002-anfrage",
+    "text": "ANFRAGE\ngemäß § 90 Abs. 1 GOG-NR\n\nder Abgeordneten Sabine Hofer und Kollegen\nan die Bundesministerin für Inneres\n\nbetreffend das Ermittlungsverfahren zur Geschäftszahl Zl 2023/987/II gegen die Firma mit Firmenbuchnummer FN 345678 b.\n\nIm Rahmen der Ermittlungen wurde Herr Wolfgang Mayer, wohnhaft Lange Gasse 44, 1080 Wien, als Zeuge einvernommen. Seine Kontaktadresse lautet w.mayer@test.gv.at.\n\nWir ersuchen um Auskunft zum Stand der Erhebungen.",
+    "entities": [
+      {
+        "start": 51,
+        "end": 63,
+        "type": "PER"
+      },
+      {
+        "start": 168,
+        "end": 182,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 220,
+        "end": 231,
+        "type": "FIRMENBUCH"
+      },
+      {
+        "start": 272,
+        "end": 286,
+        "type": "PER"
+      },
+      {
+        "start": 297,
+        "end": 322,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 376,
+        "end": 394,
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "real-003-protokoll",
+    "text": "PROTOKOLL\nEinvernahme vom 03.03.2024\n\nAnwesend:\n- Vernehmungsleiter: Stefan Koller\n- Zeuge: Anna Weber, geb. 22.07.1985, wohnhaft Mariahilfer Straße 50, 1070 Wien\n\nDie Zeugin gibt an, dass sie am 1. März 2024 das Fahrzeug mit Kennzeichen G-5678D beim Einparken beobachtet habe.\n\nKontaktdaten der Zeugin:\nTelefon: +43 676 2223334\nE-Mail: anna.weber@example.at\nSVNR: 3210 220785\nAktenzahl: GZ 2024/0112-Krim",
+    "entities": [
+      {
+        "start": 69,
+        "end": 82,
+        "type": "PER"
+      },
+      {
+        "start": 92,
+        "end": 102,
+        "type": "PER"
+      },
+      {
+        "start": 130,
+        "end": 162,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 238,
+        "end": 245,
+        "type": "KFZ"
+      },
+      {
+        "start": 313,
+        "end": 328,
+        "type": "TELEFON"
+      },
+      {
+        "start": 337,
+        "end": 358,
+        "type": "EMAIL"
+      },
+      {
+        "start": 365,
+        "end": 376,
+        "type": "SVN"
+      },
+      {
+        "start": 388,
+        "end": 405,
+        "type": "AKTENZAHL"
+      }
+    ]
+  },
+  {
+    "id": "real-004-ladung",
+    "text": "LADUNG\n\nAn: Martin Schneider\nAnschrift: Bahnhofstraße 18, 5020 Salzburg\n\nIm Verfahren zur Geschäftszahl GZ 2024/889/IV werden Sie als Beschuldigter geladen.\n\nErscheinen Sie bitte am 20.03.2024 um 09:00 Uhr. Bringen Sie Ihren Reisepass (A2345678) mit.\n\nRückfragen an die Bezirksanwältin Julia Lehner unter +43 662 8889990 oder bg.salzburg@test.gv.at.",
+    "entities": [
+      {
+        "start": 12,
+        "end": 28,
+        "type": "PER"
+      },
+      {
+        "start": 40,
+        "end": 71,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 104,
+        "end": 118,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 236,
+        "end": 244,
+        "type": "REISEPASS"
+      },
+      {
+        "start": 286,
+        "end": 298,
+        "type": "PER"
+      },
+      {
+        "start": 305,
+        "end": 320,
+        "type": "TELEFON"
+      },
+      {
+        "start": 326,
+        "end": 348,
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "real-005-zahlung",
+    "text": "ZAHLUNGSAUFFORDERUNG\n\nEmpfänger: Hannes Schwarz\nAktenzeichen: Az 2024/5566-Fin\n\nDer offene Betrag von EUR 1.234,00 ist binnen 14 Tagen auf das Konto AT10 0000 0000 1234 5678 zu überweisen.\n\nAls Verwendungszweck geben Sie bitte die Geschäftszahl an. Bei Rückfragen wenden Sie sich an kasse@test.gv.at.\nDie Firma ist im Firmenbuch unter FN 998877 k eingetragen.",
+    "entities": [
+      {
+        "start": 33,
+        "end": 47,
+        "type": "PER"
+      },
+      {
+        "start": 62,
+        "end": 78,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 149,
+        "end": 173,
+        "type": "IBAN"
+      },
+      {
+        "start": 283,
+        "end": 299,
+        "type": "EMAIL"
+      },
+      {
+        "start": 335,
+        "end": 346,
+        "type": "FIRMENBUCH"
+      }
+    ]
+  },
+  {
+    "id": "real-006-meldung",
+    "text": "MELDUNG\n\nErmittler: Lukas Steiner\nDatum der Sichtung: 10.04.2024\n\nDas verdächtige Fahrzeug mit Kennzeichen W-334455C wurde in der Kärntner Straße 9, 1010 Wien beobachtet. Der Halter Michael Bauer ist telefonisch unter +43 664 5554433 nicht erreichbar.\n\nDie Meldung wird zur Geschäftszahl GZ 2024/1010-Krim zum Akt genommen. Kontakt im Präsidium: ek.wien@test.gv.at.",
+    "entities": [
+      {
+        "start": 20,
+        "end": 33,
+        "type": "PER"
+      },
+      {
+        "start": 107,
+        "end": 116,
+        "type": "KFZ"
+      },
+      {
+        "start": 130,
+        "end": 158,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 182,
+        "end": 195,
+        "type": "PER"
+      },
+      {
+        "start": 218,
+        "end": 233,
+        "type": "TELEFON"
+      },
+      {
+        "start": 288,
+        "end": 305,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 346,
+        "end": 364,
+        "type": "EMAIL"
+      }
+    ]
+  }
+]
