@@ -5,8 +5,9 @@ Endpoints:
 - POST /api/v1/anonymize — Main anonymization endpoint
 - GET  /api/v1/health — System health and model status
 - GET  /api/v1/mappings/{document_id} — Retrieve stored mapping
-- DELETE /api/v1/mappings/{document_id} — Delete stored mapping
+- DELETE /api/v1/mappings/{document_id} — Delete stored mapping only
 - GET  /api/v1/audit/{document_id} — Retrieve audit trail
+- DELETE /api/v1/documents/{document_id} — DSGVO Art. 17 (mapping + audit)
 """
 
 import uuid
@@ -246,6 +247,30 @@ async def delete_mapping(request: Request, document_id: str) -> dict:
     if not deleted:
         raise HTTPException(status_code=404, detail=f"No mapping found for document {document_id}")
     return {"status": "deleted", "document_id": document_id}
+
+
+@router.delete("/documents/{document_id}")
+async def delete_document(request: Request, document_id: str) -> dict:
+    """DSGVO Art. 17 "Recht auf Vergessenwerden".
+
+    Removes the document's placeholder mapping AND all audit entries
+    in a single transactional call. Use this instead of the narrower
+    ``DELETE /mappings/{id}`` when acting on a Betroffenen-Antrag.
+    """
+    mapping_store = request.app.state.mapping_store
+    audit_logger = request.app.state.audit_logger
+    mapping_deleted = mapping_store.delete(document_id)
+    audit_removed = audit_logger.forget(document_id)
+    if not mapping_deleted and audit_removed == 0:
+        raise HTTPException(
+            status_code=404, detail=f"Document {document_id} is unknown"
+        )
+    return {
+        "status": "deleted",
+        "document_id": document_id,
+        "mapping_deleted": mapping_deleted,
+        "audit_entries_removed": audit_removed,
+    }
 
 
 @router.get("/audit/{document_id}", response_model=AuditResponse)
