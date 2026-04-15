@@ -277,6 +277,36 @@ class TestBirthDateRegex:
         assert len(result) == 0
 
 
+class TestLongDateRegex:
+    """Tests for long-form German date detection."""
+
+    def test_dezember(self):
+        from anomyze.patterns.dates import find_long_date_regex
+        text = "Der Antrag vom 20. Dezember 2023 wurde abgelehnt."
+        result = find_long_date_regex(text)
+        assert len(result) == 1
+        assert result[0].entity_group == "GEBURTSDATUM"
+        assert result[0].word == "20. Dezember 2023"
+
+    def test_maerz_umlaut(self):
+        from anomyze.patterns.dates import find_long_date_regex
+        text = "geboren am 3. März 1987"
+        result = find_long_date_regex(text)
+        assert len(result) == 1
+
+    def test_maerz_ascii(self):
+        from anomyze.patterns.dates import find_long_date_regex
+        text = "geboren am 3. Maerz 1987"
+        result = find_long_date_regex(text)
+        assert len(result) == 1
+
+    def test_invalid_day_rejected(self):
+        from anomyze.patterns.dates import find_long_date_regex
+        text = "am 32. Dezember 2023"
+        result = find_long_date_regex(text)
+        assert len(result) == 0
+
+
 # ---------------------------------------------------------------------------
 # Aktenzahl tests
 # ---------------------------------------------------------------------------

@@ -16,9 +16,12 @@ KNOWN_CATEGORIES = set(ENTITY_GROUP_TO_PLACEHOLDER) | {
 DATASETS_DIR = Path(__file__).resolve().parents[1] / "benchmarks" / "datasets"
 
 
+KNOWN_CATEGORIES.update({"UID", "BIC"})
+
+
 @pytest.mark.parametrize(
     "filename",
-    ["synthetic_at.json", "realistic_at.json"],
+    ["synthetic_at.json", "realistic_at.json", "smoke_at.json"],
 )
 def test_dataset_loads_and_spans_are_valid(filename: str) -> None:
     dataset_path = DATASETS_DIR / filename

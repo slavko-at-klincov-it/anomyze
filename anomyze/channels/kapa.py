@@ -23,7 +23,7 @@ from anomyze.audit.logger import AuditEntry
 from anomyze.channels.base import BaseChannel, ChannelResult
 from anomyze.channels.govgpt import ENTITY_GROUP_TO_PLACEHOLDER
 from anomyze.config.settings import Settings
-from anomyze.pipeline import DetectedEntity
+from anomyze.pipeline import ART9_SENSITIVE_CATEGORIES, DetectedEntity
 from anomyze.pipeline.entity_resolver import resolve_entities
 from anomyze.pipeline.quality_check import check_output
 
@@ -159,7 +159,11 @@ class KAPAChannel(BaseChannel):
                 base_placeholder = f"{entity_type}_{type_counters[entity_type]}"
 
                 # Flag for human review if confidence is below threshold
-                if score < review_threshold:
+                # OR the entity falls under DSGVO Art. 9 (besondere
+                # Kategorien). Art. 9 categories always require manual
+                # confirmation regardless of confidence.
+                is_art9 = entity.entity_group in ART9_SENSITIVE_CATEGORIES
+                if score < review_threshold or is_art9:
                     placeholder = f"[PRÜFEN:{base_placeholder}]"
                     flagged.append(placeholder)
                 else:
@@ -175,8 +179,13 @@ class KAPAChannel(BaseChannel):
 
             entity.placeholder = key_to_placeholder[lookup]
 
-            # Build audit entry
-            action = "flagged_for_review" if score < review_threshold else "anonymized"
+            # Build audit entry — Art. 9 always flagged for review
+            is_art9 = entity.entity_group in ART9_SENSITIVE_CATEGORIES
+            action = (
+                "flagged_for_review"
+                if score < review_threshold or is_art9
+                else "anonymized"
+            )
             context_snippet = _extract_context_snippet(
                 text, entity.start, entity.end, entity.placeholder
             )

@@ -61,4 +61,27 @@ class DetectedEntity:
         }
 
 
-__all__ = ["DetectedEntity"]
+# DSGVO Art. 9 "besondere Kategorien personenbezogener Daten" — health,
+# religion, ethnicity, political opinion, union membership, sexual
+# orientation and biometric data. These categories receive stricter
+# handling across the three output channels:
+#
+# * GovGPT: standard numbered placeholders.
+# * IFG: collapsed into ``[GESCHWÄRZT:BESONDERE_KATEGORIE]`` in the
+#   redaction protocol so the public aggregate counts cannot be used
+#   to infer the original category.
+# * KAPA: always flagged for human review, regardless of the entity's
+#   raw confidence score.
+ART9_SENSITIVE_CATEGORIES: frozenset[str] = frozenset({
+    "HEALTH_DIAGNOSIS",
+    "HEALTH_MEDICATION",
+    "RELIGION",
+    "ETHNICITY",
+    "POLITICAL",
+    "UNION",
+    "SEXUAL_ORIENTATION",
+    "BIOMETRIC",
+})
+
+
+__all__ = ["DetectedEntity", "ART9_SENSITIVE_CATEGORIES"]

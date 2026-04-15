@@ -21,8 +21,25 @@ from dataclasses import dataclass, field
 from anomyze.channels.base import BaseChannel, ChannelResult
 from anomyze.channels.govgpt import ENTITY_GROUP_TO_PLACEHOLDER
 from anomyze.config.settings import Settings
-from anomyze.pipeline import DetectedEntity
+from anomyze.pipeline import ART9_SENSITIVE_CATEGORIES, DetectedEntity
 from anomyze.pipeline.quality_check import check_output
+
+# Public label for Art. 9 DSGVO "besondere Kategorien" in IFG output.
+# All special categories collapse into this single bucket so the public
+# redaction protocol cannot be used to back-infer whether a document
+# touched on, e.g., health vs. religion.
+ART9_IFG_CATEGORY = "BESONDERE_KATEGORIE"
+
+
+def _ifg_category(entity_group: str) -> str:
+    """Return the IFG-public category for an entity group.
+
+    Art. 9 DSGVO special categories collapse into ``BESONDERE_KATEGORIE``.
+    Every other group uses its normal placeholder label.
+    """
+    if entity_group in ART9_SENSITIVE_CATEGORIES:
+        return ART9_IFG_CATEGORY
+    return ENTITY_GROUP_TO_PLACEHOLDER.get(entity_group, entity_group)
 
 
 @dataclass
@@ -107,9 +124,7 @@ class IFGChannel(BaseChannel):
         # Build redaction protocol (category stats)
         category_stats: dict[str, dict] = {}
         for entity in valid_entities:
-            category = ENTITY_GROUP_TO_PLACEHOLDER.get(
-                entity.entity_group, entity.entity_group
-            )
+            category = _ifg_category(entity.entity_group)
             if category not in category_stats:
                 category_stats[category] = {
                     "count": 0,
@@ -135,9 +150,7 @@ class IFGChannel(BaseChannel):
         # Use category-only placeholders without numbering to prevent correlation
         result = text
         for entity in sorted(valid_entities, key=lambda e: e.start, reverse=True):
-            category = ENTITY_GROUP_TO_PLACEHOLDER.get(
-                entity.entity_group, entity.entity_group
-            )
+            category = _ifg_category(entity.entity_group)
             placeholder = f"[GESCHWÄRZT:{category}]"
             entity.placeholder = placeholder
 

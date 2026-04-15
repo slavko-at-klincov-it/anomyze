@@ -2,8 +2,10 @@
 
 from anomyze.pipeline.normalizer import (
     normalize_adversarial,
+    normalize_leetspeak_in_names,
     normalize_unicode,
     normalize_whitespace,
+    rejoin_hyphenation,
     remove_invisible,
     replace_homoglyphs,
 )
@@ -143,3 +145,58 @@ class TestNormalizeAdversarial:
     def test_idempotent(self) -> None:
         text = "Maria Huber, Musterstraße 12, 1010 Wien"
         assert normalize_adversarial(normalize_adversarial(text)) == text
+
+
+class TestRTLOverride:
+    def test_rtl_override_stripped(self) -> None:
+        text = "Herr \u202eMoser"
+        assert "\u202e" not in normalize_adversarial(text)
+
+    def test_lri_stripped(self) -> None:
+        assert "\u2066" not in normalize_adversarial("x\u2066y")
+
+
+class TestMathematicalAlphabet:
+    def test_bold_letters(self) -> None:
+        # 𝐌𝐨𝐬𝐞𝐫 (mathematical bold) → Moser via NFKC
+        assert normalize_adversarial("\U0001d40c\U0001d428\U0001d42c\U0001d41e\U0001d42b") == "Moser"
+
+
+class TestRejoinHyphenation:
+    def test_basic_hyphen_linebreak(self) -> None:
+        assert rejoin_hyphenation("Mü-\nller") == "Müller"
+
+    def test_hyphen_with_spaces(self) -> None:
+        assert rejoin_hyphenation("Mü-  \nller") == "Müller"
+
+    def test_no_hyphen_no_change(self) -> None:
+        assert rejoin_hyphenation("Müller") == "Müller"
+
+    def test_in_full_pipeline(self) -> None:
+        # The newline is preserved by collapse but the word is rejoined
+        assert "Müller" in normalize_adversarial("Herr Mü-\nller kam")
+
+
+class TestLeetspeak:
+    def test_fold_after_herr(self) -> None:
+        assert normalize_leetspeak_in_names("Herr M0s3r") == "Herr Moser"
+
+    def test_fold_after_frau_with_at(self) -> None:
+        assert normalize_leetspeak_in_names("Frau @nn@") == "Frau anna"
+
+    def test_iban_digits_not_folded(self) -> None:
+        # Outside of name context, digits survive — critical for IBAN
+        text = "IBAN AT61 1904 3002 3457 3201"
+        assert normalize_leetspeak_in_names(text) == text
+
+    def test_svnr_digits_not_folded(self) -> None:
+        text = "SVNR 1237 010180"
+        assert normalize_leetspeak_in_names(text) == text
+
+    def test_honorific_dr(self) -> None:
+        # Uppercase letters are preserved; only digit/@/$ are folded.
+        assert normalize_leetspeak_in_names("Dr. L1s@") == "Dr. Llsa"
+
+    def test_opt_out(self) -> None:
+        text = "Herr M0s3r"
+        assert normalize_adversarial(text, apply_leetspeak=False) == text

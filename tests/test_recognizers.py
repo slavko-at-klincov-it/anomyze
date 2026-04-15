@@ -6,12 +6,15 @@ from anomyze.pipeline.recognizers import (
     ATAktenzahlRecognizer,
     ATBICRecognizer,
     ATFirmenbuchRecognizer,
+    ATFuehrerscheinRecognizer,
+    ATGerichtsaktenzahlRecognizer,
     ATIBANRecognizer,
     ATKFZRecognizer,
     ATNameRecognizer,
     ATPassportRecognizer,
     ATSVNRRecognizer,
     ATUIDRecognizer,
+    ATZMRRecognizer,
     Pattern,
     PatternRecognizer,
 )
@@ -306,6 +309,49 @@ class TestATNameRecognizer:
         r = ATNameRecognizer()
         # Pattern requires 3+ lowercase chars after capital
         assert r.analyze("Am") == []
+
+
+class TestATFuehrerscheinRecognizer:
+    def test_with_context(self) -> None:
+        r = ATFuehrerscheinRecognizer()
+        results = r.analyze("Führerscheinnummer: 12345678")
+        assert len(results) == 1
+        assert results[0].entity_type == "AT_FUEHRERSCHEIN"
+
+    def test_without_context_dropped(self) -> None:
+        r = ATFuehrerscheinRecognizer()
+        # Bare 8-digit number without FS context should not match
+        assert r.analyze("Code 12345678") == []
+
+
+class TestATZMRRecognizer:
+    def test_with_context(self) -> None:
+        r = ATZMRRecognizer()
+        results = r.analyze("ZMR-Zahl: 123 456 789 012")
+        assert len(results) == 1
+        assert results[0].entity_type == "AT_ZMR"
+
+    def test_without_context_dropped(self) -> None:
+        r = ATZMRRecognizer()
+        assert r.analyze("Nummer 123 456 789 012") == []
+
+
+class TestATGerichtsaktenzahlRecognizer:
+    def test_ob_format(self) -> None:
+        r = ATGerichtsaktenzahlRecognizer()
+        results = r.analyze("Das Urteil 3 Ob 123/45 ist rechtskräftig.")
+        assert len(results) == 1
+        assert "3 Ob 123/45" in results[0].text
+
+    def test_os_format(self) -> None:
+        r = ATGerichtsaktenzahlRecognizer()
+        results = r.analyze("Strafsache 14 Os 45/23")
+        assert len(results) == 1
+
+    def test_obs_format(self) -> None:
+        r = ATGerichtsaktenzahlRecognizer()
+        results = r.analyze("Sozialrechtssache 10 ObS 12/24")
+        assert len(results) == 1
 
 
 class TestPresidioCompatLayer:

@@ -12,6 +12,7 @@ from stdnum.at import uid as stdnum_uid
 from stdnum.at import vnr as stdnum_vnr
 
 from anomyze.patterns.at_names import is_at_firstname, is_at_lastname
+from anomyze.patterns.healthcare import is_icd10_code
 from anomyze.pipeline.recognizers.base import (
     Pattern,
     PatternRecognizer,
@@ -183,6 +184,128 @@ class ATAktenzahlRecognizer(PatternRecognizer):
         ),
     ]
     context = ["geschäftszahl", "aktenzahl", "akt", "verfahrenszahl"]
+
+
+class ATFuehrerscheinRecognizer(PatternRecognizer):
+    """Austrian driving-licence number (post-2006 scheckkarten format).
+
+    Shape is a bare 8-digit number, so we require medical- or
+    administrative-context to avoid collisions with other eight-digit
+    identifiers. Match is dropped when no context word is nearby.
+    """
+
+    supported_entity = "AT_FUEHRERSCHEIN"
+    patterns = [
+        Pattern(name="fs_8", regex=r"\b\d{8}\b", score=0.45),
+    ]
+    context = [
+        "führerschein",
+        "fuehrerschein",
+        "fs-nr",
+        "fs nr",
+        "lenkberechtigung",
+        "driving licence",
+        "driver licence",
+    ]
+    context_boost = 0.4
+
+    def _is_valid_match(
+        self, matched: str, full_text: str, start: int, end: int
+    ) -> bool:
+        return self._has_context(full_text, start, end)
+
+
+class ATZMRRecognizer(PatternRecognizer):
+    """ZMR-Kennzahl (Zentrales Melderegister personal identifier).
+
+    Canonical form is 12 digits, optionally grouped ``XXX XXX XXX XXX``.
+    Context-only to avoid collisions with other long numeric strings.
+    """
+
+    supported_entity = "AT_ZMR"
+    patterns = [
+        Pattern(name="zmr_grouped", regex=r"\b\d{3}\s?\d{3}\s?\d{3}\s?\d{3}\b", score=0.55),
+    ]
+    context = [
+        "zmr",
+        "zmr-zahl",
+        "zmr-kennzahl",
+        "melderegister",
+        "zentrales melderegister",
+        "meldezahl",
+    ]
+    context_boost = 0.35
+
+    def _is_valid_match(
+        self, matched: str, full_text: str, start: int, end: int
+    ) -> bool:
+        return self._has_context(full_text, start, end)
+
+
+class ATGerichtsaktenzahlRecognizer(PatternRecognizer):
+    """Austrian court docket reference (e.g. ``3 Ob 123/45``).
+
+    Senate-abbreviations in AT jurisprudence: ``Ob`` (Zivilsenat),
+    ``ObS`` (Sozialrechtssachen), ``Os`` (Strafsenat), ``Nc`` (nichtige
+    Sachen), ``Ra`` (arbeitsrechtliche Sachen), ``Bkd``, ``Bs``, ``Ra``.
+    Format: leading docket digit(s), senate abbreviation, docket
+    number with year suffix separated by ``/``.
+    """
+
+    supported_entity = "AT_GERICHTSAKTENZAHL"
+    patterns = [
+        Pattern(
+            name="court_docket",
+            regex=r"\b\d{1,3}\s(?:Ob[SaA]?|Os|Nc|Ra|Bs|Bkd|Präs|AZ)\s\d{1,4}/\d{1,3}\b",
+            score=0.9,
+        ),
+    ]
+    context = ["gericht", "urteil", "beschluss", "ogh", "vwgh", "vfgh", "landesgericht"]
+
+
+class ATICD10Recognizer(PatternRecognizer):
+    """ICD-10 diagnosis codes (DSGVO Art. 9 health data).
+
+    The shape of ICD-10 is far too thin to match safely on its own —
+    ``A01`` could be a room number, ``F32`` a form code, ``Z99`` a
+    postal area. We therefore:
+
+    * validate the match against the official ICD-10 chapter ranges
+      (``is_icd10_code``), and
+    * require a nearby medical-context word; matches without context
+      are dropped entirely rather than emitted with a low score.
+    """
+
+    supported_entity = "HEALTH_DIAGNOSIS"
+    patterns = [
+        Pattern(
+            name="icd10",
+            regex=r"\b[A-TV-Z]\d{2}(?:\.\d{1,2})?\b",
+            score=0.55,
+        ),
+    ]
+    context = [
+        "icd",
+        "icd-10",
+        "diagnose",
+        "diagnosen",
+        "befund",
+        "anamnese",
+        "arztbrief",
+        "entlassungsbrief",
+        "klassifikation",
+        "krankheitsbild",
+    ]
+    context_boost = 0.35
+
+    def _is_valid_match(
+        self, matched: str, full_text: str, start: int, end: int
+    ) -> bool:
+        if not is_icd10_code(matched):
+            return False
+        # Health data is Art. 9 — require context to reduce FPs on
+        # strings like "Raum A01" or part numbers.
+        return self._has_context(full_text, start, end)
 
 
 class ATNameRecognizer(PatternRecognizer):

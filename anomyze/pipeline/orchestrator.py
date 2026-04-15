@@ -414,7 +414,10 @@ class PipelineOrchestrator:
         if self.settings.fix_encoding:
             text = fix_encoding(text)
         if self.settings.use_adversarial_normalization:
-            text = normalize_adversarial(text)
+            text = normalize_adversarial(
+                text,
+                apply_leetspeak=self.settings.use_leetspeak_normalization,
+            )
 
         raw_entities: list[DetectedEntity] = []
 

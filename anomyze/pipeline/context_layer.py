@@ -23,6 +23,7 @@ from typing import Any
 from anomyze.config.settings import Settings, get_settings
 from anomyze.patterns import COMPANY_CONTEXT_PATTERNS, NORMAL_CONTEXT_WORDS
 from anomyze.pipeline import DetectedEntity
+from anomyze.pipeline.reidentification import detect_quasi_identifiers
 from anomyze.pipeline.utils import entities_overlap
 
 logger = logging.getLogger(__name__)
@@ -209,17 +210,25 @@ class ContextLayer:
         existing_entities: list[DetectedEntity],
         settings: Settings,
     ) -> list[DetectedEntity]:
-        """Detect passages where quasi-identifier combinations could re-identify a person.
-
-        Scans for co-occurring role references (Beschwerdeführer, Antragsteller),
-        location mentions, and age/birth year references. When 2+ quasi-identifier
-        types appear within a proximity window without an associated PER entity,
-        the undetected attributes are flagged.
-
-        Example: "der Beschwerdeführer aus Graz, geboren 1985"
-        → "Graz" already detected as LOC, but the birth year "1985" and the
-          role "Beschwerdeführer" in combination make this passage identifying.
+        """Delegating shim — the full implementation lives in
+        ``anomyze.pipeline.reidentification``. Kept here for
+        backwards compatibility with tests / external callers that
+        patched the original method.
         """
+        return detect_quasi_identifiers(text, existing_entities, settings)
+
+    # ------------------------------------------------------------------
+    # Legacy in-line implementation retained below — UNUSED.
+    # Left for diffability during the migration; will be removed in a
+    # later cleanup once external references are migrated.
+    # ------------------------------------------------------------------
+
+    def _detect_quasi_identifiers_legacy(
+        self,
+        text: str,
+        existing_entities: list[DetectedEntity],
+        settings: Settings,
+    ) -> list[DetectedEntity]:  # pragma: no cover
         new_entities: list[DetectedEntity] = []
 
         # Collect quasi-identifier signals with their positions

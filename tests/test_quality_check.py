@@ -154,6 +154,47 @@ class TestPlaceholderFormat:
         assert any(i.type == "leak" for i in report.issues)
 
 
+class TestNameDictLeakage:
+    """Rescan via AT first/last-name dictionary catches residual names."""
+
+    def test_first_plus_last_flagged_as_leak(self) -> None:
+        report = check_output("[PERSON_1] Maria Gruber kam zurück", [])
+        assert not report.passed
+        assert any(
+            i.type == "leak" and i.pii_type == "PER_DICT"
+            for i in report.issues
+        )
+
+    def test_single_surname_is_warning_not_leak(self) -> None:
+        # Single surname in output next to an existing placeholder →
+        # warn-level (the anonymization pass clearly happened, yet
+        # a surname slipped through).
+        report = check_output("[PERSON_1] traf Herrn Gruber", [])
+        assert any(
+            i.type == "warn" and i.pii_type == "PER_DICT"
+            for i in report.issues
+        )
+        # leak_count excludes warnings
+        assert report.leak_count == 0
+
+    def test_rescan_skipped_when_no_anonymization(self) -> None:
+        # Raw input (no placeholders, no anonymized entities) → we
+        # don't second-guess the user; no name-dict warnings.
+        report = check_output("Maria Huber kam vorbei", [])
+        dict_issues = [i for i in report.issues if i.pii_type == "PER_DICT"]
+        assert dict_issues == []
+
+    def test_first_name_inside_placeholder_ignored(self) -> None:
+        report = check_output("[PERSON_1] war hier", [])
+        dict_issues = [i for i in report.issues if i.pii_type == "PER_DICT"]
+        assert dict_issues == []
+
+    def test_non_name_word_not_flagged(self) -> None:
+        report = check_output("Heute scheint die Sonne.", [])
+        dict_issues = [i for i in report.issues if i.pii_type == "PER_DICT"]
+        assert dict_issues == []
+
+
 class TestQualityReportSerialization:
     """QualityReport should be JSON-serializable via to_dict."""
 

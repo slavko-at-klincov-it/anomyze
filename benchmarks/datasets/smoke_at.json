@@ -1,0 +1,1427 @@
+[
+  {
+    "id": "gen-bescheid-0000",
+    "text": "BESCHEID, Geschäftszahl GZ 2022/4112-II/5.\nSehr geehrte Frau Monika Fellner, wohnhaft Mariahilferstraße 174, 6900 Bregenz.\nIhre Sozialversicherungsnummer 1002 031067 und Konto AT49 0013 3890 8386 3794 wurden vermerkt.",
+    "entities": [
+      {
+        "start": 24,
+        "end": 41,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 61,
+        "end": 75,
+        "type": "PER"
+      },
+      {
+        "start": 86,
+        "end": 121,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 154,
+        "end": 165,
+        "type": "SVN"
+      },
+      {
+        "start": 176,
+        "end": 200,
+        "type": "IBAN"
+      }
+    ]
+  },
+  {
+    "id": "gen-ladung-0001",
+    "text": "LADUNG zur Geschäftszahl GZ 2024/5674-III/5. Herr Sophie Aigner, Bahnhofstraße 196, 5020 Salzburg, wird als Beschuldigter vorgeladen. Fahrzeug G-1520DM wurde sichergestellt.",
+    "entities": [
+      {
+        "start": 25,
+        "end": 43,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 50,
+        "end": 63,
+        "type": "PER"
+      },
+      {
+        "start": 65,
+        "end": 97,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 143,
+        "end": 151,
+        "type": "KFZ"
+      }
+    ]
+  },
+  {
+    "id": "gen-rechnung-0002",
+    "text": "Rechnung an Tobias Lindner (UID: ATU52553419).\nBitte überweisen auf AT39 2832 7648 3503 0564. Rückfragen: tobias.lindner@example.at.",
+    "entities": [
+      {
+        "start": 12,
+        "end": 26,
+        "type": "PER"
+      },
+      {
+        "start": 33,
+        "end": 44,
+        "type": "UID"
+      },
+      {
+        "start": 68,
+        "end": 92,
+        "type": "IBAN"
+      },
+      {
+        "start": 106,
+        "end": 131,
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "gen-protokoll-0003",
+    "text": "PROTOKOLL: Vernehmungsleiter Brigitte Hofer. Zeugin: Marie Zauner, wohnhaft Kärntner Straße 55, 3100 St. Pölten, SVNR 1005 160796, erreichbar unter +43 699 3396987.",
+    "entities": [
+      {
+        "start": 29,
+        "end": 43,
+        "type": "PER"
+      },
+      {
+        "start": 53,
+        "end": 65,
+        "type": "PER"
+      },
+      {
+        "start": 76,
+        "end": 111,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 118,
+        "end": 129,
+        "type": "SVN"
+      },
+      {
+        "start": 148,
+        "end": 163,
+        "type": "TELEFON"
+      }
+    ]
+  },
+  {
+    "id": "gen-bescheid-0004",
+    "text": "BESCHEID, Geschäftszahl GZ 2022/9677-IV/19.\nSehr geehrte Frau Gertrude Gartner, wohnhaft Herrengasse 93, 8010 Graz.\nIhre Sozialversicherungsnummer 1008 050971 und Konto AT85 1012 2691 6697 8480 wurden vermerkt.",
+    "entities": [
+      {
+        "start": 24,
+        "end": 42,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 62,
+        "end": 78,
+        "type": "PER"
+      },
+      {
+        "start": 89,
+        "end": 114,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 147,
+        "end": 158,
+        "type": "SVN"
+      },
+      {
+        "start": 169,
+        "end": 193,
+        "type": "IBAN"
+      }
+    ]
+  },
+  {
+    "id": "gen-ladung-0005",
+    "text": "LADUNG zur Geschäftszahl GZ 2022/5673-I/10. Herr Paul Zechmeister, Herrengasse 41, 9020 Klagenfurt, wird als Beschuldigter vorgeladen. Fahrzeug W-4316FSD wurde sichergestellt.",
+    "entities": [
+      {
+        "start": 25,
+        "end": 42,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 49,
+        "end": 65,
+        "type": "PER"
+      },
+      {
+        "start": 67,
+        "end": 98,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 144,
+        "end": 153,
+        "type": "KFZ"
+      }
+    ]
+  },
+  {
+    "id": "gen-rechnung-0006",
+    "text": "Rechnung an Valentina Steiner (UID: ATU50983930).\nBitte überweisen auf AT73 1031 0518 3473 8299. Rückfragen: valentina.steiner@example.at.",
+    "entities": [
+      {
+        "start": 12,
+        "end": 29,
+        "type": "PER"
+      },
+      {
+        "start": 36,
+        "end": 47,
+        "type": "UID"
+      },
+      {
+        "start": 71,
+        "end": 95,
+        "type": "IBAN"
+      },
+      {
+        "start": 109,
+        "end": 137,
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "gen-protokoll-0007",
+    "text": "PROTOKOLL: Vernehmungsleiter Lena Jäger. Zeugin: Silvia Pucher, wohnhaft Herrengasse 49, 1070 Wien, SVNR 1001 041167, erreichbar unter +43 660 8106470.",
+    "entities": [
+      {
+        "start": 29,
+        "end": 39,
+        "type": "PER"
+      },
+      {
+        "start": 49,
+        "end": 62,
+        "type": "PER"
+      },
+      {
+        "start": 73,
+        "end": 98,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 105,
+        "end": 116,
+        "type": "SVN"
+      },
+      {
+        "start": 135,
+        "end": 150,
+        "type": "TELEFON"
+      }
+    ]
+  },
+  {
+    "id": "gen-bescheid-0008",
+    "text": "BESCHEID, Geschäftszahl GZ 2019/1093-IV/11.\nSehr geehrte Frau Karin Prinz, wohnhaft Mariahilferstraße 64, 8010 Graz.\nIhre Sozialversicherungsnummer 1018 070968 und Konto AT11 2624 7317 8108 0132 wurden vermerkt.",
+    "entities": [
+      {
+        "start": 24,
+        "end": 42,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 62,
+        "end": 73,
+        "type": "PER"
+      },
+      {
+        "start": 84,
+        "end": 115,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 148,
+        "end": 159,
+        "type": "SVN"
+      },
+      {
+        "start": 170,
+        "end": 194,
+        "type": "IBAN"
+      }
+    ]
+  },
+  {
+    "id": "gen-ladung-0009",
+    "text": "LADUNG zur Geschäftszahl GZ 2021/6670-I/6. Herr Karin Pöll, Herrengasse 1, 6020 Innsbruck, wird als Beschuldigter vorgeladen. Fahrzeug IL-7455OT wurde sichergestellt.",
+    "entities": [
+      {
+        "start": 25,
+        "end": 41,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 48,
+        "end": 58,
+        "type": "PER"
+      },
+      {
+        "start": 60,
+        "end": 89,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 135,
+        "end": 144,
+        "type": "KFZ"
+      }
+    ]
+  },
+  {
+    "id": "gen-rechnung-0010",
+    "text": "Rechnung an Nina Zauner (UID: ATU20812191).\nBitte überweisen auf AT90 3619 3990 9169 9854. Rückfragen: nina.zauner@example.at.",
+    "entities": [
+      {
+        "start": 12,
+        "end": 23,
+        "type": "PER"
+      },
+      {
+        "start": 30,
+        "end": 41,
+        "type": "UID"
+      },
+      {
+        "start": 65,
+        "end": 89,
+        "type": "IBAN"
+      },
+      {
+        "start": 103,
+        "end": 125,
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "gen-protokoll-0011",
+    "text": "PROTOKOLL: Vernehmungsleiter Felix Weber. Zeugin: Raphael Lang, wohnhaft Bahnhofstraße 68, 6020 Innsbruck, SVNR 1008 051181, erreichbar unter +43 660 8670955.",
+    "entities": [
+      {
+        "start": 29,
+        "end": 40,
+        "type": "PER"
+      },
+      {
+        "start": 50,
+        "end": 62,
+        "type": "PER"
+      },
+      {
+        "start": 73,
+        "end": 105,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 112,
+        "end": 123,
+        "type": "SVN"
+      },
+      {
+        "start": 142,
+        "end": 157,
+        "type": "TELEFON"
+      }
+    ]
+  },
+  {
+    "id": "gen-bescheid-0012",
+    "text": "BESCHEID, Geschäftszahl GZ 2025/9324-I/3.\nSehr geehrte Frau Herbert Brunner, wohnhaft Opernring 55, 6900 Bregenz.\nIhre Sozialversicherungsnummer 1001 090399 und Konto AT07 5135 4278 4980 8412 wurden vermerkt.",
+    "entities": [
+      {
+        "start": 24,
+        "end": 40,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 60,
+        "end": 75,
+        "type": "PER"
+      },
+      {
+        "start": 86,
+        "end": 112,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 145,
+        "end": 156,
+        "type": "SVN"
+      },
+      {
+        "start": 167,
+        "end": 191,
+        "type": "IBAN"
+      }
+    ]
+  },
+  {
+    "id": "gen-ladung-0013",
+    "text": "LADUNG zur Geschäftszahl GZ 2020/4562-III/20. Herr Gertrude Fellner, Bahnhofstraße 184, 5020 Salzburg, wird als Beschuldigter vorgeladen. Fahrzeug S-4326RJB wurde sichergestellt.",
+    "entities": [
+      {
+        "start": 25,
+        "end": 44,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 51,
+        "end": 67,
+        "type": "PER"
+      },
+      {
+        "start": 69,
+        "end": 101,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 147,
+        "end": 156,
+        "type": "KFZ"
+      }
+    ]
+  },
+  {
+    "id": "gen-rechnung-0014",
+    "text": "Rechnung an Christoph Strasser (UID: ATU68044369).\nBitte überweisen auf AT80 9577 7387 2148 9513. Rückfragen: christoph.strasser@example.at.",
+    "entities": [
+      {
+        "start": 12,
+        "end": 30,
+        "type": "PER"
+      },
+      {
+        "start": 37,
+        "end": 48,
+        "type": "UID"
+      },
+      {
+        "start": 72,
+        "end": 96,
+        "type": "IBAN"
+      },
+      {
+        "start": 110,
+        "end": 139,
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "gen-protokoll-0015",
+    "text": "PROTOKOLL: Vernehmungsleiter Patrick Lackner. Zeugin: Franz Herzog, wohnhaft Ringstraße 7, 1010 Wien, SVNR 1001 080879, erreichbar unter +43 664 8640615.",
+    "entities": [
+      {
+        "start": 29,
+        "end": 44,
+        "type": "PER"
+      },
+      {
+        "start": 54,
+        "end": 66,
+        "type": "PER"
+      },
+      {
+        "start": 77,
+        "end": 100,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 107,
+        "end": 118,
+        "type": "SVN"
+      },
+      {
+        "start": 137,
+        "end": 152,
+        "type": "TELEFON"
+      }
+    ]
+  },
+  {
+    "id": "gen-bescheid-0016",
+    "text": "BESCHEID, Geschäftszahl GZ 2024/8199-IV/8.\nSehr geehrte Frau Karl Steiner, wohnhaft Ringstraße 168, 1010 Wien.\nIhre Sozialversicherungsnummer 1009 250289 und Konto AT64 6328 7083 1727 8895 wurden vermerkt.",
+    "entities": [
+      {
+        "start": 24,
+        "end": 41,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 61,
+        "end": 73,
+        "type": "PER"
+      },
+      {
+        "start": 84,
+        "end": 109,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 142,
+        "end": 153,
+        "type": "SVN"
+      },
+      {
+        "start": 164,
+        "end": 188,
+        "type": "IBAN"
+      }
+    ]
+  },
+  {
+    "id": "gen-ladung-0017",
+    "text": "LADUNG zur Geschäftszahl GZ 2025/2707-IV/15. Herr Samuel Payer, Landstraße 193, 8010 Graz, wird als Beschuldigter vorgeladen. Fahrzeug IL-8541WH wurde sichergestellt.",
+    "entities": [
+      {
+        "start": 25,
+        "end": 43,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 50,
+        "end": 62,
+        "type": "PER"
+      },
+      {
+        "start": 64,
+        "end": 89,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 135,
+        "end": 144,
+        "type": "KFZ"
+      }
+    ]
+  },
+  {
+    "id": "gen-rechnung-0018",
+    "text": "Rechnung an Hannah Payer (UID: ATU34670656).\nBitte überweisen auf AT81 2729 8069 9016 2720. Rückfragen: hannah.payer@example.at.",
+    "entities": [
+      {
+        "start": 12,
+        "end": 24,
+        "type": "PER"
+      },
+      {
+        "start": 31,
+        "end": 42,
+        "type": "UID"
+      },
+      {
+        "start": 66,
+        "end": 90,
+        "type": "IBAN"
+      },
+      {
+        "start": 104,
+        "end": 127,
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "gen-protokoll-0019",
+    "text": "PROTOKOLL: Vernehmungsleiter Gertrude Meyer. Zeugin: Hermine Hofer, wohnhaft Schottengasse 84, 5020 Salzburg, SVNR 1004 250757, erreichbar unter +43 699 5232413.",
+    "entities": [
+      {
+        "start": 29,
+        "end": 43,
+        "type": "PER"
+      },
+      {
+        "start": 53,
+        "end": 66,
+        "type": "PER"
+      },
+      {
+        "start": 77,
+        "end": 108,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 115,
+        "end": 126,
+        "type": "SVN"
+      },
+      {
+        "start": 145,
+        "end": 160,
+        "type": "TELEFON"
+      }
+    ]
+  },
+  {
+    "id": "gen-bescheid-0020",
+    "text": "BESCHEID, Geschäftszahl GZ 2018/8937-I/12.\nSehr geehrte Frau Theresa Buchner, wohnhaft Bahnhofstraße 167, 1070 Wien.\nIhre Sozialversicherungsnummer 1009 251142 und Konto AT26 0330 9232 7193 7452 wurden vermerkt.",
+    "entities": [
+      {
+        "start": 24,
+        "end": 41,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 61,
+        "end": 76,
+        "type": "PER"
+      },
+      {
+        "start": 87,
+        "end": 115,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 148,
+        "end": 159,
+        "type": "SVN"
+      },
+      {
+        "start": 170,
+        "end": 194,
+        "type": "IBAN"
+      }
+    ]
+  },
+  {
+    "id": "gen-ladung-0021",
+    "text": "LADUNG zur Geschäftszahl GZ 2020/5196-I/19. Herr Maximilian Schwarz, Hauptstraße 80, 7000 Eisenstadt, wird als Beschuldigter vorgeladen. Fahrzeug SL-6499GCU wurde sichergestellt.",
+    "entities": [
+      {
+        "start": 25,
+        "end": 42,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 49,
+        "end": 67,
+        "type": "PER"
+      },
+      {
+        "start": 69,
+        "end": 100,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 146,
+        "end": 156,
+        "type": "KFZ"
+      }
+    ]
+  },
+  {
+    "id": "gen-rechnung-0022",
+    "text": "Rechnung an Peter Steiner (UID: ATU23374989).\nBitte überweisen auf AT02 4134 3524 0824 0084. Rückfragen: peter.steiner@example.at.",
+    "entities": [
+      {
+        "start": 12,
+        "end": 25,
+        "type": "PER"
+      },
+      {
+        "start": 32,
+        "end": 43,
+        "type": "UID"
+      },
+      {
+        "start": 67,
+        "end": 91,
+        "type": "IBAN"
+      },
+      {
+        "start": 105,
+        "end": 129,
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "gen-protokoll-0023",
+    "text": "PROTOKOLL: Vernehmungsleiter Petra Fuchs. Zeugin: Monika Pöll, wohnhaft Mariahilferstraße 4, 7000 Eisenstadt, SVNR 1009 100870, erreichbar unter +43 699 6716097.",
+    "entities": [
+      {
+        "start": 29,
+        "end": 40,
+        "type": "PER"
+      },
+      {
+        "start": 50,
+        "end": 61,
+        "type": "PER"
+      },
+      {
+        "start": 72,
+        "end": 108,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 115,
+        "end": 126,
+        "type": "SVN"
+      },
+      {
+        "start": 145,
+        "end": 160,
+        "type": "TELEFON"
+      }
+    ]
+  },
+  {
+    "id": "gen-bescheid-0024",
+    "text": "BESCHEID, Geschäftszahl GZ 2025/1969-I/13.\nSehr geehrte Frau Ernst Berger, wohnhaft Schottengasse 19, 7000 Eisenstadt.\nIhre Sozialversicherungsnummer 1005 211143 und Konto AT27 2294 1318 6999 3867 wurden vermerkt.",
+    "entities": [
+      {
+        "start": 24,
+        "end": 41,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 61,
+        "end": 73,
+        "type": "PER"
+      },
+      {
+        "start": 84,
+        "end": 117,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 150,
+        "end": 161,
+        "type": "SVN"
+      },
+      {
+        "start": 172,
+        "end": 196,
+        "type": "IBAN"
+      }
+    ]
+  },
+  {
+    "id": "gen-ladung-0025",
+    "text": "LADUNG zur Geschäftszahl GZ 2022/9416-V/2. Herr Klaus Köck, Burggasse 190, 1070 Wien, wird als Beschuldigter vorgeladen. Fahrzeug S-3458XC wurde sichergestellt.",
+    "entities": [
+      {
+        "start": 25,
+        "end": 41,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 48,
+        "end": 58,
+        "type": "PER"
+      },
+      {
+        "start": 60,
+        "end": 84,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 130,
+        "end": 138,
+        "type": "KFZ"
+      }
+    ]
+  },
+  {
+    "id": "gen-rechnung-0026",
+    "text": "Rechnung an Emilia Höfer (UID: ATU03859770).\nBitte überweisen auf AT40 3482 4771 0932 4808. Rückfragen: emilia.höfer@example.at.",
+    "entities": [
+      {
+        "start": 12,
+        "end": 24,
+        "type": "PER"
+      },
+      {
+        "start": 31,
+        "end": 42,
+        "type": "UID"
+      },
+      {
+        "start": 66,
+        "end": 90,
+        "type": "IBAN"
+      },
+      {
+        "start": 104,
+        "end": 127,
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "gen-protokoll-0027",
+    "text": "PROTOKOLL: Vernehmungsleiter Karin Ebner. Zeugin: Franz Fellner, wohnhaft Schottengasse 31, 3100 St. Pölten, SVNR 1000 270371, erreichbar unter +43 660 9537455.",
+    "entities": [
+      {
+        "start": 29,
+        "end": 40,
+        "type": "PER"
+      },
+      {
+        "start": 50,
+        "end": 63,
+        "type": "PER"
+      },
+      {
+        "start": 74,
+        "end": 107,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 114,
+        "end": 125,
+        "type": "SVN"
+      },
+      {
+        "start": 144,
+        "end": 159,
+        "type": "TELEFON"
+      }
+    ]
+  },
+  {
+    "id": "gen-bescheid-0028",
+    "text": "BESCHEID, Geschäftszahl GZ 2025/7836-II/15.\nSehr geehrte Frau Philipp Koch, wohnhaft Opernring 38, 6020 Innsbruck.\nIhre Sozialversicherungsnummer 1005 071072 und Konto AT70 2146 5840 4499 7278 wurden vermerkt.",
+    "entities": [
+      {
+        "start": 24,
+        "end": 42,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 62,
+        "end": 74,
+        "type": "PER"
+      },
+      {
+        "start": 85,
+        "end": 113,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 146,
+        "end": 157,
+        "type": "SVN"
+      },
+      {
+        "start": 168,
+        "end": 192,
+        "type": "IBAN"
+      }
+    ]
+  },
+  {
+    "id": "gen-ladung-0029",
+    "text": "LADUNG zur Geschäftszahl GZ 2024/7560-III/7. Herr Leo Lindner, Bahnhofstraße 147, 6020 Innsbruck, wird als Beschuldigter vorgeladen. Fahrzeug S-6731L wurde sichergestellt.",
+    "entities": [
+      {
+        "start": 25,
+        "end": 43,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 50,
+        "end": 61,
+        "type": "PER"
+      },
+      {
+        "start": 63,
+        "end": 96,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 142,
+        "end": 149,
+        "type": "KFZ"
+      }
+    ]
+  },
+  {
+    "id": "gen-rechnung-0030",
+    "text": "Rechnung an Sabine Pucher (UID: ATU62174596).\nBitte überweisen auf AT87 1586 5780 9134 3161. Rückfragen: sabine.pucher@example.at.",
+    "entities": [
+      {
+        "start": 12,
+        "end": 25,
+        "type": "PER"
+      },
+      {
+        "start": 32,
+        "end": 43,
+        "type": "UID"
+      },
+      {
+        "start": 67,
+        "end": 91,
+        "type": "IBAN"
+      },
+      {
+        "start": 105,
+        "end": 129,
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "gen-protokoll-0031",
+    "text": "PROTOKOLL: Vernehmungsleiter Sandra Strasser. Zeugin: Philipp Eder, wohnhaft Schottengasse 43, 4020 Linz, SVNR 1008 010160, erreichbar unter +43 664 5921894.",
+    "entities": [
+      {
+        "start": 29,
+        "end": 44,
+        "type": "PER"
+      },
+      {
+        "start": 54,
+        "end": 66,
+        "type": "PER"
+      },
+      {
+        "start": 77,
+        "end": 104,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 111,
+        "end": 122,
+        "type": "SVN"
+      },
+      {
+        "start": 141,
+        "end": 156,
+        "type": "TELEFON"
+      }
+    ]
+  },
+  {
+    "id": "gen-bescheid-0032",
+    "text": "BESCHEID, Geschäftszahl GZ 2020/4100-V/14.\nSehr geehrte Frau Jakob Meier, wohnhaft Burggasse 175, 1120 Wien.\nIhre Sozialversicherungsnummer 1003 060345 und Konto AT79 9693 7923 7474 0748 wurden vermerkt.",
+    "entities": [
+      {
+        "start": 24,
+        "end": 41,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 61,
+        "end": 72,
+        "type": "PER"
+      },
+      {
+        "start": 83,
+        "end": 107,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 140,
+        "end": 151,
+        "type": "SVN"
+      },
+      {
+        "start": 162,
+        "end": 186,
+        "type": "IBAN"
+      }
+    ]
+  },
+  {
+    "id": "gen-ladung-0033",
+    "text": "LADUNG zur Geschäftszahl GZ 2023/9726-III/14. Herr Emilia Brunner, Landstraße 117, 4020 Linz, wird als Beschuldigter vorgeladen. Fahrzeug S-6303DH wurde sichergestellt.",
+    "entities": [
+      {
+        "start": 25,
+        "end": 44,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 51,
+        "end": 65,
+        "type": "PER"
+      },
+      {
+        "start": 67,
+        "end": 92,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 138,
+        "end": 146,
+        "type": "KFZ"
+      }
+    ]
+  },
+  {
+    "id": "gen-rechnung-0034",
+    "text": "Rechnung an Jonas Schober (UID: ATU52904228).\nBitte überweisen auf AT04 4210 2053 9502 4026. Rückfragen: jonas.schober@example.at.",
+    "entities": [
+      {
+        "start": 12,
+        "end": 25,
+        "type": "PER"
+      },
+      {
+        "start": 32,
+        "end": 43,
+        "type": "UID"
+      },
+      {
+        "start": 67,
+        "end": 91,
+        "type": "IBAN"
+      },
+      {
+        "start": 105,
+        "end": 129,
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "gen-protokoll-0035",
+    "text": "PROTOKOLL: Vernehmungsleiter Magdalena Fellner. Zeugin: Sabine Binder, wohnhaft Schottengasse 115, 5020 Salzburg, SVNR 1009 171046, erreichbar unter +43 699 9453010.",
+    "entities": [
+      {
+        "start": 29,
+        "end": 46,
+        "type": "PER"
+      },
+      {
+        "start": 56,
+        "end": 69,
+        "type": "PER"
+      },
+      {
+        "start": 80,
+        "end": 112,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 119,
+        "end": 130,
+        "type": "SVN"
+      },
+      {
+        "start": 149,
+        "end": 164,
+        "type": "TELEFON"
+      }
+    ]
+  },
+  {
+    "id": "gen-bescheid-0036",
+    "text": "BESCHEID, Geschäftszahl GZ 2022/7604-I/2.\nSehr geehrte Frau Franz Seidl, wohnhaft Schottengasse 103, 6020 Innsbruck.\nIhre Sozialversicherungsnummer 1002 220271 und Konto AT80 7115 9212 4998 5698 wurden vermerkt.",
+    "entities": [
+      {
+        "start": 24,
+        "end": 40,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 60,
+        "end": 71,
+        "type": "PER"
+      },
+      {
+        "start": 82,
+        "end": 115,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 148,
+        "end": 159,
+        "type": "SVN"
+      },
+      {
+        "start": 170,
+        "end": 194,
+        "type": "IBAN"
+      }
+    ]
+  },
+  {
+    "id": "gen-ladung-0037",
+    "text": "LADUNG zur Geschäftszahl GZ 2019/1974-V/7. Herr Heidi Pichler, Herrengasse 116, 8010 Graz, wird als Beschuldigter vorgeladen. Fahrzeug SL-5554NO wurde sichergestellt.",
+    "entities": [
+      {
+        "start": 25,
+        "end": 41,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 48,
+        "end": 61,
+        "type": "PER"
+      },
+      {
+        "start": 63,
+        "end": 89,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 135,
+        "end": 144,
+        "type": "KFZ"
+      }
+    ]
+  },
+  {
+    "id": "gen-rechnung-0038",
+    "text": "Rechnung an Robert Eder (UID: ATU34324451).\nBitte überweisen auf AT13 0762 2683 8851 6060. Rückfragen: robert.eder@example.at.",
+    "entities": [
+      {
+        "start": 12,
+        "end": 23,
+        "type": "PER"
+      },
+      {
+        "start": 30,
+        "end": 41,
+        "type": "UID"
+      },
+      {
+        "start": 65,
+        "end": 89,
+        "type": "IBAN"
+      },
+      {
+        "start": 103,
+        "end": 125,
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "gen-protokoll-0039",
+    "text": "PROTOKOLL: Vernehmungsleiter Laura Brunner. Zeugin: Ursula Lang, wohnhaft Burggasse 110, 7000 Eisenstadt, SVNR 1004 131280, erreichbar unter +43 699 5857259.",
+    "entities": [
+      {
+        "start": 29,
+        "end": 42,
+        "type": "PER"
+      },
+      {
+        "start": 52,
+        "end": 63,
+        "type": "PER"
+      },
+      {
+        "start": 74,
+        "end": 104,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 111,
+        "end": 122,
+        "type": "SVN"
+      },
+      {
+        "start": 141,
+        "end": 156,
+        "type": "TELEFON"
+      }
+    ]
+  },
+  {
+    "id": "gen-bescheid-0040",
+    "text": "BESCHEID, Geschäftszahl GZ 2023/2915-V/15.\nSehr geehrte Frau Daniela Müller, wohnhaft Kärntner Straße 23, 6020 Innsbruck.\nIhre Sozialversicherungsnummer 1006 280255 und Konto AT26 6968 1645 3521 8188 wurden vermerkt.",
+    "entities": [
+      {
+        "start": 24,
+        "end": 41,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 61,
+        "end": 75,
+        "type": "PER"
+      },
+      {
+        "start": 86,
+        "end": 120,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 153,
+        "end": 164,
+        "type": "SVN"
+      },
+      {
+        "start": 175,
+        "end": 199,
+        "type": "IBAN"
+      }
+    ]
+  },
+  {
+    "id": "gen-ladung-0041",
+    "text": "LADUNG zur Geschäftszahl GZ 2020/3971-I/5. Herr Eva Lindner, Landstraße 51, 1120 Wien, wird als Beschuldigter vorgeladen. Fahrzeug VB-2505CFW wurde sichergestellt.",
+    "entities": [
+      {
+        "start": 25,
+        "end": 41,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 48,
+        "end": 59,
+        "type": "PER"
+      },
+      {
+        "start": 61,
+        "end": 85,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 131,
+        "end": 141,
+        "type": "KFZ"
+      }
+    ]
+  },
+  {
+    "id": "gen-rechnung-0042",
+    "text": "Rechnung an Leopold Prinz (UID: ATU59051518).\nBitte überweisen auf AT45 6449 2519 2546 2914. Rückfragen: leopold.prinz@example.at.",
+    "entities": [
+      {
+        "start": 12,
+        "end": 25,
+        "type": "PER"
+      },
+      {
+        "start": 32,
+        "end": 43,
+        "type": "UID"
+      },
+      {
+        "start": 67,
+        "end": 91,
+        "type": "IBAN"
+      },
+      {
+        "start": 105,
+        "end": 129,
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "gen-protokoll-0043",
+    "text": "PROTOKOLL: Vernehmungsleiter Maria Meyer. Zeugin: Moritz Lehner, wohnhaft Ringstraße 172, 3100 St. Pölten, SVNR 1005 170281, erreichbar unter +43 699 9531021.",
+    "entities": [
+      {
+        "start": 29,
+        "end": 40,
+        "type": "PER"
+      },
+      {
+        "start": 50,
+        "end": 63,
+        "type": "PER"
+      },
+      {
+        "start": 74,
+        "end": 105,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 112,
+        "end": 123,
+        "type": "SVN"
+      },
+      {
+        "start": 142,
+        "end": 157,
+        "type": "TELEFON"
+      }
+    ]
+  },
+  {
+    "id": "gen-bescheid-0044",
+    "text": "BESCHEID, Geschäftszahl GZ 2022/3053-II/11.\nSehr geehrte Frau Johann Aumayr, wohnhaft Schottengasse 50, 8010 Graz.\nIhre Sozialversicherungsnummer 1000 050344 und Konto AT94 4188 8059 2962 2292 wurden vermerkt.",
+    "entities": [
+      {
+        "start": 24,
+        "end": 42,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 62,
+        "end": 75,
+        "type": "PER"
+      },
+      {
+        "start": 86,
+        "end": 113,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 146,
+        "end": 157,
+        "type": "SVN"
+      },
+      {
+        "start": 168,
+        "end": 192,
+        "type": "IBAN"
+      }
+    ]
+  },
+  {
+    "id": "gen-ladung-0045",
+    "text": "LADUNG zur Geschäftszahl GZ 2024/6068-II/15. Herr Renate Payer, Burggasse 73, 9020 Klagenfurt, wird als Beschuldigter vorgeladen. Fahrzeug S-8750K wurde sichergestellt.",
+    "entities": [
+      {
+        "start": 25,
+        "end": 43,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 50,
+        "end": 62,
+        "type": "PER"
+      },
+      {
+        "start": 64,
+        "end": 93,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 139,
+        "end": 146,
+        "type": "KFZ"
+      }
+    ]
+  },
+  {
+    "id": "gen-rechnung-0046",
+    "text": "Rechnung an Sophie Pucher (UID: ATU86239240).\nBitte überweisen auf AT14 7581 8141 2478 2613. Rückfragen: sophie.pucher@example.at.",
+    "entities": [
+      {
+        "start": 12,
+        "end": 25,
+        "type": "PER"
+      },
+      {
+        "start": 32,
+        "end": 43,
+        "type": "UID"
+      },
+      {
+        "start": 67,
+        "end": 91,
+        "type": "IBAN"
+      },
+      {
+        "start": 105,
+        "end": 129,
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "gen-protokoll-0047",
+    "text": "PROTOKOLL: Vernehmungsleiter Stefan Pfeifer. Zeugin: Waltraud Lindner, wohnhaft Hauptstraße 107, 1010 Wien, SVNR 1008 130963, erreichbar unter +43 676 7478792.",
+    "entities": [
+      {
+        "start": 29,
+        "end": 43,
+        "type": "PER"
+      },
+      {
+        "start": 53,
+        "end": 69,
+        "type": "PER"
+      },
+      {
+        "start": 80,
+        "end": 106,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 113,
+        "end": 124,
+        "type": "SVN"
+      },
+      {
+        "start": 143,
+        "end": 158,
+        "type": "TELEFON"
+      }
+    ]
+  },
+  {
+    "id": "gen-bescheid-0048",
+    "text": "BESCHEID, Geschäftszahl GZ 2018/5321-I/11.\nSehr geehrte Frau Christine Meier, wohnhaft Ringstraße 36, 1010 Wien.\nIhre Sozialversicherungsnummer 1001 100884 und Konto AT38 2779 0104 3289 8614 wurden vermerkt.",
+    "entities": [
+      {
+        "start": 24,
+        "end": 41,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 61,
+        "end": 76,
+        "type": "PER"
+      },
+      {
+        "start": 87,
+        "end": 111,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 144,
+        "end": 155,
+        "type": "SVN"
+      },
+      {
+        "start": 166,
+        "end": 190,
+        "type": "IBAN"
+      }
+    ]
+  },
+  {
+    "id": "gen-ladung-0049",
+    "text": "LADUNG zur Geschäftszahl GZ 2018/4006-IV/20. Herr Friedrich Köck, Schottengasse 17, 1070 Wien, wird als Beschuldigter vorgeladen. Fahrzeug LI-9777AWS wurde sichergestellt.",
+    "entities": [
+      {
+        "start": 25,
+        "end": 43,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 50,
+        "end": 64,
+        "type": "PER"
+      },
+      {
+        "start": 66,
+        "end": 93,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 139,
+        "end": 149,
+        "type": "KFZ"
+      }
+    ]
+  }
+]

@@ -32,9 +32,16 @@ class Settings:
     anomaly_threshold: float = 0.5
     perplexity_threshold: float = 0.3
 
+    # Quasi-identifier proximity window (characters).
+    # Controls how close role / profession / relationship / age /
+    # gender / location signals must appear to be treated as a
+    # combined re-identifying attribute set.
+    quasi_id_window: int = 200
+
     # Processing options
     fix_encoding: bool = True
     use_adversarial_normalization: bool = True
+    use_leetspeak_normalization: bool = True
     use_regex_fallback: bool = True
     use_anomaly_detection: bool = True
     use_gliner: bool = True

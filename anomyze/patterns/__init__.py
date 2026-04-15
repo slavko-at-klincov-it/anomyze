@@ -6,7 +6,7 @@ Re-exports all pattern modules for backwards compatibility.
 from anomyze.patterns.addresses import find_address_regex
 from anomyze.patterns.blacklist import ENTITY_BLACKLIST, is_blacklisted
 from anomyze.patterns.company_context import COMPANY_CONTEXT_PATTERNS, NORMAL_CONTEXT_WORDS
-from anomyze.patterns.dates import find_birth_date_regex
+from anomyze.patterns.dates import find_birth_date_regex, find_long_date_regex
 from anomyze.patterns.documents import (
     find_aktenzahl_regex,
     find_id_card_regex,
@@ -29,6 +29,7 @@ __all__ = [
     "find_svnr_regex",
     "find_tax_number_regex",
     "find_birth_date_regex",
+    "find_long_date_regex",
     "find_aktenzahl_regex",
     "find_passport_regex",
     "find_id_card_regex",

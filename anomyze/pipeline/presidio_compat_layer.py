@@ -14,12 +14,16 @@ from anomyze.pipeline.recognizers import (
     ATAktenzahlRecognizer,
     ATBICRecognizer,
     ATFirmenbuchRecognizer,
+    ATFuehrerscheinRecognizer,
+    ATGerichtsaktenzahlRecognizer,
     ATIBANRecognizer,
+    ATICD10Recognizer,
     ATKFZRecognizer,
     ATNameRecognizer,
     ATPassportRecognizer,
     ATSVNRRecognizer,
     ATUIDRecognizer,
+    ATZMRRecognizer,
     PatternRecognizer,
 )
 
@@ -34,6 +38,10 @@ _ENTITY_TYPE_MAP: dict[str, str] = {
     "AT_NAME": "PER",
     "AT_UID": "UID",
     "BIC": "BIC",
+    "HEALTH_DIAGNOSIS": "HEALTH_DIAGNOSIS",
+    "AT_FUEHRERSCHEIN": "FUEHRERSCHEIN",
+    "AT_ZMR": "ZMR",
+    "AT_GERICHTSAKTENZAHL": "GERICHTSAKTENZAHL",
 }
 
 
@@ -48,6 +56,10 @@ def _default_recognizers() -> list[PatternRecognizer]:
         ATNameRecognizer(),
         ATUIDRecognizer(),
         ATBICRecognizer(),
+        ATICD10Recognizer(),
+        ATFuehrerscheinRecognizer(),
+        ATZMRRecognizer(),
+        ATGerichtsaktenzahlRecognizer(),
     ]
 
 

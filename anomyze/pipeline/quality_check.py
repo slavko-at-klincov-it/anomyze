@@ -23,7 +23,13 @@ from anomyze.patterns import (
     find_svnr_regex,
     find_tax_number_regex,
 )
+from anomyze.patterns.at_names import is_at_firstname, is_at_lastname
 from anomyze.pipeline import DetectedEntity
+
+# Capitalised word of 3+ characters — token candidate for the AT name
+# dictionary rescan. We only scan capitalised runs so common nouns
+# like "Bank" don't flood the report.
+_CAPITALISED_WORD = re.compile(r"\b[A-ZÄÖÜ][a-zäöüß]{2,}\b")
 
 # Matches any [...] placeholder in output
 _PLACEHOLDER_RE = re.compile(r'\[[^\]]+\]')
@@ -183,9 +189,88 @@ def check_output(
                 description=f"Malformed placeholder: {placeholder}",
             ))
 
+    # 4. Name-dictionary rescan — catches residual names that slipped
+    # through ML layers and are not yet in the anonymized-entity set
+    # (e.g., introduced by post-anonymization smoothing). Only runs
+    # when at least one placeholder is present; otherwise no
+    # anonymization took place and the ordinary entity-word check
+    # already covers pre-anonymization input.
+    anonymization_happened = bool(spans) or any(e.placeholder for e in entities)
+    if anonymization_happened:
+        issues.extend(_check_name_dict_leakage(text, spans))
+
     leak_count = sum(1 for i in issues if i.type == 'leak')
     return QualityReport(
         passed=len(issues) == 0,
         issues=issues,
         leak_count=leak_count,
     )
+
+
+def _check_name_dict_leakage(
+    text: str,
+    spans: list[tuple[int, int]],
+) -> list[QualityIssue]:
+    """Flag capitalised tokens that match the AT name dictionary.
+
+    Strategy:
+
+    * ``leak``: two consecutive tokens where the first is an AT
+      first-name and the second an AT last-name (or vice-versa) —
+      this is an unambiguous personal identifier.
+    * ``warn``: a single token that is in both lists (ambiguous
+      name / surname) or a token that is a surname only. Surfaced
+      so reviewers can look but not counted as a hard leak.
+    """
+    issues: list[QualityIssue] = []
+    matches = list(_CAPITALISED_WORD.finditer(text))
+    tagged: list[tuple[int, int, str, bool, bool]] = []
+    for match in matches:
+        if _is_inside(match.start(), match.end(), spans):
+            continue
+        word = match.group()
+        is_first = is_at_firstname(word)
+        is_last = is_at_lastname(word)
+        if not (is_first or is_last):
+            continue
+        tagged.append((match.start(), match.end(), word, is_first, is_last))
+
+    flagged_positions: set[int] = set()
+
+    # Pairwise scan: adjacent (first, last) or (last, first) → leak.
+    for i, (start, end, word, is_f, is_l) in enumerate(tagged):
+        if i + 1 >= len(tagged):
+            continue
+        n_start, n_end, n_word, n_f, n_l = tagged[i + 1]
+        if n_start - end > 3:  # only truly adjacent tokens
+            continue
+        pair_is_leak = (is_f and n_l) or (is_l and n_f)
+        if pair_is_leak:
+            issues.append(QualityIssue(
+                type="leak",
+                pii_type="PER_DICT",
+                position=start,
+                snippet=f"{word} {n_word}",
+                description=(
+                    f"AT name dictionary match in output: "
+                    f"'{word} {n_word}'"
+                ),
+            ))
+            flagged_positions.add(start)
+            flagged_positions.add(n_start)
+
+    # Single-token warnings (not counted as leaks).
+    for start, end, word, is_f, is_l in tagged:
+        if start in flagged_positions:
+            continue
+        # Last-name alone is a stronger signal than first-name alone.
+        if is_l and not is_f:
+            issues.append(QualityIssue(
+                type="warn",
+                pii_type="PER_DICT",
+                position=start,
+                snippet=word,
+                description=f"Possible AT surname in output: '{word}'",
+            ))
+
+    return issues
