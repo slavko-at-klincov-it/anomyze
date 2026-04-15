@@ -93,9 +93,21 @@ class Settings:
     audit_enabled: bool = False
     audit_log_path: str | None = None
 
+    # When True (default), every DSGVO Art. 9 entity is flagged for
+    # human review in the KAPA channel regardless of confidence. Set
+    # to False to fall back to the regular ``kapa_review_threshold``
+    # gate (legacy v1 behaviour).
+    always_review_art9: bool = True
+
     # API configuration
     api_host: str = "0.0.0.0"
     api_port: int = 8000
+
+    # Request-size caps. ``max_request_text_chars`` is enforced by the
+    # Pydantic validator on ``AnonymizeRequest.text``;
+    # ``max_request_body_bytes`` is enforced by ``BodySizeLimitMiddleware``.
+    max_request_text_chars: int = 50_000
+    max_request_body_bytes: int = 500_000
 
     # Mapping persistence
     mapping_persist_path: str | None = None
@@ -130,8 +142,17 @@ class Settings:
             ),
             audit_enabled=os.getenv("ANOMYZE_AUDIT_ENABLED", "").lower() in ("true", "1", "yes"),
             audit_log_path=os.getenv("ANOMYZE_AUDIT_LOG_PATH"),
+            always_review_art9=os.getenv(
+                "ANOMYZE_ALWAYS_REVIEW_ART9", "true"
+            ).lower() in ("true", "1", "yes"),
             api_host=os.getenv("ANOMYZE_API_HOST", cls.api_host),
             api_port=int(os.getenv("ANOMYZE_API_PORT", str(cls.api_port))),
+            max_request_text_chars=int(
+                os.getenv("ANOMYZE_MAX_REQUEST_TEXT_CHARS", str(cls.max_request_text_chars))
+            ),
+            max_request_body_bytes=int(
+                os.getenv("ANOMYZE_MAX_REQUEST_BODY_BYTES", str(cls.max_request_body_bytes))
+            ),
             mapping_persist_path=os.getenv("ANOMYZE_MAPPING_PERSIST_PATH"),
         )
 
