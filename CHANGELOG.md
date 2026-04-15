@@ -4,6 +4,55 @@ All notable changes are documented in this file.
 
 ## [Unreleased]
 
+### Phase A — Post-Phase-3 Backwards-Compat & Compliance Fixes
+
+#### Added
+- `Settings.always_review_art9` (default `True`) — opt-out for KAPA's
+  unconditional Art. 9 flagging via
+  `ANOMYZE_ALWAYS_REVIEW_ART9=false`. Restores Phase 1/2 semantics
+  where Art. 9 entities with scores above `kapa_review_threshold`
+  are auto-anonymised.
+- `Settings.max_request_text_chars` (default 50 000) — configurable
+  via `ANOMYZE_MAX_REQUEST_TEXT_CHARS`. Replaces the hard-coded
+  Pydantic `Field(max_length=50_000)` from Phase 3.
+- `Settings.max_request_body_bytes` (default 500 000) — configurable
+  via `ANOMYZE_MAX_REQUEST_BODY_BYTES`. Threaded through to
+  `BodySizeLimitMiddleware`.
+- `DELETE /api/v1/documents/{document_id}` — single call for DSGVO
+  Art. 17 that clears both `mapping_store` and `audit_logger`.
+- Regression-guard tests for the whitelist/PER collision
+  (`tests/test_whitelist_collisions.py`) and for the Art. 9 opt-out
+  invariant (`tests/test_kapa_art9_optout.py`).
+- `ModelManager._hf_kwargs("")` now logs a WARNING when the model
+  revision is unset so operators notice unpinned deployments.
+
+#### Changed
+- `Dockerfile` installs `".[api,observability,hardening]"` so the
+  Phase 3 metrics/rate-limit/security-header middleware is actually
+  active in the container. Previously only `.[api]` was installed
+  and the middleware silently no-op'd.
+- Removed the dead `ContextLayer._detect_quasi_identifiers_legacy`
+  helper (pragma: no cover). The quasi-identifier implementation
+  lives in `anomyze/pipeline/reidentification.py`; the shim in
+  `context_layer.py` still delegates there.
+
+#### Breaking Changes (consumer-visible)
+- Pydantic error emitted on oversized `AnonymizeRequest.text`
+  changes from `string_too_long` to `value_error`. Clients that
+  parse API errors by `type` need to accommodate both.
+- Phase 2's IFG channel collapses every DSGVO Art. 9 entity into a
+  single `[GESCHWÄRZT:BESONDERE_KATEGORIE]` placeholder — by design,
+  to keep the public redaction protocol from back-inferring the
+  special category. Consumers that expected individual
+  `HEALTH_DIAGNOSIS` / `RELIGION` / ... entries must migrate.
+- Phase 2's KAPA channel flagged **every** Art. 9 entity for review
+  regardless of score. Phase A makes this opt-out via
+  `ANOMYZE_ALWAYS_REVIEW_ART9=false`; default remains opt-in.
+- Phase 1 removed the erroneous `U+00A7 → ß` mapping from
+  `fix_encoding`. Pipelines that fed intentionally obfuscated
+  `§`-as-`ß` text need to pre-process such inputs externally
+  (commit `ffa05f9`).
+
 ### Phase 3 — Production Readiness, Compliance, Benchmark CI
 
 #### Added
