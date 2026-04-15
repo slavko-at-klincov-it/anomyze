@@ -74,7 +74,7 @@ class TestZeroWidthAttacks:
 
     def test_soft_hyphen_in_svnr(self, orch) -> None:
         # Soft hyphen in the middle of SVNR
-        text = "SVNR: 1234\u00ad 010180"
+        text = "SVNR: 1237\u00ad 010180"
         result = orch.process(text, channel="govgpt")
         assert "[SVNR_1]" in result.text
 
@@ -121,7 +121,7 @@ class TestDensePII:
         text = (
             "Kontakt: maria@example.at, "
             "IBAN AT61 1904 3002 3457 3201, "
-            "SVNR 1234 010180, Tel: +43 664 1234567"
+            "SVNR 1237 010180, Tel: +43 664 1234567"
         )
         result = orch.process(text, channel="govgpt")
         # All four PII categories anonymized

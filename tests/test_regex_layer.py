@@ -180,14 +180,14 @@ class TestSVNrRegex:
     """Tests for Austrian Sozialversicherungsnummer detection."""
 
     def test_svnr_with_space(self):
-        text = "SVNr. 1234 140387"
+        text = "SVNr. 1008 140387"
         result = find_svnr_regex(text)
         assert len(result) == 1
         assert result[0].entity_group == "SVN"
         assert result[0].score == 0.95
 
     def test_svnr_without_space(self):
-        text = "Versicherungsnummer: 1234140387"
+        text = "Versicherungsnummer: 1008140387"
         result = find_svnr_regex(text)
         assert len(result) == 1
 
@@ -205,7 +205,7 @@ class TestSVNrRegex:
 
     def test_svnr_valid_edge_dates(self):
         # Day 31, month 12
-        text = "Nr. 9999311287"
+        text = "Nr. 1007311287"
         result = find_svnr_regex(text)
         assert len(result) == 1
 

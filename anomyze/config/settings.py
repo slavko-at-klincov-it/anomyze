@@ -53,6 +53,8 @@ class Settings:
         "social security number",
         "bank account number",
         "license plate number",
+        "austrian vat id",
+        "bank identifier code",
     )
 
     # Device settings (auto-detected if None)

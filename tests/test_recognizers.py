@@ -4,12 +4,14 @@ from anomyze.config.settings import Settings
 from anomyze.pipeline.presidio_compat_layer import PresidioCompatLayer
 from anomyze.pipeline.recognizers import (
     ATAktenzahlRecognizer,
+    ATBICRecognizer,
     ATFirmenbuchRecognizer,
     ATIBANRecognizer,
     ATKFZRecognizer,
     ATNameRecognizer,
     ATPassportRecognizer,
     ATSVNRRecognizer,
+    ATUIDRecognizer,
     Pattern,
     PatternRecognizer,
 )
@@ -106,26 +108,26 @@ class TestATSVNRRecognizer:
 
     def test_svnr_with_space(self) -> None:
         r = ATSVNRRecognizer()
-        results = r.analyze("SVNR: 1234 010180")
+        results = r.analyze("SVNR: 1237 010180")
         assert len(results) == 1
-        assert results[0].text == "1234 010180"
+        assert results[0].text == "1237 010180"
 
     def test_svnr_invalid_month_rejected(self) -> None:
         r = ATSVNRRecognizer()
         # Month 13 is invalid
-        results = r.analyze("1234 011380")
+        results = r.analyze("1237 011380")
         assert results == []
 
     def test_svnr_invalid_day_rejected(self) -> None:
         r = ATSVNRRecognizer()
         # Day 32 is invalid
-        results = r.analyze("1234 320180")
+        results = r.analyze("1237 320180")
         assert results == []
 
     def test_svnr_context_boost(self) -> None:
         r = ATSVNRRecognizer()
-        without = r.analyze("Nummer: 1234 010180")
-        with_ctx = r.analyze("Sozialversicherung: 1234 010180")
+        without = r.analyze("Nummer: 1237 010180")
+        with_ctx = r.analyze("Sozialversicherung: 1237 010180")
         assert with_ctx[0].score > without[0].score
 
 
@@ -141,6 +143,57 @@ class TestATIBANRecognizer:
         r = ATIBANRecognizer()
         results = r.analyze("Konto: AT611904300234573201")
         assert len(results) == 1
+
+    def test_invalid_checksum_rejected(self) -> None:
+        r = ATIBANRecognizer()
+        # AT00 0000 0000 0000 0000 fails MOD-97
+        results = r.analyze("Konto: AT00 0000 0000 0000 0000")
+        assert results == []
+
+
+class TestATUIDRecognizer:
+    """Test Austrian UID (VAT) recognition."""
+
+    def test_valid_uid(self) -> None:
+        r = ATUIDRecognizer()
+        results = r.analyze("ATU13585627")
+        assert len(results) == 1
+        assert results[0].entity_type == "AT_UID"
+
+    def test_invalid_uid_checksum_rejected(self) -> None:
+        r = ATUIDRecognizer()
+        # ATU12345678 fails MOD-11 check digit
+        results = r.analyze("ATU12345678")
+        assert results == []
+
+    def test_uid_context_boost(self) -> None:
+        r = ATUIDRecognizer()
+        without = r.analyze("Code: ATU13585627")
+        with_ctx = r.analyze("UID: ATU13585627")
+        assert with_ctx[0].score > without[0].score
+
+
+class TestATBICRecognizer:
+    """Test BIC/SWIFT recognition."""
+
+    def test_valid_bic_with_context(self) -> None:
+        r = ATBICRecognizer()
+        # GIBAATWWXXX is the BIC for Erste Bank Austria
+        results = r.analyze("BIC: GIBAATWWXXX")
+        assert len(results) == 1
+
+    def test_invalid_bic_rejected(self) -> None:
+        r = ATBICRecognizer()
+        # ZZZZZZ99 has an invalid country component
+        results = r.analyze("BIC: ZZZZZZ99")
+        assert results == []
+
+    def test_bic_without_context_low_score(self) -> None:
+        r = ATBICRecognizer()
+        # Valid BIC shape but no context word → base score only
+        results = r.analyze("Tag: GIBAATWW beim Eintrag")
+        assert len(results) == 1
+        assert results[0].score < 0.7
 
 
 class TestATKFZRecognizer:

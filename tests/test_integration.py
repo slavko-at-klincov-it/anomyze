@@ -46,7 +46,7 @@ Sehr geehrte Frau Mag. Maria Huber,
 
 zu Ihrer Anfrage vom 12.03.2024 teilen wir Ihnen mit, dass
 die Ueberweisung auf das Konto AT61 1904 3002 3457 3201
-erfolgt ist. Ihre Sozialversicherungsnummer 1234 010180
+erfolgt ist. Ihre Sozialversicherungsnummer 1237 010180
 liegt dem Akt bei.
 
 Kontakt: maria.huber@bmi.gv.at, Tel.: +43 1 5311 0.
@@ -63,7 +63,7 @@ An das Bundesministerium fuer Inneres
 Betrifft: Parlamentarische Anfrage (Zl 567/2024)
 
 Der Abgeordnete Dr. Karl Gruber fragt in Bezug auf
-das Verfahren gegen Herrn Josef Mayer (SVNR 2345 020280)
+das Verfahren gegen Herrn Josef Mayer (SVNR 1009 020280)
 und seinen Bruder Mayer, ob die Akten GZ 2023-55 und
 Az BMI-7/88/2023 freigegeben werden koennen.
 """
@@ -83,7 +83,7 @@ class TestGovGPTIntegration:
         # Raw PII must not remain in output
         assert "AT61 1904 3002 3457 3201" not in result.text
         assert "maria.huber@bmi.gv.at" not in result.text
-        assert "1234 010180" not in result.text
+        assert "1237 010180" not in result.text
         assert "W-12345" not in result.text
         # Placeholders present
         assert "[IBAN_1]" in result.text
@@ -168,7 +168,7 @@ class TestCrossChannelConsistency:
         raw_pii = [
             "AT61 1904 3002 3457 3201",
             "maria.huber@bmi.gv.at",
-            "1234 010180",
+            "1237 010180",
             "W-12345 AB",
         ]
         for channel in ("govgpt", "ifg", "kapa"):

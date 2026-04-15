@@ -69,7 +69,7 @@ class TestRegexLeaks:
         assert any(i.pii_type == "IBAN" for i in report.issues)
 
     def test_svnr_leak(self) -> None:
-        report = check_output("SVNR: 1234 010180", [])
+        report = check_output("SVNR: 1237 010180", [])
         assert not report.passed
         assert any(i.pii_type == "SVN" for i in report.issues)
 

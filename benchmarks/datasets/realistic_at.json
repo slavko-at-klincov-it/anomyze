@@ -1,7 +1,7 @@
 [
   {
     "id": "real-001-bescheid",
-    "text": "BESCHEID\n\nGeschäftszahl: GZ 2024/4567-III/2\nDatum: 12.02.2024\n\nIn der Verwaltungssache des Herrn Franz Berger, geboren am 14.05.1978, wohnhaft Schmidgasse 12, 1080 Wien, vertreten durch RA Karl Gruber, ergeht folgender Bescheid:\n\nDer Antrag auf Zulassung des Kraftfahrzeugs mit Kennzeichen W-78901A wird stattgegeben.\n\nKontakt: franz.berger@example.at, Telefon +43 1 5551234.\nSozialversicherungsnummer: 4567 140578.",
+    "text": "BESCHEID\n\nGeschäftszahl: GZ 2024/4567-III/2\nDatum: 12.02.2024\n\nIn der Verwaltungssache des Herrn Franz Berger, geboren am 14.05.1978, wohnhaft Schmidgasse 12, 1080 Wien, vertreten durch RA Karl Gruber, ergeht folgender Bescheid:\n\nDer Antrag auf Zulassung des Kraftfahrzeugs mit Kennzeichen W-78901A wird stattgegeben.\n\nKontakt: franz.berger@example.at, Telefon +43 1 5551234.\nSozialversicherungsnummer: 1006 140578.",
     "entities": [
       {
         "start": 25,
@@ -170,7 +170,7 @@
   },
   {
     "id": "real-005-zahlung",
-    "text": "ZAHLUNGSAUFFORDERUNG\n\nEmpfänger: Hannes Schwarz\nAktenzeichen: Az 2024/5566-Fin\n\nDer offene Betrag von EUR 1.234,00 ist binnen 14 Tagen auf das Konto AT10 0000 0000 1234 5678 zu überweisen.\n\nAls Verwendungszweck geben Sie bitte die Geschäftszahl an. Bei Rückfragen wenden Sie sich an kasse@test.gv.at.\nDie Firma ist im Firmenbuch unter FN 998877 k eingetragen.",
+    "text": "ZAHLUNGSAUFFORDERUNG\n\nEmpfänger: Hannes Schwarz\nAktenzeichen: Az 2024/5566-Fin\n\nDer offene Betrag von EUR 1.234,00 ist binnen 14 Tagen auf das Konto AT34 0000 0000 1234 5678 zu überweisen.\n\nAls Verwendungszweck geben Sie bitte die Geschäftszahl an. Bei Rückfragen wenden Sie sich an kasse@test.gv.at.\nDie Firma ist im Firmenbuch unter FN 998877 k eingetragen.",
     "entities": [
       {
         "start": 33,
@@ -237,6 +237,42 @@
         "start": 346,
         "end": 364,
         "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "real-007-rechnung",
+    "text": "RECHNUNG Nr. 2024/1234\n\nFirma: Musterbau GmbH\nUID-Nummer: ATU13585627\nFirmenbuchnummer: FN 123456 a\n\nRechnungsbetrag EUR 2.500,00.\n\nBitte überweisen auf:\nIBAN: AT34 0000 0000 1234 5678\nBIC: GIBAATWWXXX\nBank: Erste Bank\n\nRückfragen: buchhaltung@musterbau.at oder +43 1 5559999.",
+    "entities": [
+      {
+        "start": 58,
+        "end": 69,
+        "type": "UID"
+      },
+      {
+        "start": 88,
+        "end": 99,
+        "type": "FIRMENBUCH"
+      },
+      {
+        "start": 160,
+        "end": 184,
+        "type": "IBAN"
+      },
+      {
+        "start": 190,
+        "end": 201,
+        "type": "BIC"
+      },
+      {
+        "start": 232,
+        "end": 256,
+        "type": "EMAIL"
+      },
+      {
+        "start": 262,
+        "end": 275,
+        "type": "TELEFON"
       }
     ]
   }

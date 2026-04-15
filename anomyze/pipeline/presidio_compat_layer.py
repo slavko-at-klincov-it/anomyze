@@ -12,12 +12,14 @@ from anomyze.patterns import is_blacklisted
 from anomyze.pipeline import DetectedEntity
 from anomyze.pipeline.recognizers import (
     ATAktenzahlRecognizer,
+    ATBICRecognizer,
     ATFirmenbuchRecognizer,
     ATIBANRecognizer,
     ATKFZRecognizer,
     ATNameRecognizer,
     ATPassportRecognizer,
     ATSVNRRecognizer,
+    ATUIDRecognizer,
     PatternRecognizer,
 )
 
@@ -30,6 +32,8 @@ _ENTITY_TYPE_MAP: dict[str, str] = {
     "AT_PASSPORT": "REISEPASS",
     "AT_AKTENZAHL": "AKTENZAHL",
     "AT_NAME": "PER",
+    "AT_UID": "UID",
+    "BIC": "BIC",
 }
 
 
@@ -42,6 +46,8 @@ def _default_recognizers() -> list[PatternRecognizer]:
         ATPassportRecognizer(),
         ATAktenzahlRecognizer(),
         ATNameRecognizer(),
+        ATUIDRecognizer(),
+        ATBICRecognizer(),
     ]
 
 

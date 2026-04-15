@@ -6,6 +6,11 @@ Firmenbuchnummer) and demonstrates context-aware confidence scoring.
 
 import re
 
+from stdnum import bic as stdnum_bic
+from stdnum import iban as stdnum_iban
+from stdnum.at import uid as stdnum_uid
+from stdnum.at import vnr as stdnum_vnr
+
 from anomyze.patterns.at_names import is_at_firstname, is_at_lastname
 from anomyze.pipeline.recognizers.base import (
     Pattern,
@@ -15,7 +20,12 @@ from anomyze.pipeline.recognizers.base import (
 
 
 class ATSVNRRecognizer(PatternRecognizer):
-    """Austrian Sozialversicherungsnummer (10 digits, last 6 = DDMMYY)."""
+    """Austrian Sozialversicherungsnummer (10 digits, last 6 = DDMMYY).
+
+    Validation uses the official Austrian check digit algorithm (MOD-11
+    weighted sum) via ``stdnum.at.vnr``; invalid birth dates and invalid
+    check digits are both rejected.
+    """
 
     supported_entity = "AT_SVNR"
     patterns = [
@@ -27,19 +37,15 @@ class ATSVNRRecognizer(PatternRecognizer):
     def _is_valid_match(
         self, matched: str, full_text: str, start: int, end: int
     ) -> bool:
-        digits = re.sub(r"\s", "", matched)
-        if len(digits) != 10:
-            return False
-        try:
-            day = int(digits[4:6])
-            month = int(digits[6:8])
-            return 1 <= day <= 31 and 1 <= month <= 12
-        except ValueError:
-            return False
+        return stdnum_vnr.is_valid(matched)
 
 
 class ATIBANRecognizer(PatternRecognizer):
-    """Austrian IBAN: AT + 2 check digits + 16 digits (BLZ + account)."""
+    """Austrian IBAN: AT + 2 check digits + 16 digits (BLZ + account).
+
+    Validation uses the ISO 13616 MOD-97 check via ``stdnum.iban`` to
+    reject typo'd or fabricated IBANs that happen to match the format.
+    """
 
     supported_entity = "AT_IBAN"
     patterns = [
@@ -50,6 +56,11 @@ class ATIBANRecognizer(PatternRecognizer):
         ),
     ]
     context = ["iban", "konto", "bankverbindung", "kontonummer"]
+
+    def _is_valid_match(
+        self, matched: str, full_text: str, start: int, end: int
+    ) -> bool:
+        return stdnum_iban.is_valid(matched)
 
 
 # Austrian Bundesland and Bezirk codes for license plates.
@@ -77,6 +88,54 @@ class ATKFZRecognizer(PatternRecognizer):
         ),
     ]
     context = ["kennzeichen", "auto", "fahrzeug", "kfz", "wagen"]
+
+
+class ATUIDRecognizer(PatternRecognizer):
+    """Austrian VAT number (UID / Umsatzsteuer-Identifikationsnummer).
+
+    Format: ``ATU`` followed by 8 digits; the last digit is a MOD-11
+    check digit. Validated via ``stdnum.at.uid``.
+    """
+
+    supported_entity = "AT_UID"
+    patterns = [
+        Pattern(name="atu", regex=r"\bATU\s?\d{8}\b", score=0.9),
+    ]
+    context = [
+        "uid",
+        "umsatzsteuer-identifikationsnummer",
+        "ust-id",
+        "ust.-nr",
+        "vat",
+    ]
+
+    def _is_valid_match(
+        self, matched: str, full_text: str, start: int, end: int
+    ) -> bool:
+        return stdnum_uid.is_valid(matched)
+
+
+class ATBICRecognizer(PatternRecognizer):
+    """Business Identifier Code (BIC / SWIFT).
+
+    Format: 4 letters (bank) + 2 letters (country) + 2 alphanumerics
+    (location) + optional 3 alphanumerics (branch). Validated via
+    ``stdnum.bic``, which checks the country-code component.
+    """
+
+    supported_entity = "BIC"
+    patterns = [
+        Pattern(name="bic", regex=r"\b[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}(?:[A-Z0-9]{3})?\b", score=0.55),
+    ]
+    # BIC without context is highly prone to FPs because the 8-char
+    # all-caps shape overlaps with common acronyms.
+    context = ["bic", "swift", "bankleitzahl"]
+    context_boost = 0.35
+
+    def _is_valid_match(
+        self, matched: str, full_text: str, start: int, end: int
+    ) -> bool:
+        return stdnum_bic.is_valid(matched)
 
 
 class ATFirmenbuchRecognizer(PatternRecognizer):

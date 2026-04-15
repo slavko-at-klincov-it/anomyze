@@ -17,7 +17,7 @@
   },
   {
     "id": "syn-002",
-    "text": "IBAN: AT00 0000 0000 0000 0001 lautet auf den Kontoinhaber.",
+    "text": "IBAN: AT88 0000 0000 0000 0001 lautet auf den Kontoinhaber.",
     "entities": [
       {
         "start": 6,
@@ -28,7 +28,7 @@
   },
   {
     "id": "syn-003",
-    "text": "SVNR: 1234 010190 (Geburtsdatum im SVN enthalten).",
+    "text": "SVNR: 1238 010190 (Geburtsdatum im SVN enthalten).",
     "entities": [
       {
         "start": 6,
@@ -137,7 +137,7 @@
   },
   {
     "id": "syn-012",
-    "text": "Überweisung an AT12 0000 0000 0000 0099 war fällig.",
+    "text": "Überweisung an AT61 0000 0000 0000 0099 war fällig.",
     "entities": [
       {
         "start": 15,
@@ -295,7 +295,7 @@
   },
   {
     "id": "syn-025",
-    "text": "Konto AT44 0000 1234 0000 5678, Inhaber Anna Pichler.",
+    "text": "Konto AT45 0000 1234 0000 5678, Inhaber Anna Pichler.",
     "entities": [
       {
         "start": 6,

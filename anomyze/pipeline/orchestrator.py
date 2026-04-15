@@ -24,6 +24,7 @@ from transformers import pipeline as hf_pipeline
 from anomyze.config.settings import Settings, get_settings
 from anomyze.pipeline import DetectedEntity
 from anomyze.pipeline.context_layer import ContextLayer
+from anomyze.patterns.whitelist import filter_whitelisted
 from anomyze.pipeline.ensemble import merge_entities
 from anomyze.pipeline.ner_layer import NERLayer
 from anomyze.pipeline.normalizer import normalize_adversarial
@@ -41,7 +42,7 @@ ENCODING_REPLACEMENTS = {
     '\u00f7': 'ö',
     '\u00b8': 'ü', '\u00b3': 'ü',
     '\u0192': 'ä',
-    '\ufb02': 'ß', '\ufb01': 'ß', '\u00a7': 'ß',
+    '\ufb02': 'ß', '\ufb01': 'ß',
     '\u00d0': 'Ä', '\u2044': 'Ü',
     # Common OCR/transcription errors
     '\u00b4': "'", '\u0060': "'",
@@ -449,6 +450,11 @@ class PipelineOrchestrator:
 
         # Ensemble: merge overlapping entities from all sources
         entities = merge_entities(raw_entities, text)
+
+        # Filter Austrian legal whitelist (statute codes, authorities).
+        # Applied before Context-Layer so quasi-identifier checks don't
+        # treat whitelisted authorities as re-identifying attributes.
+        entities = filter_whitelisted(entities)
 
         # Stage 3: Context/anomaly detection (uses merged entities)
         if self.settings.use_anomaly_detection:

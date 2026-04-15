@@ -2,6 +2,9 @@
 
 import re
 
+from stdnum import iban as stdnum_iban
+from stdnum.at import vnr as stdnum_vnr
+
 from anomyze.pipeline import DetectedEntity
 
 # IBAN (international format, AT-optimized)
@@ -19,28 +22,12 @@ STEUERNUMMER_PATTERN = re.compile(
 )
 
 
-def _validate_svnr_date(day: str, month: str, year: str) -> bool:
-    """Validate the date portion of an Austrian SVNr.
-
-    Args:
-        day: DD portion (01-31).
-        month: MM portion (01-12).
-        year: YY portion.
-
-    Returns:
-        True if the date is plausible.
-    """
-    try:
-        d, m = int(day), int(month)
-        return 1 <= d <= 31 and 1 <= m <= 12
-    except ValueError:
-        return False
-
-
 def find_ibans_regex(text: str) -> list[DetectedEntity]:
-    """Find IBAN numbers using regex."""
+    """Find IBAN numbers using regex + ISO 13616 MOD-97 check."""
     entities = []
     for match in IBAN_PATTERN.finditer(text):
+        if not stdnum_iban.is_valid(match.group()):
+            continue
         entities.append(DetectedEntity(
             word=match.group(),
             entity_group='IBAN',
@@ -56,12 +43,12 @@ def find_svnr_regex(text: str) -> list[DetectedEntity]:
     """Find Austrian Sozialversicherungsnummern (SVNr).
 
     Format: XXXX DDMMYY -- 4-digit running number + 6-digit birthdate.
-    Validates that the date portion is plausible.
+    Validates the Austrian MOD-11 check digit and the embedded birth
+    date via ``stdnum.at.vnr``.
     """
     entities = []
     for match in SVNR_PATTERN.finditer(text):
-        day, month, year = match.group(2), match.group(3), match.group(4)
-        if not _validate_svnr_date(day, month, year):
+        if not stdnum_vnr.is_valid(match.group()):
             continue
         entities.append(DetectedEntity(
             word=match.group(),
