@@ -119,13 +119,13 @@ Passagen mit Kombinationen aus Rolle + Ort + Alter (ohne erkannten Namen) werden
 | SVN | SVNR | Regex + Datumsvalidierung |
 | STEUERNUMMER | STEUERNUMMER | Regex |
 | GEBURTSDATUM | GEBURTSDATUM | Regex |
-| AKTENZAHL | AKTENZAHL | Regex |
+| AKTENZAHL | AKTENZAHL | Regex + AT-Recognizer |
+| FIRMENBUCH | FIRMENBUCH | AT-Recognizer |
 | REISEPASS | REISEPASS | Regex (kontext-gesteuert) |
 | PERSONALAUSWEIS | PERSONALAUSWEIS | Regex (kontext-gesteuert) |
-| KFZ | KFZ | Regex (Bezirk-Codes) |
+| KFZ | KFZ | Regex (AT-Bezirkscodes) |
 | TELEFON | TELEFON | Regex |
 | QUASI_ID | QUASI_ID | Kontext (Kombinations-Check) |
-```
 
 ### GET /health
 

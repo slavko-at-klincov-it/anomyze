@@ -9,15 +9,20 @@
 
 ---
 
-Anomyze ist der **Output-Filter** der "Public AI"-Initiative. Die KI-Tools (GovGPT, ELAK-KI, KAPA) arbeiten intern mit den vollen Daten — sie brauchen PII um zu funktionieren. Anomyze prüft und filtert den **Output**, bevor er das System verlässt: Veröffentlichung auf data.gv.at, parlamentarische Antworten, weitergeleitete Berichte.
+Anomyze ist der **Output-Filter** der "Public AI"-Initiative. Die KI-Tools (GovGPT, ELAK-KI, KAPA) arbeiten intern mit den vollen Daten — sie brauchen PII, um zu funktionieren. Anomyze prüft und filtert den **Output**, bevor er das System verlässt: Veröffentlichung auf data.gv.at, parlamentarische Antworten, weitergeleitete Berichte.
 
 ## Features
 
-- **3-Stufen-Pipeline:** Regex → NER → Perplexitäts-Anomalie-Erkennung
+- **Mehrschichtige Detection-Pipeline:** Regex → NER-Ensemble (2 HF-Modelle + GLiNER Zero-Shot) → Presidio-kompatible AT-Recognizer → Perplexitäts-Anomalie-Erkennung
 - **3 Ausgabe-Kanäle:** GovGPT (reversibel), IFG (irreversibel), KAPA (mit Audit-Trail)
-- **Österreich-spezifisch:** Adressen, SVNr, IBAN, KFZ-Kennzeichen, Aktenzahlen, Steuernummern, Verwaltungssprache
+- **Österreich-spezifisch:** Adressen, SVNr, IBAN, KFZ-Kennzeichen, Aktenzahlen, Firmenbuchnummern, Reisepass, Steuernummern, AT-Namensliste mit Kölner Phonetik
+- **Ensemble-Merging:** Überlappende Detections aus mehreren Layern werden mit Konfidenz-Aggregation zusammengeführt
+- **Entity-Resolver:** Varianten derselben Entität (z. B. "Maria Gruber" und "Frau Gruber") werden verknüpft
 - **Quasi-Identifikator-Check:** Erkennt re-identifizierende Attribut-Kombinationen (Rolle + Ort + Alter)
-- **100% lokal:** Kein Cloud-Call, kein API-Call nach außen
+- **Adversarial-Normalization:** Unicode-Homoglyphen, Zero-Width-Spaces und Leetspeak werden normalisiert, bevor Detection greift
+- **Post-Anonymization Quality-Check:** Überprüft die finale Ausgabe auf durchgerutschte PII-Reste
+- **Benchmark-Framework:** Precision / Recall / F1 pro Kategorie und pro Detection-Layer auf annotierten Ground-Truth-Datensätzen
+- **100 % lokal:** Kein Cloud-Call, kein API-Call nach außen
 - **REST API:** FastAPI-basiert, Docker-ready
 - **DSGVO-konform:** Privacy by Default, irreversible Schwärzung für IFG
 - **Human-in-the-Loop:** Unsichere Erkennungen werden zur manuellen Prüfung geflaggt (KAPA)
@@ -92,37 +97,53 @@ curl http://localhost:8000/api/v1/health
 docker-compose up --build
 ```
 
-## 3-Stufen-Pipeline
+## Pipeline
 
-### Stufe 1: Regex (regex_layer.py)
+```
+KI-Tool (GovGPT / ELAK-KI / KAPA)
+    ↓ KI-Output
+Preprocessing
+    ↓ fix_encoding + adversarial normalization
+Stage 1: Regex (modular: email, phone, financial, documents, vehicles, addresses, names, dates)
+Stage 2: NER-Ensemble
+    ├─ PII-Modell (HuggingLil/pii-sensitive-ner-german)
+    ├─ NER-Modell (Davlan/xlm-roberta-large-ner-hrl)
+    └─ GLiNER Zero-Shot (urchade/gliner_large-v2.1, optional)
+Stage 2c: Presidio-kompatible AT-Recognizer
+    └─ SVNR, IBAN, KFZ, Firmenbuch, Reisepass, Aktenzahl, AT-Namen
+Ensemble-Merge (überlappende Spans + Konfidenz-Aggregation)
+Stage 3: Kontext/MLM (dbmdz/bert-base-german-cased)
+    ├─ Perplexitäts-basierte Anomalie-Erkennung (unbekannte Firmen)
+    └─ Quasi-Identifikator-Check (Rolle + Ort + Alter)
+Entity-Resolver (verknüpft Varianten derselben Entität)
+    ↓
+Kanal-Auswahl (govgpt / ifg / kapa)
+    ↓
+Quality-Check (durchgerutschte PII-Reste flaggen)
+    ↓
+Gefilterter Output verlässt das System
+```
 
-Österreich-spezifische Muster mit höchster Präzision:
+## Erkannte PII-Typen
 
-| Typ | Format | Beispiel |
-|-----|--------|----------|
-| Adresse | Straße Nr, PLZ Ort | Schottenfeldgasse 29/3, 1070 Wien |
-| SVNr | XXXX DDMMYY | 1234 140387 |
-| IBAN | ATxx xxxx xxxx xxxx xxxx | AT61 1904 3002 3457 3201 |
-| KFZ | Bezirk-Ziffern-Buchstaben | W-34567B |
-| Aktenzahl | GZ/AZ/Zl. + Kürzel | GZ BMI-2024/0815 |
-| Geburtsdatum | DD.MM.YYYY | 14.03.1987 |
-| Telefon | +43, 0043, 06xx | +43 664 1234567 |
-| Email | Standard | m.gruber@gmail.com |
-| Steuernummer | XX-XXX/XXXX | 12-345/6789 |
-| Reisepass | Kontext + A1234567 | Reisepass: P1234567 |
-| Personalausweis | Kontext + ID | Personalausweis: AB123456CD |
-
-### Stufe 2: NER (ner_layer.py)
-
-HuggingFace Transformer-Modelle für Personennamen, Organisationen und Orte.
-
-### Stufe 3: Kontext (context_layer.py)
-
-Zwei Erkennungsmechanismen:
-
-1. **Perplexitäts-basierte Anomalie-Erkennung:** Erkennt unbekannte Firmennamen, die weder durch Regex noch NER abgedeckt sind.
-
-2. **Quasi-Identifikator-Check:** Erkennt Passagen, in denen Kombinationen aus Rolle (Beschwerdeführer), Ort und Alter/Geburtsjahr eine Person identifizierbar machen — auch ohne dass ein Name genannt wird. Beispiel: "der Beschwerdeführer aus Graz, geboren 1985".
+| Typ | Format | Quelle |
+|-----|--------|--------|
+| PERSON | Namen (mit/ohne Titel) | NER + AT-Namensliste + Phonetik |
+| ORGANISATION | Firmennamen, Behörden | NER + Kontext-Perplexität |
+| ORT | Wien, Graz | NER |
+| ADRESSE | Straße Nr, PLZ Ort | Regex |
+| EMAIL | Standard | Regex |
+| IBAN | ATxx xxxx xxxx xxxx xxxx | Regex + AT-Recognizer |
+| SVNR | XXXX DDMMYY | Regex + Datumsvalidierung |
+| TELEFON | +43, 0043, 06xx | Regex |
+| KFZ | Bezirkscode-Ziffern-Buchstaben | Regex + AT-Recognizer |
+| AKTENZAHL | GZ/AZ/Zl. + Kürzel | Regex + AT-Recognizer |
+| FIRMENBUCH | FN + 1-6 Ziffern + Prüfbuchstabe | AT-Recognizer |
+| REISEPASS | 1 Buchstabe + 7 Ziffern | Regex (kontext-gesteuert) |
+| PERSONALAUSWEIS | ID-Formate | Regex (kontext-gesteuert) |
+| STEUERNUMMER | XX-XXX/XXXX | Regex |
+| GEBURTSDATUM | DD.MM.YYYY | Regex |
+| QUASI_ID | "der Beschwerdeführer aus Graz, geboren 1985" | Kontext (Kombinations-Check) |
 
 ## 3 Ausgabe-Kanäle
 
@@ -132,17 +153,37 @@ Zwei Erkennungsmechanismen:
 | **IFG** | KI-Outputs vor Veröffentlichung auf data.gv.at schwärzen | Nein | Schwärzungsprotokoll |
 | **KAPA** | KI-Rechercheergebnisse für parlamentarische Antworten filtern | Ja (Mapping) | Vollständiger Trail |
 
-## API Endpunkte
+## API-Endpunkte
 
 | Methode | Pfad | Beschreibung |
 |---------|------|--------------|
 | POST | /api/v1/anonymize | Text anonymisieren |
 | GET | /api/v1/health | Systemstatus |
-| GET | /api/v1/mappings/{id} | Mapping abrufen |
-| DELETE | /api/v1/mappings/{id} | Mapping löschen |
-| GET | /api/v1/audit/{id} | Audit-Trail abrufen |
+| GET | /api/v1/mappings/{document_id} | Mapping abrufen |
+| DELETE | /api/v1/mappings/{document_id} | Mapping löschen |
+| GET | /api/v1/audit/{document_id} | Audit-Trail abrufen |
 
 Detaillierte API-Dokumentation: [docs/api_reference.md](docs/api_reference.md)
+
+## Benchmark-Framework
+
+Anomyze enthält ein Benchmark-Framework zur Messung der Detection-Qualität auf annotierten Ground-Truth-Datensätzen:
+
+```bash
+# Synthetisches AT-PII-Dataset (25 Sätze)
+python -m anomyze.benchmark benchmarks/datasets/synthetic_at.json
+
+# Realistische AT-Dokumente (6 Bescheide / Anfragen / Protokolle)
+python -m anomyze.benchmark benchmarks/datasets/realistic_at.json
+
+# Mit MLM/GLiNER (langsamer, umfassender)
+python -m anomyze.benchmark benchmarks/datasets/synthetic_at.json --with-mlm --with-gliner
+
+# JSON-Report für CI
+python -m anomyze.benchmark benchmarks/datasets/synthetic_at.json --json
+```
+
+Der Report zeigt Precision, Recall und F1 pro Kategorie sowie pro Detection-Layer (`regex`, `pii`, `org`, `presidio_compat`, `gliner`, `ensemble`, `perplexity`). Details: [benchmarks/README.md](benchmarks/README.md).
 
 ## Architektur
 
@@ -155,8 +196,12 @@ Alle Einstellungen können über Umgebungsvariablen gesetzt werden:
 ```bash
 ANOMYZE_DEVICE=cpu              # cpu, cuda, mps
 ANOMYZE_DEFAULT_CHANNEL=govgpt  # govgpt, ifg, kapa
-ANOMYZE_PII_THRESHOLD=0.7       # Konfidenz-Schwelle PII
+ANOMYZE_PII_THRESHOLD=0.7       # Konfidenz-Schwelle PII-Modell
+ANOMYZE_ORG_THRESHOLD=0.7       # Konfidenz-Schwelle NER/ORG-Modell
+ANOMYZE_GLINER_THRESHOLD=0.4    # Konfidenz-Schwelle GLiNER
+ANOMYZE_ANOMALY_THRESHOLD=0.5   # Finale Score-Schwelle
 ANOMYZE_KAPA_REVIEW_THRESHOLD=0.85  # Unter diesem Wert → manuelle Prüfung
+ANOMYZE_USE_GLINER=true         # GLiNER-Layer an/aus
 ```
 
 ## Lizenz
