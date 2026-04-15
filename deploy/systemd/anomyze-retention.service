@@ -1,0 +1,18 @@
+[Unit]
+Description=Anomyze audit-log retention enforcement (DSGVO Art. 5(1)e)
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+# Aufgerufen vom gleichnamigen .timer.
+# Ruft enforce_retention() auf dem laufenden Container auf.
+ExecStart=/usr/bin/docker exec anomyze-anomyze-1 \
+    python -c "\
+from pathlib import Path; \
+from anomyze.audit.logger import AuditLogger, RetentionPolicy; \
+log = AuditLogger(log_path=Path('/var/lib/anomyze/audit/audit.json')); \
+result = log.enforce_retention(); \
+print(f\"retention: redacted={result['redacted']} deleted={result['deleted']}\")"
+StandardOutput=journal
+StandardError=journal

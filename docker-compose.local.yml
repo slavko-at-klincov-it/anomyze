@@ -1,0 +1,31 @@
+# Local smoke-test overlay for docker-compose.yml.
+#
+# Mounts the host HuggingFace cache (already populated at
+# ~/.cache/huggingface) read-only into the container so the first
+# boot does NOT re-download ~6 GB of models. Disables GLiNER to fit
+# 16 GB MacBook/M-mini memory budgets.
+#
+# Use:
+#   docker compose -f docker-compose.yml -f docker-compose.local.yml up --build
+#
+# Do not deploy this overlay to production; it mounts developer
+# caches and lowers the security posture for convenience.
+
+services:
+  anomyze:
+    environment:
+      - ANOMYZE_USE_GLINER=false
+      - ANOMYZE_USE_ANOMALY_DETECTION=false  # skip MLM for faster smoke
+      - ANOMYZE_AUDIT_ENABLED=true
+    volumes:
+      # Override the named volume with the host cache (read-only).
+      # The container's HF code falls back to the cache if the files
+      # are present; no downloads should happen during this smoke.
+      - ${HOME}/.cache/huggingface:/home/anomyze/.cache/huggingface:ro
+    # 10G is tight with Docker Desktop's overhead on a 16 GB Mac;
+    # drop the hard limit during local smoke so we don't hit an OOM
+    # kill before the test starts. The production compose keeps 10G.
+    deploy:
+      resources:
+        limits:
+          memory: 12G

@@ -1,0 +1,10 @@
+[Unit]
+Description=Encrypted backup of Anomyze audit log
+After=anomyze-retention.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/anomyze/backup.env
+ExecStart=/usr/local/bin/anomyze-audit-backup
+StandardOutput=journal
+StandardError=journal
