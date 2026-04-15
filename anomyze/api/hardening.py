@@ -84,12 +84,15 @@ def install(
         # we only register the middleware and the default fallback.
 
     if _SECURE:
-        sec = _secure.Secure()
+        # secure 1.x API: with_default_headers() returns a configured
+        # Secure instance; set_headers(response) copies the headers
+        # onto an outgoing Starlette / FastAPI response.
+        sec = _secure.Secure.with_default_headers()
 
         @app.middleware("http")
         async def _security_headers(request, call_next):
             response = await call_next(request)
-            sec.framework.fastapi(response)
+            sec.set_headers(response)
             return response
 
 
