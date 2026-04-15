@@ -4,7 +4,9 @@ Pydantic request/response schemas for the Anomyze REST API.
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+from anomyze.config.settings import get_settings
 
 
 class SettingsOverride(BaseModel):
@@ -24,8 +26,10 @@ class AnonymizeRequest(BaseModel):
     text: str = Field(
         ...,
         min_length=1,
-        max_length=50_000,
-        description="Text to anonymize (max 50,000 characters)",
+        description=(
+            "Text to anonymize. The maximum length is configured via "
+            "ANOMYZE_MAX_REQUEST_TEXT_CHARS (default 50,000)."
+        ),
     )
     channel: Literal["govgpt", "ifg", "kapa"] = Field(
         "govgpt", description="Output channel"
@@ -33,6 +37,17 @@ class AnonymizeRequest(BaseModel):
     document_id: str | None = Field(
         None, description="Document ID (auto-generated if omitted)"
     )
+
+    @field_validator("text")
+    @classmethod
+    def _check_max_length(cls, value: str) -> str:
+        limit = get_settings().max_request_text_chars
+        if len(value) > limit:
+            raise ValueError(
+                f"text exceeds {limit} characters "
+                f"(ANOMYZE_MAX_REQUEST_TEXT_CHARS)"
+            )
+        return value
     settings_override: SettingsOverride | None = Field(
         None, description="Per-request settings overrides"
     )

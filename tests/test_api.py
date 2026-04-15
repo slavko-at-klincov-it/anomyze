@@ -46,6 +46,9 @@ def mock_orchestrator(mock_settings):
 @pytest.fixture
 def client(mock_settings, mock_orchestrator):
     """Create a test client with mocked dependencies."""
+    from anomyze.config.settings import configure
+    configure(mock_settings)
+
     app = create_app(mock_settings)
 
     # Override lifespan by setting state directly
@@ -176,6 +179,72 @@ class TestAnonymizeEndpoint:
             },
         })
         assert response.status_code == 200
+
+
+class TestRequestSizeLimits:
+    """Tests for configurable text-length and body-size limits."""
+
+    def test_text_at_default_limit_accepted(self, client):
+        # Default limit is 50_000; 49_999 chars must pass.
+        text = "a" * 49_999
+        response = client.post("/api/v1/anonymize", json={
+            "text": text,
+            "channel": "govgpt",
+        })
+        assert response.status_code == 200
+
+    def test_text_above_default_limit_rejected(self, client):
+        text = "a" * 60_000
+        response = client.post("/api/v1/anonymize", json={
+            "text": text,
+            "channel": "govgpt",
+        })
+        # field_validator raises ValueError -> 422 from Pydantic
+        assert response.status_code == 422
+        assert "exceeds" in response.text.lower() or "value error" in response.text.lower()
+
+    def test_body_size_middleware_rejects_oversized(self, client):
+        # Default body cap is 500_000 bytes; send 600 KB raw body.
+        oversize = "x" * 600_000
+        response = client.post(
+            "/api/v1/anonymize",
+            content=f'{{"text":"{oversize}","channel":"govgpt"}}',
+            headers={"content-type": "application/json"},
+        )
+        assert response.status_code == 413
+
+
+class TestConfigurableTextLimit:
+    """Settings-driven text limit can be raised."""
+
+    def test_raised_limit_accepts_larger_text(self, mock_settings, mock_orchestrator):
+        from anomyze.config.settings import Settings, configure
+        from anomyze.api.main import create_app
+        from anomyze.mappings.mapping_store import MappingStore
+        from anomyze.audit.logger import AuditLogger
+        from fastapi.testclient import TestClient
+
+        big_settings = Settings(
+            use_anomaly_detection=False,
+            device="cpu",
+            max_request_text_chars=200_000,
+        )
+        configure(big_settings)
+        try:
+            app = create_app(big_settings)
+            app.state.orchestrator = mock_orchestrator
+            app.state.mapping_store = MappingStore()
+            app.state.audit_logger = AuditLogger()
+            app.state.settings = big_settings
+            with TestClient(app) as test_client:
+                text = "y" * 150_000
+                response = test_client.post("/api/v1/anonymize", json={
+                    "text": text,
+                    "channel": "govgpt",
+                })
+                assert response.status_code == 200
+        finally:
+            configure(mock_settings)
 
     def test_kapa_channel_has_audit_trail(self, client):
         response = client.post("/api/v1/anonymize", json={

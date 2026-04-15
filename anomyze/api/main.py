@@ -79,7 +79,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.settings = settings
     app.include_router(router, prefix="/api/v1")
     metrics.install(app)
-    hardening.install(app)
+    hardening.install(app, max_body_bytes=settings.max_request_body_bytes)
 
     return app
 

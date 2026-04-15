@@ -160,9 +160,14 @@ class KAPAChannel(BaseChannel):
 
                 # Flag for human review if confidence is below threshold
                 # OR the entity falls under DSGVO Art. 9 (besondere
-                # Kategorien). Art. 9 categories always require manual
-                # confirmation regardless of confidence.
-                is_art9 = entity.entity_group in ART9_SENSITIVE_CATEGORIES
+                # Kategorien) AND ``always_review_art9`` is on. The
+                # opt-out lets legacy KAPA workflows that auto-anonymise
+                # high-confidence health/religion/etc. entities keep
+                # their behaviour by setting ``always_review_art9=False``.
+                is_art9 = (
+                    entity.entity_group in ART9_SENSITIVE_CATEGORIES
+                    and settings.always_review_art9
+                )
                 if score < review_threshold or is_art9:
                     placeholder = f"[PRÜFEN:{base_placeholder}]"
                     flagged.append(placeholder)
@@ -179,8 +184,14 @@ class KAPAChannel(BaseChannel):
 
             entity.placeholder = key_to_placeholder[lookup]
 
-            # Build audit entry — Art. 9 always flagged for review
-            is_art9 = entity.entity_group in ART9_SENSITIVE_CATEGORIES
+            # Build audit entry. Mirrors the placeholder gate above so
+            # action == flagged_for_review iff the placeholder uses
+            # the [PRÜFEN:...] prefix — invariant relied upon by tests
+            # and consumers alike.
+            is_art9 = (
+                entity.entity_group in ART9_SENSITIVE_CATEGORIES
+                and settings.always_review_art9
+            )
             action = (
                 "flagged_for_review"
                 if score < review_threshold or is_art9
