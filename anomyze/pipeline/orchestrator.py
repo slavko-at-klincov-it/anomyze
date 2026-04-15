@@ -163,9 +163,19 @@ class ModelManager:
         return self._device_name
 
     def _hf_kwargs(self, revision: str) -> dict[str, Any]:
-        """Return ``from_pretrained`` kwargs honouring the optional pin."""
+        """Return ``from_pretrained`` kwargs honouring the optional pin.
+
+        When ``revision`` is empty the returned dict is empty — the
+        caller then inherits HuggingFace's default "latest" behaviour,
+        which is logged as a warning so operators notice the unpinned
+        dependency.
+        """
         if revision:
             return {"model_kwargs": {"revision": revision}, "revision": revision}
+        logger.warning(
+            "model revision not pinned; falling back to 'latest' "
+            "(set ANOMYZE_*_MODEL_REVISION for reproducible deployments)"
+        )
         return {}
 
     def load_pii_pipeline(self, verbose: bool = True) -> Any:
