@@ -12,7 +12,7 @@ WORKDIR /home/anomyze/app
 # Install Python dependencies
 COPY pyproject.toml README.md ./
 COPY anomyze/ anomyze/
-RUN pip install --no-cache-dir ".[api,observability,hardening]"
+RUN pip install --no-cache-dir --timeout 300 --retries 5 ".[api,observability,hardening]"
 
 # Switch to non-root user
 USER anomyze

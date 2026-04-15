@@ -21,6 +21,7 @@ from dataclasses import dataclass
 from typing import Any, Iterator
 
 import torch
+from transformers import AutoTokenizer
 from transformers import pipeline as hf_pipeline
 
 from anomyze.config.settings import Settings, get_settings
@@ -178,14 +179,33 @@ class ModelManager:
         )
         return {}
 
+    def _load_slow_tokenizer(self, model_id: str, revision: str) -> Any:
+        """Load the slow (SentencePiece-backed) tokenizer for a model.
+
+        ``hf_pipeline`` does not propagate ``use_fast=False`` through to
+        the internal ``AutoTokenizer.from_pretrained`` call on
+        transformers >= 5.0, so the slow-to-fast converter gets called
+        anyway and crashes on SentencePiece vocabularies. Loading the
+        slow tokenizer explicitly here and injecting it into the
+        pipeline bypasses that code path.
+        """
+        kwargs: dict[str, Any] = {"use_fast": False}
+        if revision:
+            kwargs["revision"] = revision
+        return AutoTokenizer.from_pretrained(model_id, **kwargs)
+
     def load_pii_pipeline(self, verbose: bool = True) -> Any:
         """Load the PII detection pipeline."""
         if self._pii_pipeline is None:
             if verbose:
                 print("Loading PII model...")
+            tokenizer = self._load_slow_tokenizer(
+                self.settings.pii_model, self.settings.pii_model_revision
+            )
             self._pii_pipeline = hf_pipeline(
                 "token-classification",
                 model=self.settings.pii_model,
+                tokenizer=tokenizer,
                 aggregation_strategy="simple",
                 device=self.device,
                 **self._hf_kwargs(self.settings.pii_model_revision),
@@ -197,9 +217,13 @@ class ModelManager:
         if self._org_pipeline is None:
             if verbose:
                 print("Loading NER model...")
+            tokenizer = self._load_slow_tokenizer(
+                self.settings.org_model, self.settings.org_model_revision
+            )
             self._org_pipeline = hf_pipeline(
                 "token-classification",
                 model=self.settings.org_model,
+                tokenizer=tokenizer,
                 aggregation_strategy="simple",
                 device=self.device,
                 **self._hf_kwargs(self.settings.org_model_revision),

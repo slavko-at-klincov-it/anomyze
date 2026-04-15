@@ -13,15 +13,21 @@
 
 services:
   anomyze:
+    # Route to host port 8001 to avoid conflicts with other services
+    # that may listen on 8000 (e.g. local dev tools, GUI apps).
+    ports:
+      - "8001:8000"
     environment:
       - ANOMYZE_USE_GLINER=false
       - ANOMYZE_USE_ANOMALY_DETECTION=false  # skip MLM for faster smoke
       - ANOMYZE_AUDIT_ENABLED=true
     volumes:
-      # Override the named volume with the host cache (read-only).
-      # The container's HF code falls back to the cache if the files
-      # are present; no downloads should happen during this smoke.
-      - ${HOME}/.cache/huggingface:/home/anomyze/.cache/huggingface:ro
+      # Override the named volume with the host cache. Mounted rw
+      # (not :ro) because HuggingFace creates .lock files next to
+      # the blobs during load even when the blobs themselves are
+      # already present. The host dir is the developer's cache so
+      # letting it write back is acceptable for smoke-testing.
+      - ${HOME}/.cache/huggingface:/home/anomyze/.cache/huggingface
     # 10G is tight with Docker Desktop's overhead on a 16 GB Mac;
     # drop the hard limit during local smoke so we don't hit an OOM
     # kill before the test starts. The production compose keeps 10G.

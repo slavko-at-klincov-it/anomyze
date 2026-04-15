@@ -43,9 +43,17 @@ classifiers = [
 
 dependencies = [
     "torch>=2.0.0",
-    "transformers>=4.30.0",
+    # transformers 5.x funnels every from_pretrained through the new
+    # convert_to_native_format -> extract_vocab_merges_from_model path,
+    # which on Python 3.11 trips over xlm-roberta's SentencePiece file
+    # regardless of ``use_fast=False``. The 4.x line keeps the classic
+    # slow tokenizer path; upper-bound until the regression is fixed.
+    "transformers>=4.30.0,<5.0",
     "prompt-toolkit>=3.0.0",
     "python-stdnum>=1.20",
+    # xlm-roberta (ORG) + HuggingLil PII both ship SentencePiece vocabs;
+    # the slow tokenizer needs this at runtime.
+    "sentencepiece>=0.2.0",
 ]
 
 [project.optional-dependencies]

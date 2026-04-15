@@ -16,6 +16,34 @@ from anomyze.patterns import is_blacklisted
 from anomyze.pipeline import DetectedEntity
 from anomyze.pipeline.utils import clean_entity_word
 
+
+def _resolve_offsets(
+    text: str,
+    raw_word: str,
+    start: int | None,
+    end: int | None,
+) -> tuple[int, int] | None:
+    """Return (start, end) offsets, falling back to ``text.find`` when the
+    tokenizer did not emit character positions.
+
+    Slow tokenizers (``use_fast=False``) — which we are forced to use
+    for SentencePiece models in transformers 4.x — do not populate the
+    ``start``/``end`` fields of pipeline outputs. Look up the raw word
+    in ``text`` as a best-effort fallback; return ``None`` if the word
+    cannot be located (entity is dropped).
+    """
+    if start is not None and end is not None:
+        return int(start), int(end)
+    # SentencePiece emits "▁word" for whitespace-prefixed tokens; strip
+    # it before searching.
+    needle = raw_word.lstrip("▁ ").strip()
+    if not needle:
+        return None
+    idx = text.find(needle)
+    if idx == -1:
+        return None
+    return idx, idx + len(needle)
+
 # Label normalization: different NER models use different label schemes.
 # xlm-roberta-large-ner-hrl uses B-PER/I-PER, dslim uses PER, etc.
 _LABEL_NORMALIZE: dict[str, str] = {
@@ -75,7 +103,10 @@ class NERLayer:
         # Layer 1: PII detection (names, emails, phones, dates)
         pii_entities = pii_pipeline(text)
         for e in pii_entities:
-            word, start, end = clean_entity_word(e['word'], text, e['start'], e['end'])
+            offsets = _resolve_offsets(text, e['word'], e.get('start'), e.get('end'))
+            if offsets is None:
+                continue
+            word, start, end = clean_entity_word(e['word'], text, offsets[0], offsets[1])
 
             if e['score'] < settings.pii_threshold:
                 continue
@@ -100,7 +131,10 @@ class NERLayer:
         ]
 
         for e in org_entities:
-            word, start, end = clean_entity_word(e['word'], text, e['start'], e['end'])
+            offsets = _resolve_offsets(text, e['word'], e.get('start'), e.get('end'))
+            if offsets is None:
+                continue
+            word, start, end = clean_entity_word(e['word'], text, offsets[0], offsets[1])
 
             if is_blacklisted(word):
                 continue

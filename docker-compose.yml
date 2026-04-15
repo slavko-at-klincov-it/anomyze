@@ -14,7 +14,10 @@ services:
     read_only: true
     tmpfs:
       - /tmp:size=256M
-      - /home/anomyze/.cache/huggingface/tmp:size=512M
+    # Note: no tmpfs under /home/anomyze/.cache/huggingface — the
+    # named volume already owns that subtree. Trying to nest a tmpfs
+    # inside a read-only volume fails with "cannot create mountpoint".
+    # HuggingFace writes into the volume itself for lock files.
     security_opt:
       - no-new-privileges:true
     cap_drop:

@@ -20,7 +20,7 @@ $COMPOSE up -d
 echo "==> wait for /health (up to 6 min)"
 ok=0
 for i in $(seq 1 72); do
-    if curl -fsS -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/api/v1/health 2>/dev/null | grep -q 200; then
+    if curl -fsS -o /dev/null -w "%{http_code}" http://127.0.0.1:8001/api/v1/health 2>/dev/null | grep -q 200; then
         echo "ready after $((i * 5))s"
         ok=1
         break
@@ -39,13 +39,13 @@ BESCHEID='{"text":"BESCHEID, GZ 2024/4567-III/2. Herr Dr. Maximilian Huber, gebo
 for channel in govgpt ifg kapa; do
     echo "==> POST /anonymize channel=$channel"
     payload="${BESCHEID//CHANNEL/$channel}"
-    curl -fsS -X POST http://127.0.0.1:8000/api/v1/anonymize \
+    curl -fsS -X POST http://127.0.0.1:8001/api/v1/anonymize \
          -H 'content-type: application/json' \
          -d "$payload" | python3 -c "import json,sys; r=json.load(sys.stdin); print(f\"  entity_count={r['entity_count']} text={r['text'][:180]!r}\")"
 done
 
 echo "==> metrics"
-curl -fsS http://127.0.0.1:8000/metrics \
+curl -fsS http://127.0.0.1:8001/metrics \
     | grep -E '^anomyze_(channel_requests_total|model_loaded)' \
     | head -10
 
