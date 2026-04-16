@@ -4,35 +4,68 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/slavko-at-klincov-it/anomyze/actions/workflows/ci.yml/badge.svg)](https://github.com/slavko-at-klincov-it/anomyze/actions/workflows/ci.yml)
 
 [anomyze.it](https://anomyze.it)
 
 ---
 
-Anomyze ist der **Output-Filter** der "Public AI"-Initiative. Die KI-Tools (GovGPT, ELAK-KI, KAPA) arbeiten intern mit den vollen Daten — sie brauchen PII, um zu funktionieren. Anomyze prüft und filtert den **Output**, bevor er das System verlässt: Veröffentlichung auf data.gv.at, parlamentarische Antworten, weitergeleitete Berichte.
+## Das Problem
 
-## Features
+Die österreichische Bundesverwaltung setzt zunehmend auf KI-Werkzeuge: GovGPT beantwortet Anfragen von Bediensteten, ELAK-KI unterstützt die Aktenverwaltung, KAPA recherchiert für parlamentarische Anfragen. Diese Werkzeuge arbeiten intern mit echten personenbezogenen Daten — Namen, Sozialversicherungsnummern, Adressen, Gesundheitsinformationen —, weil sie diese Daten brauchen, um sinnvolle Antworten zu geben.
 
-- **Mehrschichtige Detection-Pipeline:** Regex → NER-Ensemble (2 HF-Modelle + GLiNER Zero-Shot) → Presidio-kompatible AT-Recognizer → Perplexitäts-Anomalie-Erkennung
-- **3 Ausgabe-Kanäle:** GovGPT (reversibel), IFG (irreversibel), KAPA (mit Audit-Trail)
-- **Österreich-spezifisch:** Adressen, SVNr (mit Prüfziffer), IBAN (MOD-97), UID (ATU + MOD-11), BIC/SWIFT, KFZ-Kennzeichen, Aktenzahlen, Gerichtsaktenzeichen, Firmenbuchnummern, Reisepass, Führerschein, ZMR-Kennzahl, Steuernummern, ICD-10-Diagnosen, AT-Namensliste mit Kölner Phonetik
-- **DSGVO Art. 9:** Besondere Kategorien (Gesundheit, Religion, Ethnie, Politik, Gewerkschaft, Sexualität, Biometrie) werden im IFG-Kanal als `[GESCHWÄRZT:BESONDERE_KATEGORIE]` aggregiert und im KAPA-Kanal obligatorisch zur manuellen Prüfung geflaggt
-- **Checksum-Validierung:** IBAN, SVNR und UID werden per `python-stdnum` auf echte Prüfziffern validiert (reduziert False Positives auf Dummy-Daten)
-- **Whitelist AT-Rechtstexte:** Gesetzestitel (ASVG, StGB, DSGVO ...) und Behördennamen (BMI, VfGH, ÖGK ...) werden von der Schwärzung ausgenommen
-- **Ensemble-Merging:** Überlappende Detections aus mehreren Layern werden mit Konfidenz-Aggregation zusammengeführt
-- **Entity-Resolver:** Varianten derselben Entität (z. B. "Maria Gruber" und "Frau Gruber") werden verknüpft
-- **Re-Identifikations-Schutz:** Quasi-Identifikatoren (Rolle + Beruf + Ort + Alter + Verwandtschaft) werden erkannt, mit heuristischem k-Anonymitäts-Schätzer
-- **Adversarial-Normalization:** Unicode-Homoglyphen, Zero-Width-Spaces, RTL-Overrides, Mathematical-Bold-Alphabets, Leetspeak (kontextgebunden nach Honorific) und Zeilenumbruch-Silbentrennung
-- **Post-Anonymization Quality-Check:** Regex + AT-Namens-Dictionary-Rescan auf durchgerutschte PII-Reste
-- **Benchmark-Framework:** Precision / Recall / F1 pro Kategorie und pro Detection-Layer, mit deterministic-synthetic-Generator und CI-Regression-Gate
-- **Observability:** Prometheus-Metrics (`/metrics`), strukturiertes JSON-Logging (structlog), per-Stage Latency-Histogramme
-- **API-Hardening:** Rate-Limiting (slowapi), Security-Headers (secure), Body-Size-Caps, konfigurierbarer max_length
-- **Model-Pinning:** Optionale SHA-Revisions pro HF-Modell + Integrity-Manifest (`config/model_hashes.json`)
-- **100 % lokal:** Kein Cloud-Call, kein API-Call nach außen
-- **REST API:** FastAPI-basiert, Docker-ready (gehärtet: read_only, cap_drop ALL, non-root)
-- **DSGVO-konform:** Privacy by Default, irreversible Schwärzung für IFG, Audit-Retention mit PII-Redaktion (7 Tage) und Hard-Delete (7 Jahre BAO), `DELETE /documents/{id}` für Art. 17
-- **Human-in-the-Loop:** Unsichere Erkennungen werden zur manuellen Prüfung geflaggt (KAPA)
-- **Deploy-Vorlagen:** nginx-TLS, oauth2-proxy, systemd-Timer für Retention + Backup in `deploy/`
+**Das Risiko:** Wenn der KI-generierte Text das System verlässt — als Antwort an eine Bürgerin, als Veröffentlichung auf data.gv.at, als parlamentarische Beantwortung — können personenbezogene Daten unbeabsichtigt offengelegt werden. Das verletzt die DSGVO und untergräbt das Vertrauen in den Staat.
+
+## Die Lösung
+
+Anomyze ist der **letzte Filter** vor der Tür. Es prüft jeden KI-generierten Text automatisch auf personenbezogene Daten und ersetzt sie, bevor der Text das System verlässt. Die KI-Werkzeuge selbst müssen dafür nicht angepasst werden — Anomyze arbeitet als eigenständige Schicht dazwischen.
+
+**Vorher** (KI-Output, ungefiltert):
+> Sehr geehrte Frau Mag. Maria Huber, Ihre Sozialversicherungsnummer 1237 010180 und
+> IBAN AT61 1904 3002 3457 3201 liegen dem Akt GZ 2024/4567-III/2 bei.
+> Diagnose: F32.1 (mittelgradige depressive Episode).
+
+**Nachher** (Anomyze-Output, gefiltert):
+> Sehr geehrte Frau Mag. [PERSON_1], Ihre Sozialversicherungsnummer [SVNR_1] und
+> IBAN [IBAN_1] liegen dem Akt [AKTENZAHL_1] bei.
+> Diagnose: [GESUNDHEIT_1] (mittelgradige depressive Episode).
+
+Anomyze erkennt dabei nicht nur offensichtliche Daten wie Namen und Kontonummern, sondern auch österreichisch-spezifische Formate (Sozialversicherungsnummern, KFZ-Kennzeichen, Firmenbuchnummern, Geschäftszahlen) und besonders sensible Kategorien wie Gesundheitsdaten oder Religionszugehörigkeit.
+
+## Drei Kanäle fuer drei Anwendungsfälle
+
+| Kanal | Einsatz | Verhalten |
+|-------|---------|-----------|
+| **GovGPT** | KI-Antworten an Bedienstete weiterleiten | Daten werden durch Platzhalter ersetzt. Berechtigte Personen können die Zuordnung einsehen ("wer ist PERSON_1?"). |
+| **IFG** | KI-Ergebnisse auf data.gv.at veröffentlichen | Daten werden unwiderruflich geschwärzt. Niemand kann die Originaldaten rekonstruieren — Datenschutz by Design. |
+| **KAPA** | Parlamentarische Anfragen beantworten | Wie GovGPT, aber mit vollständigem Prüfprotokoll: wann wurde was erkannt, mit welcher Sicherheit, wer hat geprüft. Unsichere Erkennungen werden zur manuellen Kontrolle markiert. |
+
+## Warum Anomyze
+
+- **100 % lokal.** Kein Datentransfer an Cloud-Dienste, keine externen API-Aufrufe. Alle Daten bleiben in der Infrastruktur der Behörde. Volle Datensouveränität.
+- **Österreich-spezifisch.** Erkennt österreichische Sozialversicherungsnummern, UID-Nummern, KFZ-Kennzeichen mit Bezirkscodes, Geschäftszahlen, Gerichtsaktenzeichen, Firmenbuchnummern — Formate die generische Anonymisierungswerkzeuge nicht kennen.
+- **DSGVO-konform.** Besonders sensible Daten (Gesundheit, Religion, Ethnie, politische Meinung) werden besonders geschützt — im IFG-Kanal nicht einmal die Kategorie öffentlich gemacht, im KAPA-Kanal zwingend zur manuellen Prüfung vorgelegt. Ein eingebautes Löschkonzept setzt das Recht auf Vergessenwerden (Art. 17) technisch um.
+- **Prüfbar.** Ein mitgeliefertes Benchmark-Framework misst die Erkennungsqualität auf österreichischen Testdokumenten (Bescheide, Niederschriften, Ladungen). Automatische Regressionsprüfung stellt sicher, dass neue Versionen nicht schlechter erkennen als alte.
+- **Manipulationssicher.** Versuche, personenbezogene Daten durch Unicode-Tricks, unsichtbare Zeichen oder Zeichenersetzungen an der Erkennung vorbeizuschmuggeln, werden automatisch neutralisiert.
+
+---
+
+## Technische Details
+
+### Features
+
+- **Mehrschichtige Detection-Pipeline:** Regex, NER-Ensemble (2 Transformer-Modelle + GLiNER Zero-Shot), Presidio-kompatible AT-Recognizer, Perplexitaets-Anomalie-Erkennung
+- **Checksum-Validierung:** IBAN, SVNR und UID werden auf echte Prüfziffern validiert
+- **Whitelist AT-Rechtstexte:** Gesetzestitel (ASVG, StGB, DSGVO) und Behördennamen (BMI, VfGH, ÖGK) werden von der Schwärzung ausgenommen
+- **Ensemble-Merging:** Überlappende Erkennungen aus mehreren Schichten werden zusammengeführt
+- **Entity-Resolver:** Varianten derselben Person ("Maria Gruber" und "Frau Gruber") werden verknüpft
+- **Re-Identifikations-Schutz:** Erkennt Attribut-Kombinationen (Rolle + Beruf + Ort + Alter) die eine Person auch ohne Namen identifizierbar machen
+- **Post-Anonymization Quality-Check:** Abschlusskontrolle auf durchgerutschte Datenreste
+- **Observability:** Prometheus-Metriken, strukturiertes JSON-Logging, Latenz-Messung pro Verarbeitungsschritt
+- **API-Hardening:** Zugriffsbegrenzung, Sicherheits-Header, Grössenprüfung
+- **Model-Pinning:** Reproduzierbare Ergebnisse durch festgelegte Modellversionen
+- **REST API:** Docker-ready, gehärtet (read-only Dateisystem, minimale Berechtigungen)
+- **Deploy-Vorlagen:** Reverse-Proxy, Authentifizierung, automatische Datenlöschung und Backup in `deploy/`
 
 ## Quickstart
 
