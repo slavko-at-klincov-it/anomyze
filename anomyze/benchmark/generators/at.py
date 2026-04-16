@@ -111,7 +111,6 @@ def _random_address(rng: random.Random) -> str:
 
 
 def _random_gz(rng: random.Random) -> str:
-    dept = rng.choice(["BMI", "BMF", "BMJ", "BKA"])
     year = rng.randint(2018, 2025)
     num = rng.randint(100, 9999)
     sub = rng.choice(["I", "II", "III", "IV", "V"])

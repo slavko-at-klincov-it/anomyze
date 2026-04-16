@@ -28,7 +28,6 @@ import hashlib
 import json
 import logging
 from pathlib import Path
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +40,7 @@ def _sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-def _model_dir(cache_root: Path, model_id: str) -> Optional[Path]:
+def _model_dir(cache_root: Path, model_id: str) -> Path | None:
     """Return the local snapshot directory for a HF model id, if any."""
     safe = model_id.replace("/", "--")
     candidates = list(cache_root.glob(f"models--{safe}/snapshots/*"))

@@ -260,7 +260,7 @@ def _check_name_dict_leakage(
             flagged_positions.add(n_start)
 
     # Single-token warnings (not counted as leaks).
-    for start, end, word, is_f, is_l in tagged:
+    for start, _end, word, is_f, is_l in tagged:
         if start in flagged_positions:
             continue
         # Last-name alone is a stronger signal than first-name alone.

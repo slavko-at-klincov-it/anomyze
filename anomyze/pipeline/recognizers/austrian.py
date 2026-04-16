@@ -4,7 +4,6 @@ Includes Austrian PII types not yet covered by the regex layer (e.g.,
 Firmenbuchnummer) and demonstrates context-aware confidence scoring.
 """
 
-import re
 
 from stdnum import bic as stdnum_bic
 from stdnum import iban as stdnum_iban

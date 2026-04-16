@@ -16,18 +16,19 @@ import logging
 import re
 import subprocess
 import time
+from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import Any, Iterator
+from typing import Any
 
 import torch
 from transformers import AutoTokenizer
 from transformers import pipeline as hf_pipeline
 
 from anomyze.config.settings import Settings, get_settings
+from anomyze.patterns.whitelist import filter_whitelisted
 from anomyze.pipeline import DetectedEntity
 from anomyze.pipeline.context_layer import ContextLayer
-from anomyze.patterns.whitelist import filter_whitelisted
 from anomyze.pipeline.ensemble import merge_entities
 from anomyze.pipeline.ner_layer import NERLayer
 from anomyze.pipeline.normalizer import normalize_adversarial
