@@ -15,27 +15,38 @@ Anomyze ist der **Output-Filter** der "Public AI"-Initiative. Die KI-Tools (GovG
 
 - **Mehrschichtige Detection-Pipeline:** Regex → NER-Ensemble (2 HF-Modelle + GLiNER Zero-Shot) → Presidio-kompatible AT-Recognizer → Perplexitäts-Anomalie-Erkennung
 - **3 Ausgabe-Kanäle:** GovGPT (reversibel), IFG (irreversibel), KAPA (mit Audit-Trail)
-- **Österreich-spezifisch:** Adressen, SVNr, IBAN, KFZ-Kennzeichen, Aktenzahlen, Firmenbuchnummern, Reisepass, Steuernummern, AT-Namensliste mit Kölner Phonetik
+- **Österreich-spezifisch:** Adressen, SVNr (mit Prüfziffer), IBAN (MOD-97), UID (ATU + MOD-11), BIC/SWIFT, KFZ-Kennzeichen, Aktenzahlen, Gerichtsaktenzeichen, Firmenbuchnummern, Reisepass, Führerschein, ZMR-Kennzahl, Steuernummern, ICD-10-Diagnosen, AT-Namensliste mit Kölner Phonetik
+- **DSGVO Art. 9:** Besondere Kategorien (Gesundheit, Religion, Ethnie, Politik, Gewerkschaft, Sexualität, Biometrie) werden im IFG-Kanal als `[GESCHWÄRZT:BESONDERE_KATEGORIE]` aggregiert und im KAPA-Kanal obligatorisch zur manuellen Prüfung geflaggt
+- **Checksum-Validierung:** IBAN, SVNR und UID werden per `python-stdnum` auf echte Prüfziffern validiert (reduziert False Positives auf Dummy-Daten)
+- **Whitelist AT-Rechtstexte:** Gesetzestitel (ASVG, StGB, DSGVO ...) und Behördennamen (BMI, VfGH, ÖGK ...) werden von der Schwärzung ausgenommen
 - **Ensemble-Merging:** Überlappende Detections aus mehreren Layern werden mit Konfidenz-Aggregation zusammengeführt
 - **Entity-Resolver:** Varianten derselben Entität (z. B. "Maria Gruber" und "Frau Gruber") werden verknüpft
-- **Quasi-Identifikator-Check:** Erkennt re-identifizierende Attribut-Kombinationen (Rolle + Ort + Alter)
-- **Adversarial-Normalization:** Unicode-Homoglyphen, Zero-Width-Spaces und Leetspeak werden normalisiert, bevor Detection greift
-- **Post-Anonymization Quality-Check:** Überprüft die finale Ausgabe auf durchgerutschte PII-Reste
-- **Benchmark-Framework:** Precision / Recall / F1 pro Kategorie und pro Detection-Layer auf annotierten Ground-Truth-Datensätzen
+- **Re-Identifikations-Schutz:** Quasi-Identifikatoren (Rolle + Beruf + Ort + Alter + Verwandtschaft) werden erkannt, mit heuristischem k-Anonymitäts-Schätzer
+- **Adversarial-Normalization:** Unicode-Homoglyphen, Zero-Width-Spaces, RTL-Overrides, Mathematical-Bold-Alphabets, Leetspeak (kontextgebunden nach Honorific) und Zeilenumbruch-Silbentrennung
+- **Post-Anonymization Quality-Check:** Regex + AT-Namens-Dictionary-Rescan auf durchgerutschte PII-Reste
+- **Benchmark-Framework:** Precision / Recall / F1 pro Kategorie und pro Detection-Layer, mit deterministic-synthetic-Generator und CI-Regression-Gate
+- **Observability:** Prometheus-Metrics (`/metrics`), strukturiertes JSON-Logging (structlog), per-Stage Latency-Histogramme
+- **API-Hardening:** Rate-Limiting (slowapi), Security-Headers (secure), Body-Size-Caps, konfigurierbarer max_length
+- **Model-Pinning:** Optionale SHA-Revisions pro HF-Modell + Integrity-Manifest (`config/model_hashes.json`)
 - **100 % lokal:** Kein Cloud-Call, kein API-Call nach außen
-- **REST API:** FastAPI-basiert, Docker-ready
-- **DSGVO-konform:** Privacy by Default, irreversible Schwärzung für IFG
+- **REST API:** FastAPI-basiert, Docker-ready (gehärtet: read_only, cap_drop ALL, non-root)
+- **DSGVO-konform:** Privacy by Default, irreversible Schwärzung für IFG, Audit-Retention mit PII-Redaktion (7 Tage) und Hard-Delete (7 Jahre BAO), `DELETE /documents/{id}` für Art. 17
 - **Human-in-the-Loop:** Unsichere Erkennungen werden zur manuellen Prüfung geflaggt (KAPA)
+- **Deploy-Vorlagen:** nginx-TLS, oauth2-proxy, systemd-Timer für Retention + Backup in `deploy/`
 
 ## Quickstart
 
 ### Installation
 
 ```bash
-pip install -e .          # Kernpaket
-pip install -e ".[api]"   # + REST API (FastAPI + Uvicorn)
-pip install -e ".[dev]"   # + Entwicklungstools
+pip install -e .                              # Kernpaket
+pip install -e ".[api]"                       # + REST API (FastAPI + Uvicorn)
+pip install -e ".[api,observability]"         # + Prometheus /metrics + structlog
+pip install -e ".[api,observability,hardening]"  # + Rate-Limit + Security-Headers
+pip install -e ".[dev]"                       # + Entwicklungstools (pytest, ruff, mypy)
 ```
+
+Runtime-Dependencies: `torch`, `transformers<5.0`, `sentencepiece`, `python-stdnum`.
 
 ### CLI
 
@@ -94,7 +105,11 @@ curl http://localhost:8000/api/v1/health
 ### Docker
 
 ```bash
-docker-compose up --build
+# Production
+docker compose up --build
+
+# Lokaler Smoke-Test (nutzt Host-HF-Cache, Port 8001)
+bash scripts/docker_smoke.sh
 ```
 
 ## Pipeline
@@ -109,12 +124,13 @@ Stage 2: NER-Ensemble
     ├─ PII-Modell (HuggingLil/pii-sensitive-ner-german)
     ├─ NER-Modell (Davlan/xlm-roberta-large-ner-hrl)
     └─ GLiNER Zero-Shot (urchade/gliner_large-v2.1, optional)
-Stage 2c: Presidio-kompatible AT-Recognizer
-    └─ SVNR, IBAN, KFZ, Firmenbuch, Reisepass, Aktenzahl, AT-Namen
+Stage 2c: Presidio-kompatible AT-Recognizer (mit Checksum-Validierung)
+    └─ SVNR, IBAN, UID, BIC, KFZ, Firmenbuch, Reisepass, Führerschein, ZMR, Aktenzahl, Gerichtsaktenzeichen, ICD-10, AT-Namen
 Ensemble-Merge (überlappende Spans + Konfidenz-Aggregation)
+Whitelist-Filter (AT-Gesetzestitel + Behördennamen bleiben im Output)
 Stage 3: Kontext/MLM (dbmdz/bert-base-german-cased)
     ├─ Perplexitäts-basierte Anomalie-Erkennung (unbekannte Firmen)
-    └─ Quasi-Identifikator-Check (Rolle + Ort + Alter)
+    └─ Quasi-Identifikator-Check (Rolle + Beruf + Verwandtschaft + Ort + Alter)
 Entity-Resolver (verknüpft Varianten derselben Entität)
     ↓
 Kanal-Auswahl (govgpt / ifg / kapa)
@@ -134,7 +150,13 @@ Gefilterter Output verlässt das System
 | ADRESSE | Straße Nr, PLZ Ort | Regex |
 | EMAIL | Standard | Regex |
 | IBAN | ATxx xxxx xxxx xxxx xxxx | Regex + AT-Recognizer |
-| SVNR | XXXX DDMMYY | Regex + Datumsvalidierung |
+| SVNR | XXXX DDMMYY | Regex + MOD-11-Prüfziffer (stdnum) |
+| UID | ATU + 8 Ziffern | AT-Recognizer + MOD-11 (stdnum) |
+| BIC | SWIFT-Code | AT-Recognizer + Land-Validierung |
+| FÜHRERSCHEIN | 8-stellig (kontext-gesteuert) | AT-Recognizer |
+| ZMR | 12-stellig (kontext-gesteuert) | AT-Recognizer |
+| GERICHTSAKTENZAHL | 3 Ob 123/45 | AT-Recognizer |
+| GESUNDHEIT (Art. 9) | ICD-10 Codes (F32.1 ...) | AT-Recognizer (kontext-gesteuert) |
 | TELEFON | +43, 0043, 06xx | Regex |
 | KFZ | Bezirkscode-Ziffern-Buchstaben | Regex + AT-Recognizer |
 | AKTENZAHL | GZ/AZ/Zl. + Kürzel | Regex + AT-Recognizer |
@@ -161,7 +183,9 @@ Gefilterter Output verlässt das System
 | GET | /api/v1/health | Systemstatus |
 | GET | /api/v1/mappings/{document_id} | Mapping abrufen |
 | DELETE | /api/v1/mappings/{document_id} | Mapping löschen |
+| DELETE | /api/v1/documents/{document_id} | DSGVO Art. 17: Mapping + Audit |
 | GET | /api/v1/audit/{document_id} | Audit-Trail abrufen |
+| GET | /metrics | Prometheus-Metriken |
 
 Detaillierte API-Dokumentation: [docs/api_reference.md](docs/api_reference.md)
 
@@ -202,7 +226,12 @@ ANOMYZE_GLINER_THRESHOLD=0.4    # Konfidenz-Schwelle GLiNER
 ANOMYZE_ANOMALY_THRESHOLD=0.5   # Finale Score-Schwelle
 ANOMYZE_KAPA_REVIEW_THRESHOLD=0.85  # Unter diesem Wert → manuelle Prüfung
 ANOMYZE_USE_GLINER=true         # GLiNER-Layer an/aus
+ANOMYZE_ALWAYS_REVIEW_ART9=true # Art. 9 immer zur Prüfung flaggen (KAPA)
+ANOMYZE_MAX_REQUEST_TEXT_CHARS=50000  # Max. Textlänge API
+ANOMYZE_PII_MODEL_REVISION=     # HF Git-SHA für Reproduzierbarkeit
 ```
+
+Vollständige ENV-Referenz: [deploy/env/anomyze.env.example](deploy/env/anomyze.env.example)
 
 ## Lizenz
 

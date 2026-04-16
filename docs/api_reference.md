@@ -126,6 +126,12 @@ Passagen mit Kombinationen aus Rolle + Ort + Alter (ohne erkannten Namen) werden
 | KFZ | KFZ | Regex (AT-Bezirkscodes) |
 | TELEFON | TELEFON | Regex |
 | QUASI_ID | QUASI_ID | Kontext (Kombinations-Check) |
+| UID | UID | AT-Recognizer (MOD-11 Checksum) |
+| BIC | BIC | AT-Recognizer (Land-Validierung) |
+| FUEHRERSCHEIN | FUEHRERSCHEIN | AT-Recognizer (kontext-gesteuert) |
+| ZMR | ZMR | AT-Recognizer (kontext-gesteuert) |
+| GERICHTSAKTENZAHL | AKTENZAHL | AT-Recognizer (Senats-Format) |
+| HEALTH_DIAGNOSIS | GESUNDHEIT | AT-Recognizer (ICD-10, kontext-gesteuert) |
 
 ### GET /health
 
@@ -160,6 +166,23 @@ Only available for GovGPT and KAPA channel results.
 ### DELETE /mappings/{document_id}
 
 Delete the mapping for a document. Returns 404 if not found.
+
+### DELETE /documents/{document_id}
+
+DSGVO Art. 17 "Recht auf Vergessenwerden". Deletes **both** the
+placeholder mapping and all audit entries for a document in one call.
+
+**Response:**
+```json
+{
+  "status": "deleted",
+  "document_id": "abc-123",
+  "mapping_deleted": true,
+  "audit_entries_removed": 3
+}
+```
+
+Returns 404 if neither a mapping nor audit entries exist for the ID.
 
 ### GET /audit/{document_id}
 
@@ -204,3 +227,11 @@ curl http://localhost:8000/api/v1/health
 | ANOMYZE_API_HOST | 0.0.0.0 | API server host |
 | ANOMYZE_API_PORT | 8000 | API server port |
 | ANOMYZE_MAPPING_PERSIST_PATH | - | Path for JSON mapping persistence |
+| ANOMYZE_ALWAYS_REVIEW_ART9 | true | Art. 9 entities always flagged in KAPA |
+| ANOMYZE_MAX_REQUEST_TEXT_CHARS | 50000 | Max characters per /anonymize request |
+| ANOMYZE_MAX_REQUEST_BODY_BYTES | 500000 | Max HTTP body size (middleware) |
+| ANOMYZE_QUASI_ID_WINDOW | 200 | Proximity window (chars) for quasi-IDs |
+| ANOMYZE_PII_MODEL_REVISION | - | HF git SHA for PII model pinning |
+| ANOMYZE_ORG_MODEL_REVISION | - | HF git SHA for ORG model pinning |
+| ANOMYZE_MLM_MODEL_REVISION | - | HF git SHA for MLM model pinning |
+| ANOMYZE_FAIL_ON_MODEL_INTEGRITY_MISMATCH | false | Hard-fail on checksum mismatch |

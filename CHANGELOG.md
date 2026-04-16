@@ -4,6 +4,50 @@ All notable changes are documented in this file.
 
 ## [Unreleased]
 
+### Phase C — Docker Verification, Deploy Templates, Tokenizer Fix
+
+#### Added
+- `deploy/` directory with production deployment templates:
+  nginx TLS reverse-proxy, oauth2-proxy OIDC config, systemd
+  retention/backup timers, env-var reference, backup/restore scripts.
+- `docker-compose.local.yml` overlay for local smoke-testing with
+  the host HF cache mounted rw.
+- `scripts/docker_smoke.sh` — automated build + up + health + 3
+  channels + /metrics scrape + down.
+- `scripts/gen_model_manifest.py` — walks HF cache snapshots and
+  emits SHA256 hashes (follows symlinks) for model integrity checks.
+
+#### Fixed
+- `transformers` pinned `<5.0` in `pyproject.toml` — transformers
+  5.x funnels every SentencePiece tokenizer through
+  `convert_to_native_format` which crashes on xlm-roberta's
+  `.bpe.model` file regardless of `use_fast=False`.
+- `sentencepiece>=0.2.0` added as runtime dependency (was only
+  transitively present in some environments).
+- `ModelManager` now pre-loads the slow tokenizer via
+  `AutoTokenizer(use_fast=False)` and injects it into `hf_pipeline`
+  — the pipeline's own `use_fast` kwarg is not forwarded internally.
+- `ner_layer.py` resilient against `start=None`/`end=None` from
+  slow tokenizers — new `_resolve_offsets` falls back to
+  `text.find()`.
+- `docker-compose.yml`: removed nested tmpfs under the HF cache
+  volume (caused "read-only filesystem" on container start).
+- `secure` 1.x API: `Secure.with_default_headers().set_headers()`
+  replaces the removed `.framework.fastapi()`.
+- `Dockerfile` pip install gets `--timeout 300 --retries 5`.
+
+### Phase B — Verification (API Middleware Tests, Model Integrity)
+
+#### Added
+- `tests/test_api_hardening.py` (6 tests) — body-size 413,
+  security headers, rate-limit smoke, graceful degradation.
+- `tests/test_api_metrics.py` (5 tests) — `/metrics` endpoint,
+  counter increments, no PII in labels.
+- `tests/test_api_logging.py` (4 tests) — JSON format,
+  structlog/stdlib fallback, no PII in logs.
+- `config/model_hashes.json` — SHA256 manifest for the four
+  default models. Regenerate with `scripts/gen_model_manifest.py`.
+
 ### Phase A — Post-Phase-3 Backwards-Compat & Compliance Fixes
 
 #### Added
