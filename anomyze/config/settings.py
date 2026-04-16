@@ -118,15 +118,29 @@ class Settings:
 
         All settings can be overridden via ANOMYZE_* environment variables.
         """
+        _bool_true = ("true", "1", "yes")
         return cls(
+            # Model selection
             pii_model=os.getenv("ANOMYZE_PII_MODEL", cls.pii_model),
             org_model=os.getenv("ANOMYZE_ORG_MODEL", cls.org_model),
             mlm_model=os.getenv("ANOMYZE_MLM_MODEL", cls.mlm_model),
             gliner_model=os.getenv("ANOMYZE_GLINER_MODEL", cls.gliner_model),
+            # Model pinning (empty string = track latest)
+            pii_model_revision=os.getenv("ANOMYZE_PII_MODEL_REVISION", ""),
+            org_model_revision=os.getenv("ANOMYZE_ORG_MODEL_REVISION", ""),
+            mlm_model_revision=os.getenv("ANOMYZE_MLM_MODEL_REVISION", ""),
+            gliner_model_revision=os.getenv("ANOMYZE_GLINER_MODEL_REVISION", ""),
+            fail_on_model_integrity_mismatch=os.getenv(
+                "ANOMYZE_FAIL_ON_MODEL_INTEGRITY_MISMATCH", ""
+            ).lower() in _bool_true,
+            # Detection thresholds
             pii_threshold=float(os.getenv("ANOMYZE_PII_THRESHOLD", str(cls.pii_threshold))),
             org_threshold=float(os.getenv("ANOMYZE_ORG_THRESHOLD", str(cls.org_threshold))),
             gliner_threshold=float(
                 os.getenv("ANOMYZE_GLINER_THRESHOLD", str(cls.gliner_threshold))
+            ),
+            presidio_threshold=float(
+                os.getenv("ANOMYZE_PRESIDIO_THRESHOLD", str(cls.presidio_threshold))
             ),
             anomaly_threshold=float(
                 os.getenv("ANOMYZE_ANOMALY_THRESHOLD", str(cls.anomaly_threshold))
@@ -134,17 +148,48 @@ class Settings:
             perplexity_threshold=float(
                 os.getenv("ANOMYZE_PERPLEXITY_THRESHOLD", str(cls.perplexity_threshold))
             ),
-            use_gliner=os.getenv("ANOMYZE_USE_GLINER", "true").lower() in ("true", "1", "yes"),
+            quasi_id_window=int(
+                os.getenv("ANOMYZE_QUASI_ID_WINDOW", str(cls.quasi_id_window))
+            ),
+            # Processing flags (default True → "true" fallback)
+            fix_encoding=os.getenv("ANOMYZE_FIX_ENCODING", "true").lower() in _bool_true,
+            use_adversarial_normalization=os.getenv(
+                "ANOMYZE_USE_ADVERSARIAL_NORMALIZATION", "true"
+            ).lower() in _bool_true,
+            use_leetspeak_normalization=os.getenv(
+                "ANOMYZE_USE_LEETSPEAK_NORMALIZATION", "true"
+            ).lower() in _bool_true,
+            use_regex_fallback=os.getenv(
+                "ANOMYZE_USE_REGEX_FALLBACK", "true"
+            ).lower() in _bool_true,
+            use_anomaly_detection=os.getenv(
+                "ANOMYZE_USE_ANOMALY_DETECTION", "true"
+            ).lower() in _bool_true,
+            use_gliner=os.getenv("ANOMYZE_USE_GLINER", "true").lower() in _bool_true,
+            use_presidio_compat=os.getenv(
+                "ANOMYZE_USE_PRESIDIO_COMPAT", "true"
+            ).lower() in _bool_true,
+            run_quality_check=os.getenv(
+                "ANOMYZE_RUN_QUALITY_CHECK", "true"
+            ).lower() in _bool_true,
+            # Device
             device=os.getenv("ANOMYZE_DEVICE"),
+            # Smoothing (Ollama, optional)
+            smooth_model=os.getenv("ANOMYZE_SMOOTH_MODEL", cls.smooth_model),
+            smooth_timeout=int(
+                os.getenv("ANOMYZE_SMOOTH_TIMEOUT", str(cls.smooth_timeout))
+            ),
+            # Channel configuration
             default_channel=os.getenv("ANOMYZE_DEFAULT_CHANNEL", cls.default_channel),
             kapa_review_threshold=float(
                 os.getenv("ANOMYZE_KAPA_REVIEW_THRESHOLD", str(cls.kapa_review_threshold))
             ),
-            audit_enabled=os.getenv("ANOMYZE_AUDIT_ENABLED", "").lower() in ("true", "1", "yes"),
+            audit_enabled=os.getenv("ANOMYZE_AUDIT_ENABLED", "").lower() in _bool_true,
             audit_log_path=os.getenv("ANOMYZE_AUDIT_LOG_PATH"),
             always_review_art9=os.getenv(
                 "ANOMYZE_ALWAYS_REVIEW_ART9", "true"
-            ).lower() in ("true", "1", "yes"),
+            ).lower() in _bool_true,
+            # API
             api_host=os.getenv("ANOMYZE_API_HOST", cls.api_host),
             api_port=int(os.getenv("ANOMYZE_API_PORT", str(cls.api_port))),
             max_request_text_chars=int(
