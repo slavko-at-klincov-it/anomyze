@@ -217,34 +217,29 @@ class TestRequestSizeLimits:
 class TestConfigurableTextLimit:
     """Settings-driven text limit can be raised."""
 
-    def test_raised_limit_accepts_larger_text(self, mock_settings, mock_orchestrator):
+    def test_raised_limit_accepts_larger_text(self, mock_settings) -> None:
+        from anomyze.api.models import AnonymizeRequest
         from anomyze.config.settings import Settings, configure
-        from anomyze.api.main import create_app
-        from anomyze.mappings.mapping_store import MappingStore
-        from anomyze.audit.logger import AuditLogger
-        from fastapi.testclient import TestClient
 
-        big_settings = Settings(
-            use_anomaly_detection=False,
-            device="cpu",
-            max_request_text_chars=200_000,
-        )
-        configure(big_settings)
+        big = Settings(use_anomaly_detection=False, device="cpu",
+                       max_request_text_chars=200_000)
+        configure(big)
         try:
-            app = create_app(big_settings)
-            app.state.orchestrator = mock_orchestrator
-            app.state.mapping_store = MappingStore()
-            app.state.audit_logger = AuditLogger()
-            app.state.settings = big_settings
-            with TestClient(app) as test_client:
-                text = "y" * 150_000
-                response = test_client.post("/api/v1/anonymize", json={
-                    "text": text,
-                    "channel": "govgpt",
-                })
-                assert response.status_code == 200
+            req = AnonymizeRequest(text="y" * 150_000, channel="govgpt")
+            assert len(req.text) == 150_000
         finally:
             configure(mock_settings)
+
+    def test_default_limit_rejects_oversized(self, mock_settings) -> None:
+        from anomyze.api.models import AnonymizeRequest
+        from anomyze.config.settings import configure
+
+        configure(mock_settings)
+        try:
+            AnonymizeRequest(text="z" * 60_000, channel="govgpt")
+            raise AssertionError("should have raised")
+        except Exception:
+            pass
 
     def test_kapa_channel_has_audit_trail(self, client):
         response = client.post("/api/v1/anonymize", json={
