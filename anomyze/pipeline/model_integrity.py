@@ -50,7 +50,9 @@ def _model_dir(cache_root: Path, model_id: str) -> Path | None:
 def load_manifest(manifest_path: Path) -> dict[str, dict[str, str]]:
     if not manifest_path.exists():
         return {}
-    return json.loads(manifest_path.read_text())
+    data = json.loads(manifest_path.read_text())
+    assert isinstance(data, dict)
+    return data
 
 
 def verify_model(

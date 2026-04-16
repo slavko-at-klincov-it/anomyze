@@ -26,12 +26,19 @@ try:  # optional dependency block
     _PROM_AVAILABLE = True
 except ImportError:  # pragma: no cover
     _PROM_AVAILABLE = False
-    Counter = Gauge = Histogram = None  # type: ignore[assignment]
-    Instrumentator = None  # type: ignore[assignment]
+    Counter = Gauge = Histogram = Instrumentator = None  # type: ignore[misc,assignment]
 
 
 # --- Metric handles -------------------------------------------------------
+# Typed as Any so the module stays mypy-clean regardless of whether the
+# optional prometheus dependency is installed. The helpers below gate
+# every access behind _PROM_AVAILABLE at runtime.
 
+ENTITY_DETECTED_TOTAL: Any = None
+PIPELINE_STAGE_DURATION: Any = None
+CONFIDENCE_SCORE: Any = None
+CHANNEL_REQUESTS_TOTAL: Any = None
+MODEL_LOADED: Any = None
 
 if _PROM_AVAILABLE:
     ENTITY_DETECTED_TOTAL = Counter(
@@ -43,7 +50,6 @@ if _PROM_AVAILABLE:
         "anomyze_pipeline_stage_duration_seconds",
         "Duration of each pipeline stage in seconds",
         ["stage"],
-        # Buckets tuned for ms-to-second range typical of CPU-bound NER.
         buckets=(0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0),
     )
     CONFIDENCE_SCORE = Histogram(
@@ -61,12 +67,6 @@ if _PROM_AVAILABLE:
         "anomyze_model_loaded",
         "1 if all detection models are loaded, 0 otherwise",
     )
-else:  # pragma: no cover
-    ENTITY_DETECTED_TOTAL = None
-    PIPELINE_STAGE_DURATION = None
-    CONFIDENCE_SCORE = None
-    CHANNEL_REQUESTS_TOTAL = None
-    MODEL_LOADED = None
 
 
 # --- Helper API -----------------------------------------------------------

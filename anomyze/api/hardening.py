@@ -19,17 +19,17 @@ try:
     from slowapi.util import get_remote_address
     _SLOWAPI = True
 except ImportError:  # pragma: no cover
-    Limiter = None  # type: ignore[assignment]
-    RateLimitExceeded = Exception  # type: ignore[assignment,misc]
-    SlowAPIMiddleware = None  # type: ignore[assignment]
-    get_remote_address = None  # type: ignore[assignment]
+    Limiter = None  # type: ignore[misc,assignment]
+    RateLimitExceeded = Exception  # type: ignore[misc,assignment]
+    SlowAPIMiddleware = None  # type: ignore[misc,assignment]
+    get_remote_address = None  # type: ignore[misc,assignment]
     _SLOWAPI = False
 
 try:
     import secure as _secure
     _SECURE = True
 except ImportError:  # pragma: no cover
-    _secure = None  # type: ignore[assignment]
+    _secure = None  # type: ignore[misc,assignment]
     _SECURE = False
 
 # --- Body-size middleware (always available, stdlib only) ------------------

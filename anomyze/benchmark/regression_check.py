@@ -25,7 +25,9 @@ DEFAULT_CRITICAL = ("SVN", "IBAN", "EMAIL")
 
 
 def _load(path: Path) -> dict:
-    return json.loads(path.read_text())
+    data = json.loads(path.read_text())
+    assert isinstance(data, dict)
+    return data
 
 
 def compare(
