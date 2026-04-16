@@ -50,6 +50,63 @@ Anomyze erkennt dabei nicht nur offensichtliche Daten wie Namen und Kontonummern
 
 ---
 
+## Der Gesamtprozess
+
+Anomyze ist kein Einzelwerkzeug, sondern eine Schicht in einem durchgehend automatisierten Ablauf. Die Buergerin stellt eine Anfrage; alles Weitere — Identifikation, Datenbeschaffung, Dokumenterstellung, Anonymisierung — laeuft automatisch. Der Mensch kommt erst am Ende als Prüfinstanz.
+
+```
+Buergerin stellt Anfrage ueber Web-Portal
+        |
+        v
+Automatische Identifikation (ID Austria)
+Was wird angefragt? Welche Daten werden benoetigt?
+        |
+        v
+Automatische Datenbeschaffung
+Relevante Akten, Registerdaten, Bescheide, Gutachten
+        |
+        v
+KI-Verarbeitung (GovGPT / ELAK-KI / KAPA)
+Erstellt den Dokument-Entwurf auf Basis der gesammelten Daten
+        |
+        v
+ +--------------+
+ |   ANOMYZE    |   Automatische Anonymisierung
+ +--------------+   Erkennung, Ersetzung, Risiko-Flagging,
+        |           Audit-Trail, Qualitaetskontrolle
+        v
+Sachbearbeiterin wird benachrichtigt
+"Ein Dokument wartet auf Ihre Freigabe."
+        |
+        v
+Pruefung und Freigabe (Human-in-the-Loop)
+Sachbearbeiterin prueft, klickt [Freigeben]
+        |
+        v
+Dokument wird an die Buergerin zugestellt
+```
+
+**Der Mensch prueft, er erstellt nicht.** Die gesamte Kette laeuft automatisch. Der Mensch kontrolliert nur das Ergebnis — markierte Stellen, Warnungen bei sensiblen Daten, unsichere Erkennungen. Alles andere ist maschinell vorbereitet.
+
+### Konkretes Beispiel: Auskunftsbegehren nach Informationsfreiheitsgesetz
+
+| Zeitpunkt | Was passiert |
+|-----------|-------------|
+| 09:12 | Buergerin stellt Anfrage auf data.gv.at: "Auskunft zu GZ 2024/4567." |
+| 09:12 | System erkennt: IFG-Anfrage, Ressort BMI, Geschaeftszahl bekannt. |
+| 09:13 | Automatischer Abruf der Akte aus dem ELAK. 14 Dokumente, 23 Seiten. |
+| 09:14 | KI erstellt Zusammenfassung. Enthaelt: 3 Namen, 2 Adressen, 1 SVNr, 1 Diagnose. |
+| 09:14 | Anomyze anonymisiert. IFG-Kanal: unwiderrufliche Schwaerzung. Diagnose als besondere Kategorie markiert. |
+| 09:15 | Dr. Koller erhaelt Benachrichtigung: "Dokument bereit zur Freigabe." |
+| 09:22 | Dr. Koller prueft die Schwaerzungen, bestaetigt, klickt [Freigeben]. |
+| 09:22 | Dokument wird an das MeinPostfach der Buergerin zugestellt. |
+
+Gesamtdauer: **10 Minuten.** Davon manuell: 7 Minuten (Pruefung durch Dr. Koller).
+
+Detaillierter Prozess mit Abgrenzung der Verantwortlichkeiten: [docs/end-to-end-process.md](docs/end-to-end-process.md)
+
+---
+
 ## Technische Details
 
 ### Features
