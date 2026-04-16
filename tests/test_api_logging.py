@@ -1,6 +1,5 @@
 """Tests for structured API logging (structlog / stdlib fallback)."""
 
-import io
 import json
 import logging
 
@@ -11,6 +10,7 @@ from anomyze.api.logging_config import configure_logging, get_logger
 
 class TestStructlogJSON:
     def test_json_output_format(self, capsys) -> None:
+        pytest.importorskip("structlog")
         configure_logging()
         log = get_logger("anomyze.test")
         log.info("demo_event", channel="govgpt", entity_count=3)
@@ -34,6 +34,7 @@ class TestStructlogJSON:
 
 class TestNoPIIInLogs:
     def test_entity_word_not_logged(self, capsys) -> None:
+        pytest.importorskip("structlog")
         configure_logging()
         log = get_logger("anomyze.test")
         log.info("anon_request", document_id="doc-123", channel="govgpt")

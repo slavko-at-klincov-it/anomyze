@@ -1,9 +1,15 @@
-"""Tests for the Prometheus metrics endpoint and instrumentation."""
+"""Tests for the Prometheus metrics endpoint and instrumentation.
 
-from unittest.mock import MagicMock
+Requires the ``observability`` extra (``pip install -e '.[observability]'``).
+Skipped automatically when ``prometheus_fastapi_instrumentator`` is absent.
+"""
 
 import pytest
-from fastapi.testclient import TestClient
+
+pytest.importorskip("prometheus_fastapi_instrumentator")
+
+from unittest.mock import MagicMock  # noqa: E402
+from fastapi.testclient import TestClient  # noqa: E402
 
 from anomyze.api.main import create_app
 from anomyze.audit.logger import AuditLogger

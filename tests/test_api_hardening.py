@@ -87,12 +87,10 @@ class TestBodySizeMiddleware:
 
 class TestSecurityHeaders:
     def test_health_response_has_hardening_headers(self, client) -> None:
+        pytest.importorskip("secure")
         response = client.get("/api/v1/health")
         assert response.status_code == 200
         headers = {k.lower(): v for k, v in response.headers.items()}
-        # At least one header added by the `secure` library must be
-        # present; exact set depends on the version, so we check for
-        # the always-on X-Content-Type-Options nosniff.
         assert headers.get("x-content-type-options", "").lower() == "nosniff"
 
 
