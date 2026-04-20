@@ -10,6 +10,9 @@ from stdnum import iban as stdnum_iban
 from stdnum.at import uid as stdnum_uid
 from stdnum.at import vnr as stdnum_vnr
 
+import re
+
+from anomyze.patterns.art9 import ART9_LEXICONS
 from anomyze.patterns.at_names import is_at_firstname, is_at_lastname
 from anomyze.patterns.healthcare import is_icd10_code
 from anomyze.pipeline.recognizers.base import (
@@ -135,6 +138,13 @@ class ATBICRecognizer(PatternRecognizer):
     def _is_valid_match(
         self, matched: str, full_text: str, start: int, end: int
     ) -> bool:
+        # BIC codes are always written in uppercase per ISO 9362.
+        # Without this gate, IGNORECASE matching causes German words
+        # like "Religion" or "Bankhaus" to slip through stdnum's
+        # purely structural check (4 letters + valid country code +
+        # 2 alphanumerics).
+        if matched != matched.upper():
+            return False
         return stdnum_bic.is_valid(matched)
 
 
@@ -343,6 +353,67 @@ class ATNameRecognizer(PatternRecognizer):
                     end=match.end(),
                     score=self._EXACT_SCORE,
                     text=word,
+                    recognizer_name=type(self).__name__,
+                ))
+        return results
+
+
+class ATArt9Recognizer(PatternRecognizer):
+    """DSGVO Art. 9 lexicon recognizer: religion, political, union.
+
+    Looks up curated Austrian/German term lists from ``patterns.art9``.
+    Each lexicon emits its own ``entity_type`` (RELIGION, POLITICAL,
+    UNION) so downstream layers — IFG ``BESONDERE_KATEGORIE`` collapse
+    and KAPA ``[PRÜFEN:]`` flagging — fire correctly.
+
+    Matching strategy:
+
+    * Whole-word, case-insensitive.
+    * Multi-word phrases (e.g. ``römisch katholisch``) are matched
+      as adjacent tokens with a flexible internal whitespace pattern
+      to tolerate single spaces, hyphens, and non-breaking spaces.
+    * Score 0.9 — high confidence because the lexicon is curated and
+      a literal hit on, say, ``römisch-katholisch`` is unambiguous.
+    """
+
+    supported_entity = "ART9"
+    patterns: list[Pattern] = []
+
+    _SCORE = 0.9
+
+    def __init__(self) -> None:
+        self._compiled_terms: list[tuple[re.Pattern[str], str]] = []
+        for entity_type, terms in ART9_LEXICONS.items():
+            for term in terms:
+                pattern = self._term_to_regex(term)
+                try:
+                    compiled = re.compile(pattern, re.IGNORECASE)
+                except re.error:
+                    continue
+                self._compiled_terms.append((compiled, entity_type))
+
+    @staticmethod
+    def _term_to_regex(term: str) -> str:
+        """Compile a curated phrase into a tolerant whole-word regex."""
+        parts = [re.escape(p) for p in term.split()]
+        joined = r"[\s\-\u00a0]+".join(parts)
+        return rf"(?<![\wäöüÄÖÜß]){joined}(?![\wäöüÄÖÜß])"
+
+    def analyze(self, text: str) -> list[RecognizerResult]:
+        results: list[RecognizerResult] = []
+        seen: set[tuple[int, int]] = set()
+        for compiled, entity_type in self._compiled_terms:
+            for match in compiled.finditer(text):
+                key = (match.start(), match.end())
+                if key in seen:
+                    continue
+                seen.add(key)
+                results.append(RecognizerResult(
+                    entity_type=entity_type,
+                    start=match.start(),
+                    end=match.end(),
+                    score=self._SCORE,
+                    text=match.group(),
                     recognizer_name=type(self).__name__,
                 ))
         return results

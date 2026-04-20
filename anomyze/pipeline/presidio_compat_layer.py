@@ -12,6 +12,7 @@ from anomyze.patterns import is_blacklisted
 from anomyze.pipeline import DetectedEntity
 from anomyze.pipeline.recognizers import (
     ATAktenzahlRecognizer,
+    ATArt9Recognizer,
     ATBICRecognizer,
     ATFirmenbuchRecognizer,
     ATFuehrerscheinRecognizer,
@@ -42,6 +43,11 @@ _ENTITY_TYPE_MAP: dict[str, str] = {
     "AT_FUEHRERSCHEIN": "FUEHRERSCHEIN",
     "AT_ZMR": "ZMR",
     "AT_GERICHTSAKTENZAHL": "GERICHTSAKTENZAHL",
+    # Art. 9 lexicon emits these directly as the entity_group already
+    # used by the channels (see channels/govgpt.py and pipeline/__init__).
+    "RELIGION": "RELIGION",
+    "POLITICAL": "POLITICAL",
+    "UNION": "UNION",
 }
 
 
@@ -60,6 +66,7 @@ def _default_recognizers() -> list[PatternRecognizer]:
         ATFuehrerscheinRecognizer(),
         ATZMRRecognizer(),
         ATGerichtsaktenzahlRecognizer(),
+        ATArt9Recognizer(),
     ]
 
 
