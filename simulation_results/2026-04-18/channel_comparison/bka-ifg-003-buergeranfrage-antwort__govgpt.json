@@ -1,0 +1,169 @@
+{
+  "doc_id": "bka-ifg-003-buergeranfrage-antwort",
+  "channel": "govgpt",
+  "elapsed_s": 0.352,
+  "input_chars": 516,
+  "ground_truth_entity_count": 6,
+  "result": {
+    "text": "Antwortschreiben gem. § 8 IFG\n\nSehr geehrter Herr [PERSON_1],\n\nbezugnehmend auf Ihre Anfrage vom [GEBURTSDATUM_1], wohnhaft [ORT_1], erreichbar unter [TELEPHONENUM_1] oder [EMAIL_1], übermitteln wir Ihnen die angeforderte Auskunft.\n\nDas von Ihnen gemeldete Fahrzeug mit Kennzeichen [KFZ_1] wurde im aktuellen Verfahren erwähnt. Ihre Führerschein-Nummer [DRIVERLICENSENUM_1] ist im Akt [BIC_1]; weitere Daten werden nicht [BIC_2].\n\nMit freundlichen Grüßen, das Bundeskanzleramt.",
+    "entities": [
+      {
+        "word": "Hubert Niefürwahr",
+        "entity_group": "PER",
+        "score": 1.0,
+        "start": 50,
+        "end": 67,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[PERSON_1]",
+        "sources": [
+          "regex_title",
+          "org",
+          "gliner",
+          "pii"
+        ]
+      },
+      {
+        "word": "02.04.2026",
+        "entity_group": "GEBURTSDATUM",
+        "score": 0.95,
+        "start": 104,
+        "end": 114,
+        "source": "regex",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GEBURTSDATUM_1]",
+        "sources": [
+          "regex"
+        ]
+      },
+      {
+        "word": "Mariahilfer Straße 318/14, 1150 Wien",
+        "entity_group": "LOC",
+        "score": 1.0,
+        "start": 125,
+        "end": 161,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[ORT_1]",
+        "sources": [
+          "regex",
+          "gliner",
+          "pii",
+          "org"
+        ]
+      },
+      {
+        "word": "+43 660 1234567",
+        "entity_group": "TELEPHONENUM",
+        "score": 0.9999991059303284,
+        "start": 180,
+        "end": 195,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[TELEPHONENUM_1]",
+        "sources": [
+          "regex",
+          "pii",
+          "gliner"
+        ]
+      },
+      {
+        "word": "h.niefuerwahr@example.at",
+        "entity_group": "EMAIL",
+        "score": 0.9999930262565613,
+        "start": 201,
+        "end": 225,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[EMAIL_1]",
+        "sources": [
+          "regex",
+          "pii",
+          "gliner"
+        ]
+      },
+      {
+        "word": "W-12345BX",
+        "entity_group": "KFZ",
+        "score": 1.0,
+        "start": 326,
+        "end": 335,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[KFZ_1]",
+        "sources": [
+          "regex",
+          "gliner",
+          "presidio_compat"
+        ]
+      },
+      {
+        "word": "87654321",
+        "entity_group": "DRIVERLICENSENUM",
+        "score": 0.990511417388916,
+        "start": 399,
+        "end": 407,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[DRIVERLICENSENUM_1]",
+        "sources": [
+          "pii",
+          "presidio_compat"
+        ]
+      },
+      {
+        "word": "vermerkt",
+        "entity_group": "BIC",
+        "score": 0.55,
+        "start": 419,
+        "end": 427,
+        "source": "presidio_compat",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[BIC_1]",
+        "sources": [
+          "presidio_compat"
+        ]
+      },
+      {
+        "word": "offengelegt",
+        "entity_group": "BIC",
+        "score": 0.55,
+        "start": 456,
+        "end": 467,
+        "source": "presidio_compat",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[BIC_2]",
+        "sources": [
+          "presidio_compat"
+        ]
+      }
+    ],
+    "channel": "govgpt",
+    "quality_report": {
+      "passed": true,
+      "issues": [],
+      "leak_count": 0
+    },
+    "mapping": {
+      "[PERSON_1]": "Hubert Niefürwahr",
+      "[GEBURTSDATUM_1]": "02.04.2026",
+      "[ORT_1]": "Mariahilfer Straße 318/14, 1150 Wien",
+      "[TELEPHONENUM_1]": "+43 660 1234567",
+      "[EMAIL_1]": "h.niefuerwahr@example.at",
+      "[KFZ_1]": "W-12345BX",
+      "[DRIVERLICENSENUM_1]": "87654321",
+      "[BIC_1]": "vermerkt",
+      "[BIC_2]": "offengelegt"
+    },
+    "original_text": "Antwortschreiben gem. § 8 IFG\n\nSehr geehrter Herr Hubert Niefürwahr,\n\nbezugnehmend auf Ihre Anfrage vom 02.04.2026, wohnhaft Mariahilfer Straße 318/14, 1150 Wien, erreichbar unter +43 660 1234567 oder h.niefuerwahr@example.at, übermitteln wir Ihnen die angeforderte Auskunft.\n\nDas von Ihnen gemeldete Fahrzeug mit Kennzeichen W-12345BX wurde im aktuellen Verfahren erwähnt. Ihre Führerschein-Nummer 87654321 ist im Akt vermerkt; weitere Daten werden nicht offengelegt.\n\nMit freundlichen Grüßen, das Bundeskanzleramt."
+  }
+}

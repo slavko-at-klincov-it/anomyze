@@ -1,6 +1,6 @@
 # Anomyze - Projekt-TODO
 
-*Ursprünglich erstellt: Januar 2025. Zuletzt aktualisiert: April 2026 nach Task 9 (Benchmark-Framework).*
+*Ursprünglich erstellt: Januar 2025. Zuletzt aktualisiert: April 2026 nach BKA/IFG-Simulation + Phase D (Art. 9 Lexikon, BIC-Fix).*
 
 ## Status-Übersicht
 
@@ -55,7 +55,10 @@ Begründung: Unabhängige Releases, sauberere Dependencies, klarere Lizenzierung
 - [x] **Integration Tests** — `test_integration.py`
 - [x] **Adversarial Tests** — `test_adversarial.py`
 - [x] **Benchmark-Framework** — Precision/Recall/F1 auf annotierten Ground-Truth-Datasets
-- [x] **Test-Daten** — `tests/fixtures/`, `benchmarks/datasets/` (synthetic_at, realistic_at)
+- [x] **Test-Daten** — `tests/fixtures/`, `benchmarks/datasets/` (synthetic_at, smoke_at, realistic_at, bka_ifg_simulation)
+- [x] **BKA/IFG-Simulation (2026-04-18)** — 5 synthetische BKA-Dokumente durch alle 3 Kanäle; Verdict-Report mit MUST/SHOULD/NICE-Matrix und Recall-Werten pro Entity-Typ. Artefakte unter `simulation_results/2026-04-18/`.
+- [x] **Art. 9 Lexikon implementiert** — `patterns/art9.py` + `ATArt9Recognizer` für RELIGION / POLITICAL / UNION; schließt die von der Simulation gefundene CRITICAL-Lücke (DSGVO Art. 9 im IFG-Kanal).
+- [x] **BIC-Recognizer gehärtet** — Uppercase-Gate verhindert False Positives auf deutschen Wörtern (9 → 1 FP im BKA-Korpus).
 
 ## 1.3 Dokumentation
 
@@ -190,3 +193,14 @@ Für die Extension ist ein separates Repository vorgesehen. Die ursprüngliche R
 2. **Lizenzklärung PII-Model** — Kontakt mit Model-Autor bzw. Swap-Plan finalisieren.
 3. **Repository `anomyze-extension`** anlegen und Grundgerüst (FastAPI-Server mit `anomyze` als Dependency, Manifest V3, Admin-UI-Skeleton).
 4. **Deployment-Guide** schreiben (Docker + On-Premise-Requirements).
+
+## Offene Gaps aus der BKA/IFG-Simulation
+
+Dokumentiert im [Verdict-Report](../simulation_results/2026-04-18/verdict_report.md). Empfohlene Reihenfolge:
+
+- [ ] **ADRESSE Recall 0 auf österreichischem Format `Straße Nr/Tür, PLZ Ort`** — `anomyze/patterns/addresses.py` erweitern; beide Testadressen im Simulationskorpus wurden nicht erkannt.
+- [ ] **Führerschein-Nr.: Kontextfenster erweitern** — aktuell nur Match mit Kontextwort in unmittelbarer Nähe; sentence-level Kontext reicht nicht.
+- [ ] **ZMR-Zahl: Kontextfenster erweitern** — gleiches Problem wie Führerschein.
+- [ ] **Organisations-Policy für IFG** — Behörden-Whitelist lässt Ministeriennamen unredigiert durch; Policy-Entscheidung dokumentieren oder IFG-spezifisch überschreiben.
+- [ ] **Benchmark-Label-Aliase** — `TELEPHONENUM`/`DATEOFBIRTH`/`DRIVERLICENSENUM`/`SURNAME` auf die intern emittierten Labels (`TELEFON`/`GEBURTSDATUM`/`FUEHRERSCHEIN`/`PER`) mappen, um scheinbare FPs aus den Benchmarks zu entfernen.
+- [ ] **Tests gegen echtes BKA-Korpus** — die Simulation ist N=5, die Produktivtauglichkeit erfordert Messungen gegen echte Dokumente.

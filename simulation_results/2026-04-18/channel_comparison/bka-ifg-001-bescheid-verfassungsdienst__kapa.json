@@ -1,0 +1,355 @@
+{
+  "doc_id": "bka-ifg-001-bescheid-verfassungsdienst",
+  "channel": "kapa",
+  "elapsed_s": 0.36,
+  "input_chars": 621,
+  "ground_truth_entity_count": 7,
+  "result": {
+    "text": "BESCHEID\n\nDes [ORGANISATION_1], [ORGANISATION_2], betreffend den Antrag gemäß § 4 IFG vom [GEBURTSDATUM_1].\n\nGeschäftszahl: [AKTENZAHL_1]\nDatum: [GEBURTSDATUM_2]\n\nIn der Verwaltungssache der Antragstellerin Frau [PERSON_1], geboren am [DATEOFBIRTH_1], wohnhaft [ORT_1], Sozialversicherungsnummer [SVNR_1], ergeht folgender Bescheid: Dem Antrag auf Akteneinsicht in das Konvolut zur interministeriellen Abstimmung wird teilweise stattgegeben.\n\nFür Rückfragen steht die zuständige Sachbearbeiterin [SURNAME_1] unter der Adresse [EMAIL_1] zur Verfügung.",
+    "entities": [
+      {
+        "word": "Bundeskanzleramts",
+        "entity_group": "ORG",
+        "score": 0.9855068922042847,
+        "start": 14,
+        "end": 31,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[ORGANISATION_1]",
+        "sources": [
+          "org",
+          "gliner"
+        ]
+      },
+      {
+        "word": "Sektion BKA-Verfassungsdienst",
+        "entity_group": "ORG",
+        "score": 0.9995793104171753,
+        "start": 33,
+        "end": 62,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[ORGANISATION_2]",
+        "sources": [
+          "gliner",
+          "org"
+        ]
+      },
+      {
+        "word": "03.03.2026",
+        "entity_group": "GEBURTSDATUM",
+        "score": 0.95,
+        "start": 104,
+        "end": 114,
+        "source": "regex",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GEBURTSDATUM_1]",
+        "sources": [
+          "regex"
+        ]
+      },
+      {
+        "word": "GZ 2026/0142-VD/3",
+        "entity_group": "AKTENZAHL",
+        "score": 1.0,
+        "start": 132,
+        "end": 149,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[AKTENZAHL_1]",
+        "sources": [
+          "presidio_compat",
+          "regex"
+        ]
+      },
+      {
+        "word": "18.04.2026",
+        "entity_group": "GEBURTSDATUM",
+        "score": 0.95,
+        "start": 157,
+        "end": 167,
+        "source": "regex",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GEBURTSDATUM_2]",
+        "sources": [
+          "regex"
+        ]
+      },
+      {
+        "word": "Ingrid Falschnamerl",
+        "entity_group": "PER",
+        "score": 1.0,
+        "start": 218,
+        "end": 237,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[PERSON_1]",
+        "sources": [
+          "regex_title",
+          "org",
+          "gliner",
+          "pii",
+          "presidio_compat"
+        ]
+      },
+      {
+        "word": "14.05.1981",
+        "entity_group": "DATEOFBIRTH",
+        "score": 0.9999935030937195,
+        "start": 250,
+        "end": 260,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[DATEOFBIRTH_1]",
+        "sources": [
+          "regex",
+          "pii",
+          "gliner"
+        ]
+      },
+      {
+        "word": "Donaufelder Straße 247, 1220 Wien",
+        "entity_group": "LOC",
+        "score": 1.0,
+        "start": 271,
+        "end": 304,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[ORT_1]",
+        "sources": [
+          "regex",
+          "gliner",
+          "pii",
+          "org"
+        ]
+      },
+      {
+        "word": "1001 140288",
+        "entity_group": "SVN",
+        "score": 1.0,
+        "start": 332,
+        "end": 343,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[SVNR_1]",
+        "sources": [
+          "regex",
+          "pii",
+          "gliner",
+          "presidio_compat"
+        ]
+      },
+      {
+        "word": "Mag.a Roswitha Erfunderl",
+        "entity_group": "SURNAME",
+        "score": 0.9999999403953552,
+        "start": 535,
+        "end": 559,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[SURNAME_1]",
+        "sources": [
+          "gliner",
+          "org",
+          "pii",
+          "presidio_compat"
+        ]
+      },
+      {
+        "word": "roswitha.erfunderl@bka.gv.at",
+        "entity_group": "EMAIL",
+        "score": 0.9999998807907104,
+        "start": 578,
+        "end": 606,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[EMAIL_1]",
+        "sources": [
+          "regex",
+          "pii",
+          "gliner",
+          "presidio_compat",
+          "org"
+        ]
+      }
+    ],
+    "channel": "kapa",
+    "quality_report": {
+      "passed": true,
+      "issues": [],
+      "leak_count": 0
+    },
+    "mapping": {
+      "[ORGANISATION_1]": "Bundeskanzleramts",
+      "[ORGANISATION_2]": "Sektion BKA-Verfassungsdienst",
+      "[GEBURTSDATUM_1]": "03.03.2026",
+      "[AKTENZAHL_1]": "GZ 2026/0142-VD/3",
+      "[GEBURTSDATUM_2]": "18.04.2026",
+      "[PERSON_1]": "Ingrid Falschnamerl",
+      "[DATEOFBIRTH_1]": "14.05.1981",
+      "[ORT_1]": "Donaufelder Straße 247, 1220 Wien",
+      "[SVNR_1]": "1001 140288",
+      "[SURNAME_1]": "Mag.a Roswitha Erfunderl",
+      "[EMAIL_1]": "roswitha.erfunderl@bka.gv.at"
+    },
+    "original_text": "BESCHEID\n\nDes Bundeskanzleramts, Sektion BKA-Verfassungsdienst, betreffend den Antrag gemäß § 4 IFG vom 03.03.2026.\n\nGeschäftszahl: GZ 2026/0142-VD/3\nDatum: 18.04.2026\n\nIn der Verwaltungssache der Antragstellerin Frau Ingrid Falschnamerl, geboren am 14.05.1981, wohnhaft Donaufelder Straße 247, 1220 Wien, Sozialversicherungsnummer 1001 140288, ergeht folgender Bescheid: Dem Antrag auf Akteneinsicht in das Konvolut zur interministeriellen Abstimmung wird teilweise stattgegeben.\n\nFür Rückfragen steht die zuständige Sachbearbeiterin Mag.a Roswitha Erfunderl unter der Adresse roswitha.erfunderl@bka.gv.at zur Verfügung.",
+    "flagged_for_review": [],
+    "audit_entries": [
+      {
+        "timestamp": "2026-04-17T22:57:56.778021+00:00",
+        "document_id": "522db98e-3dbe-43bb-bc7e-c53f86d459dc",
+        "entity_word": "Bundeskanzleramts",
+        "entity_group": "ORGANISATION",
+        "confidence": 0.9855068922042847,
+        "source_layer": "ensemble",
+        "action": "anonymized",
+        "placeholder": "[ORGANISATION_1]",
+        "context_snippet": "...BESCHEID\n\nDes [ORGANISATION_1], Sektion BKA-Verfassungsdiens...",
+        "reviewer": null,
+        "review_decision": null
+      },
+      {
+        "timestamp": "2026-04-17T22:57:56.778021+00:00",
+        "document_id": "522db98e-3dbe-43bb-bc7e-c53f86d459dc",
+        "entity_word": "Sektion BKA-Verfassungsdienst",
+        "entity_group": "ORGANISATION",
+        "confidence": 0.9995793104171753,
+        "source_layer": "ensemble",
+        "action": "anonymized",
+        "placeholder": "[ORGANISATION_2]",
+        "context_snippet": "...CHEID\n\nDes Bundeskanzleramts, [ORGANISATION_2], betreffend den Antrag gemäß ...",
+        "reviewer": null,
+        "review_decision": null
+      },
+      {
+        "timestamp": "2026-04-17T22:57:56.778021+00:00",
+        "document_id": "522db98e-3dbe-43bb-bc7e-c53f86d459dc",
+        "entity_word": "03.03.2026",
+        "entity_group": "GEBURTSDATUM",
+        "confidence": 0.95,
+        "source_layer": "regex",
+        "action": "anonymized",
+        "placeholder": "[GEBURTSDATUM_1]",
+        "context_snippet": "... den Antrag gemäß § 4 IFG vom [GEBURTSDATUM_1].\n\nGeschäftszahl: GZ 2026/0142...",
+        "reviewer": null,
+        "review_decision": null
+      },
+      {
+        "timestamp": "2026-04-17T22:57:56.778021+00:00",
+        "document_id": "522db98e-3dbe-43bb-bc7e-c53f86d459dc",
+        "entity_word": "GZ 2026/0142-VD/3",
+        "entity_group": "AKTENZAHL",
+        "confidence": 1.0,
+        "source_layer": "ensemble",
+        "action": "anonymized",
+        "placeholder": "[AKTENZAHL_1]",
+        "context_snippet": "...m 03.03.2026.\n\nGeschäftszahl: [AKTENZAHL_1]\nDatum: 18.04.2026\n\nIn der Ver...",
+        "reviewer": null,
+        "review_decision": null
+      },
+      {
+        "timestamp": "2026-04-17T22:57:56.778021+00:00",
+        "document_id": "522db98e-3dbe-43bb-bc7e-c53f86d459dc",
+        "entity_word": "18.04.2026",
+        "entity_group": "GEBURTSDATUM",
+        "confidence": 0.95,
+        "source_layer": "regex",
+        "action": "anonymized",
+        "placeholder": "[GEBURTSDATUM_2]",
+        "context_snippet": "...ahl: GZ 2026/0142-VD/3\nDatum: [GEBURTSDATUM_2]\n\nIn der Verwaltungssache der ...",
+        "reviewer": null,
+        "review_decision": null
+      },
+      {
+        "timestamp": "2026-04-17T22:57:56.778021+00:00",
+        "document_id": "522db98e-3dbe-43bb-bc7e-c53f86d459dc",
+        "entity_word": "Ingrid Falschnamerl",
+        "entity_group": "PERSON",
+        "confidence": 1.0,
+        "source_layer": "ensemble",
+        "action": "anonymized",
+        "placeholder": "[PERSON_1]",
+        "context_snippet": "...ache der Antragstellerin Frau [PERSON_1], geboren am 14.05.1981, wohnh...",
+        "reviewer": null,
+        "review_decision": null
+      },
+      {
+        "timestamp": "2026-04-17T22:57:56.778021+00:00",
+        "document_id": "522db98e-3dbe-43bb-bc7e-c53f86d459dc",
+        "entity_word": "14.05.1981",
+        "entity_group": "DATEOFBIRTH",
+        "confidence": 0.9999935030937195,
+        "source_layer": "ensemble",
+        "action": "anonymized",
+        "placeholder": "[DATEOFBIRTH_1]",
+        "context_snippet": "...grid Falschnamerl, geboren am [DATEOFBIRTH_1], wohnhaft Donaufelder Straße ...",
+        "reviewer": null,
+        "review_decision": null
+      },
+      {
+        "timestamp": "2026-04-17T22:57:56.778021+00:00",
+        "document_id": "522db98e-3dbe-43bb-bc7e-c53f86d459dc",
+        "entity_word": "Donaufelder Straße 247, 1220 Wien",
+        "entity_group": "ORT",
+        "confidence": 1.0,
+        "source_layer": "ensemble",
+        "action": "anonymized",
+        "placeholder": "[ORT_1]",
+        "context_snippet": "...boren am 14.05.1981, wohnhaft [ORT_1], Sozialversicherungsnummer 10...",
+        "reviewer": null,
+        "review_decision": null
+      },
+      {
+        "timestamp": "2026-04-17T22:57:56.778021+00:00",
+        "document_id": "522db98e-3dbe-43bb-bc7e-c53f86d459dc",
+        "entity_word": "1001 140288",
+        "entity_group": "SVNR",
+        "confidence": 1.0,
+        "source_layer": "ensemble",
+        "action": "anonymized",
+        "placeholder": "[SVNR_1]",
+        "context_snippet": "...en, Sozialversicherungsnummer [SVNR_1], ergeht folgender Bescheid: D...",
+        "reviewer": null,
+        "review_decision": null
+      },
+      {
+        "timestamp": "2026-04-17T22:57:56.778021+00:00",
+        "document_id": "522db98e-3dbe-43bb-bc7e-c53f86d459dc",
+        "entity_word": "Mag.a Roswitha Erfunderl",
+        "entity_group": "SURNAME",
+        "confidence": 0.9999999403953552,
+        "source_layer": "ensemble",
+        "action": "anonymized",
+        "placeholder": "[SURNAME_1]",
+        "context_snippet": "...e zuständige Sachbearbeiterin [SURNAME_1] unter der Adresse roswitha.er...",
+        "reviewer": null,
+        "review_decision": null
+      },
+      {
+        "timestamp": "2026-04-17T22:57:56.778021+00:00",
+        "document_id": "522db98e-3dbe-43bb-bc7e-c53f86d459dc",
+        "entity_word": "roswitha.erfunderl@bka.gv.at",
+        "entity_group": "EMAIL",
+        "confidence": 0.9999998807907104,
+        "source_layer": "ensemble",
+        "action": "anonymized",
+        "placeholder": "[EMAIL_1]",
+        "context_snippet": "...a Erfunderl unter der Adresse [EMAIL_1] zur Verfügung....",
+        "reviewer": null,
+        "review_decision": null
+      }
+    ],
+    "document_id": "522db98e-3dbe-43bb-bc7e-c53f86d459dc"
+  }
+}

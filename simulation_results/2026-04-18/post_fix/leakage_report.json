@@ -1,0 +1,257 @@
+{
+  "bka-ifg-001-bescheid-verfassungsdienst__govgpt": {
+    "doc_id": "bka-ifg-001-bescheid-verfassungsdienst",
+    "channel": "govgpt",
+    "regex_leak_count": 0,
+    "gt_verbatim_leak_count": 0,
+    "max_severity": "NONE",
+    "leaks": []
+  },
+  "bka-ifg-001-bescheid-verfassungsdienst__ifg": {
+    "doc_id": "bka-ifg-001-bescheid-verfassungsdienst",
+    "channel": "ifg",
+    "regex_leak_count": 0,
+    "gt_verbatim_leak_count": 0,
+    "max_severity": "NONE",
+    "leaks": []
+  },
+  "bka-ifg-001-bescheid-verfassungsdienst__kapa": {
+    "doc_id": "bka-ifg-001-bescheid-verfassungsdienst",
+    "channel": "kapa",
+    "regex_leak_count": 0,
+    "gt_verbatim_leak_count": 0,
+    "max_severity": "NONE",
+    "leaks": []
+  },
+  "bka-ifg-002-ministerratsvortrag__govgpt": {
+    "doc_id": "bka-ifg-002-ministerratsvortrag",
+    "channel": "govgpt",
+    "regex_leak_count": 0,
+    "gt_verbatim_leak_count": 2,
+    "max_severity": "MEDIUM",
+    "leaks": [
+      {
+        "type": "ORG",
+        "verbatim": true,
+        "severity": "MEDIUM",
+        "snippet": "<GT value of length 30 present in output>",
+        "value_length": 30,
+        "detector": "ground-truth-verbatim"
+      },
+      {
+        "type": "ORG",
+        "verbatim": true,
+        "severity": "MEDIUM",
+        "snippet": "<GT value of length 29 present in output>",
+        "value_length": 29,
+        "detector": "ground-truth-verbatim"
+      }
+    ]
+  },
+  "bka-ifg-002-ministerratsvortrag__ifg": {
+    "doc_id": "bka-ifg-002-ministerratsvortrag",
+    "channel": "ifg",
+    "regex_leak_count": 0,
+    "gt_verbatim_leak_count": 2,
+    "max_severity": "HIGH",
+    "leaks": [
+      {
+        "type": "ORG",
+        "verbatim": true,
+        "severity": "HIGH",
+        "snippet": "<GT value of length 30 present in output>",
+        "value_length": 30,
+        "detector": "ground-truth-verbatim"
+      },
+      {
+        "type": "ORG",
+        "verbatim": true,
+        "severity": "HIGH",
+        "snippet": "<GT value of length 29 present in output>",
+        "value_length": 29,
+        "detector": "ground-truth-verbatim"
+      }
+    ]
+  },
+  "bka-ifg-002-ministerratsvortrag__kapa": {
+    "doc_id": "bka-ifg-002-ministerratsvortrag",
+    "channel": "kapa",
+    "regex_leak_count": 0,
+    "gt_verbatim_leak_count": 2,
+    "max_severity": "MEDIUM",
+    "leaks": [
+      {
+        "type": "ORG",
+        "verbatim": true,
+        "severity": "MEDIUM",
+        "snippet": "<GT value of length 30 present in output>",
+        "value_length": 30,
+        "detector": "ground-truth-verbatim"
+      },
+      {
+        "type": "ORG",
+        "verbatim": true,
+        "severity": "MEDIUM",
+        "snippet": "<GT value of length 29 present in output>",
+        "value_length": 29,
+        "detector": "ground-truth-verbatim"
+      }
+    ]
+  },
+  "bka-ifg-003-buergeranfrage-antwort__govgpt": {
+    "doc_id": "bka-ifg-003-buergeranfrage-antwort",
+    "channel": "govgpt",
+    "regex_leak_count": 0,
+    "gt_verbatim_leak_count": 0,
+    "max_severity": "NONE",
+    "leaks": []
+  },
+  "bka-ifg-003-buergeranfrage-antwort__ifg": {
+    "doc_id": "bka-ifg-003-buergeranfrage-antwort",
+    "channel": "ifg",
+    "regex_leak_count": 0,
+    "gt_verbatim_leak_count": 0,
+    "max_severity": "NONE",
+    "leaks": []
+  },
+  "bka-ifg-003-buergeranfrage-antwort__kapa": {
+    "doc_id": "bka-ifg-003-buergeranfrage-antwort",
+    "channel": "kapa",
+    "regex_leak_count": 0,
+    "gt_verbatim_leak_count": 0,
+    "max_severity": "NONE",
+    "leaks": []
+  },
+  "bka-ifg-004-interministerielle-mitteilung__govgpt": {
+    "doc_id": "bka-ifg-004-interministerielle-mitteilung",
+    "channel": "govgpt",
+    "regex_leak_count": 0,
+    "gt_verbatim_leak_count": 2,
+    "max_severity": "MEDIUM",
+    "leaks": [
+      {
+        "type": "ORG",
+        "verbatim": true,
+        "severity": "MEDIUM",
+        "snippet": "<GT value of length 29 present in output>",
+        "value_length": 29,
+        "detector": "ground-truth-verbatim"
+      },
+      {
+        "type": "ORG",
+        "verbatim": true,
+        "severity": "MEDIUM",
+        "snippet": "<GT value of length 16 present in output>",
+        "value_length": 16,
+        "detector": "ground-truth-verbatim"
+      }
+    ]
+  },
+  "bka-ifg-004-interministerielle-mitteilung__ifg": {
+    "doc_id": "bka-ifg-004-interministerielle-mitteilung",
+    "channel": "ifg",
+    "regex_leak_count": 0,
+    "gt_verbatim_leak_count": 2,
+    "max_severity": "HIGH",
+    "leaks": [
+      {
+        "type": "ORG",
+        "verbatim": true,
+        "severity": "HIGH",
+        "snippet": "<GT value of length 29 present in output>",
+        "value_length": 29,
+        "detector": "ground-truth-verbatim"
+      },
+      {
+        "type": "ORG",
+        "verbatim": true,
+        "severity": "HIGH",
+        "snippet": "<GT value of length 16 present in output>",
+        "value_length": 16,
+        "detector": "ground-truth-verbatim"
+      }
+    ]
+  },
+  "bka-ifg-004-interministerielle-mitteilung__kapa": {
+    "doc_id": "bka-ifg-004-interministerielle-mitteilung",
+    "channel": "kapa",
+    "regex_leak_count": 0,
+    "gt_verbatim_leak_count": 2,
+    "max_severity": "MEDIUM",
+    "leaks": [
+      {
+        "type": "ORG",
+        "verbatim": true,
+        "severity": "MEDIUM",
+        "snippet": "<GT value of length 29 present in output>",
+        "value_length": 29,
+        "detector": "ground-truth-verbatim"
+      },
+      {
+        "type": "ORG",
+        "verbatim": true,
+        "severity": "MEDIUM",
+        "snippet": "<GT value of length 16 present in output>",
+        "value_length": 16,
+        "detector": "ground-truth-verbatim"
+      }
+    ]
+  },
+  "bka-ifg-005-parlamentarische-anfrage__govgpt": {
+    "doc_id": "bka-ifg-005-parlamentarische-anfrage",
+    "channel": "govgpt",
+    "regex_leak_count": 0,
+    "gt_verbatim_leak_count": 1,
+    "max_severity": "MEDIUM",
+    "leaks": [
+      {
+        "type": "ORG",
+        "verbatim": true,
+        "severity": "MEDIUM",
+        "snippet": "<GT value of length 13 present in output>",
+        "value_length": 13,
+        "detector": "ground-truth-verbatim"
+      }
+    ]
+  },
+  "bka-ifg-005-parlamentarische-anfrage__ifg": {
+    "doc_id": "bka-ifg-005-parlamentarische-anfrage",
+    "channel": "ifg",
+    "regex_leak_count": 0,
+    "gt_verbatim_leak_count": 1,
+    "max_severity": "HIGH",
+    "leaks": [
+      {
+        "type": "ORG",
+        "verbatim": true,
+        "severity": "HIGH",
+        "snippet": "<GT value of length 13 present in output>",
+        "value_length": 13,
+        "detector": "ground-truth-verbatim"
+      }
+    ]
+  },
+  "bka-ifg-005-parlamentarische-anfrage__kapa": {
+    "doc_id": "bka-ifg-005-parlamentarische-anfrage",
+    "channel": "kapa",
+    "regex_leak_count": 0,
+    "gt_verbatim_leak_count": 1,
+    "max_severity": "MEDIUM",
+    "leaks": [
+      {
+        "type": "ORG",
+        "verbatim": true,
+        "severity": "MEDIUM",
+        "snippet": "<GT value of length 13 present in output>",
+        "value_length": 13,
+        "detector": "ground-truth-verbatim"
+      }
+    ]
+  },
+  "_overall": {
+    "CRITICAL": 0,
+    "HIGH": 3,
+    "MEDIUM": 6,
+    "NONE": 6
+  }
+}

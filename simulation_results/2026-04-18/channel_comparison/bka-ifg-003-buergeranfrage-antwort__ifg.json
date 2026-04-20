@@ -1,0 +1,176 @@
+{
+  "doc_id": "bka-ifg-003-buergeranfrage-antwort",
+  "channel": "ifg",
+  "elapsed_s": 0.318,
+  "input_chars": 516,
+  "ground_truth_entity_count": 6,
+  "result": {
+    "text": "Antwortschreiben gem. § 8 IFG\n\nSehr geehrter Herr [GESCHWÄRZT:PERSON],\n\nbezugnehmend auf Ihre Anfrage vom [GESCHWÄRZT:GEBURTSDATUM], wohnhaft [GESCHWÄRZT:ORT], erreichbar unter [GESCHWÄRZT:TELEPHONENUM] oder [GESCHWÄRZT:EMAIL], übermitteln wir Ihnen die angeforderte Auskunft.\n\nDas von Ihnen gemeldete Fahrzeug mit Kennzeichen [GESCHWÄRZT:KFZ] wurde im aktuellen Verfahren erwähnt. Ihre Führerschein-Nummer [GESCHWÄRZT:DRIVERLICENSENUM] ist im Akt [GESCHWÄRZT:BIC]; weitere Daten werden nicht [GESCHWÄRZT:BIC].\n\nMit freundlichen Grüßen, das Bundeskanzleramt.",
+    "entities": [
+      {
+        "word": "[REDACTED]",
+        "entity_group": "PER",
+        "score": 1.0,
+        "start": 50,
+        "end": 67,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:PERSON]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "GEBURTSDATUM",
+        "score": 0.95,
+        "start": 104,
+        "end": 114,
+        "source": "regex",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:GEBURTSDATUM]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "LOC",
+        "score": 1.0,
+        "start": 125,
+        "end": 161,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:ORT]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "TELEPHONENUM",
+        "score": 0.9999991059303284,
+        "start": 180,
+        "end": 195,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:TELEPHONENUM]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "EMAIL",
+        "score": 0.9999930262565613,
+        "start": 201,
+        "end": 225,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:EMAIL]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "KFZ",
+        "score": 1.0,
+        "start": 326,
+        "end": 335,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:KFZ]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "DRIVERLICENSENUM",
+        "score": 0.990511417388916,
+        "start": 399,
+        "end": 407,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:DRIVERLICENSENUM]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "BIC",
+        "score": 0.55,
+        "start": 419,
+        "end": 427,
+        "source": "presidio_compat",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:BIC]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "BIC",
+        "score": 0.55,
+        "start": 456,
+        "end": 467,
+        "source": "presidio_compat",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:BIC]",
+        "sources": []
+      }
+    ],
+    "channel": "ifg",
+    "quality_report": {
+      "passed": true,
+      "issues": [],
+      "leak_count": 0
+    },
+    "redaction_protocol": [
+      {
+        "category": "BIC",
+        "count": 2,
+        "min_confidence": 0.55,
+        "max_confidence": 0.55
+      },
+      {
+        "category": "DRIVERLICENSENUM",
+        "count": 1,
+        "min_confidence": 0.990511417388916,
+        "max_confidence": 0.990511417388916
+      },
+      {
+        "category": "EMAIL",
+        "count": 1,
+        "min_confidence": 0.9999930262565613,
+        "max_confidence": 0.9999930262565613
+      },
+      {
+        "category": "GEBURTSDATUM",
+        "count": 1,
+        "min_confidence": 0.95,
+        "max_confidence": 0.95
+      },
+      {
+        "category": "KFZ",
+        "count": 1,
+        "min_confidence": 1.0,
+        "max_confidence": 1.0
+      },
+      {
+        "category": "ORT",
+        "count": 1,
+        "min_confidence": 1.0,
+        "max_confidence": 1.0
+      },
+      {
+        "category": "PERSON",
+        "count": 1,
+        "min_confidence": 1.0,
+        "max_confidence": 1.0
+      },
+      {
+        "category": "TELEPHONENUM",
+        "count": 1,
+        "min_confidence": 0.9999991059303284,
+        "max_confidence": 0.9999991059303284
+      }
+    ]
+  }
+}

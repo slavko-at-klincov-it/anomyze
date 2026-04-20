@@ -4,6 +4,63 @@ All notable changes are documented in this file.
 
 ## [Unreleased]
 
+### Phase D — Art. 9 Lexikon, BIC-Fix, BKA/IFG-Simulation
+
+#### Added
+- `anomyze/patterns/art9.py` — kuratierte österreichische Lexika für
+  DSGVO Art. 9 Kategorien `RELIGION` (anerkannte Kirchen und
+  Religionsgesellschaften + Alltagsformen), `POLITICAL` (Nationalrats-
+  parteien + Mitgliedschafts-/Wähler-Affiliationen) und `UNION`
+  (ÖGB + Teilgewerkschaften). Case-insensitive mit flexibler
+  Mehrwort-Matcher (Bindestriche, Leerzeichen, NBSP). `ETHNICITY`,
+  `SEXUAL_ORIENTATION`, `BIOMETRIC` bewusst nicht als Wortliste
+  aufgenommen — zu fehleranfällig.
+- `ATArt9Recognizer` in `anomyze/pipeline/recognizers/austrian.py` —
+  neuer Presidio-kompatibler Recognizer, der die Lexika auswertet
+  und pro Treffer den passenden Entity-Type (`RELIGION` /
+  `POLITICAL` / `UNION`) emittiert. Score 0.9. Zusammen mit IFG's
+  `BESONDERE_KATEGORIE`-Collapse und KAPA's `always_review_art9`
+  schließt das die von der Simulation gefundene Lücke, in der
+  `römisch-katholisch` unredigiert durch den IFG-Kanal rutschte.
+- `benchmarks/datasets/bka_ifg_simulation.json` — 5 synthetische
+  BKA-Dokumente (IFG-Bescheid, Ministerratsvortrag, Bürgeranfrage,
+  interministerielle Mitteilung, parlamentarische Anfrage) mit
+  prüfsummen-validen SVNR/IBAN/UID (via `stdnum`). Dient als
+  Regressionsbasis für die Art. 9 / Adress / Kontext-Recognizer-
+  Abdeckung.
+- `simulation_results/2026-04-18/verdict_report.md` — Vollständiger
+  BKA/IFG-Verdict-Report mit MUST/SHOULD/NICE-Matrix, Per-Entity-
+  Recall-Werten und expliziter Auflistung der noch zu behebenden
+  Gaps (Adresse, Führerschein, ZMR, Organisationen).
+
+#### Fixed
+- `ATBICRecognizer._is_valid_match` — das bisherige IGNORECASE-
+  Regex-Matching erlaubte deutschen Wörtern wie „Religion" oder
+  „Diagnose" durch die rein strukturelle `stdnum.bic.is_valid`-
+  Prüfung zu schlüpfen (die Buchstabenpaare GI/DI entsprechen
+  gültigen ISO-Länderkürzeln — Gibraltar/Dominikanische Republik).
+  Neue Zusatzbedingung: der Match muss bereits im Quelltext
+  vollständig uppercase sein. BIC-False-Positives im BKA-Korpus:
+  9 → 1. Kein Recall-Verlust bei echten BICs.
+
+#### Changed
+- `anomyze/pipeline/presidio_compat_layer.py` — `ATArt9Recognizer`
+  in den Default-Satz aufgenommen; `_ENTITY_TYPE_MAP` um die
+  Einträge `RELIGION`, `POLITICAL`, `UNION` erweitert (direkte
+  Passthrough-Mapping zum channel-intern erwarteten entity_group).
+- `anomyze/pipeline/recognizers/__init__.py` — `ATArt9Recognizer`
+  exportiert.
+
+#### Docs
+- README.md — neue Zeilen RELIGION/POLITIK/GEWERKSCHAFT in der
+  PII-Tabelle, `Art. 9 Lexikon` in der Stage-2c-Recognizer-Liste
+  der Pipeline-Übersicht, neue Sektion „Wann ist menschliche
+  Prüfung erforderlich?" mit den Recall-Werten aus der Simulation.
+- docs/architecture.md — `patterns/art9.py` in Package-Tree;
+  `ATArt9Recognizer` in der Recognizer-Liste.
+- docs/PROJECT-TODO.md — Art. 9 Lexikon und BKA/IFG-Simulation als
+  abgeschlossene Meilensteine markiert.
+
 ### Phase C — Docker Verification, Deploy Templates, Tokenizer Fix
 
 #### Added

@@ -1,0 +1,122 @@
+{
+  "doc_id": "bka-ifg-005-parlamentarische-anfrage",
+  "channel": "ifg",
+  "elapsed_s": 0.294,
+  "input_chars": 437,
+  "ground_truth_entity_count": 6,
+  "result": {
+    "text": "PARLAMENTARISCHE ANFRAGE\ngemäß § 90 Abs. 1 GOG-NR\n\nder Abgeordneten [GESCHWÄRZT:PERSON] und Genoss:innen an den Bundeskanzler betreffend das Verfahren zur Geschäftszahl [GESCHWÄRZT:AKTENZAHL] gegen die [GESCHWÄRZT:ORGANISATION].\n\nIm Rahmen der Erhebungen wurde [GESCHWÄRZT:PERSON] als Auskunftsperson herangezogen. Förderzahlungen erfolgten auf das Konto [GESCHWÄRZT:IBAN]. Wir [GESCHWÄRZT:BIC] um schriftliche Beantwortung gemäß § 91 GOG-NR.",
+    "entities": [
+      {
+        "word": "[REDACTED]",
+        "entity_group": "PER",
+        "score": 0.999994695186615,
+        "start": 68,
+        "end": 86,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:PERSON]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "AKTENZAHL",
+        "score": 1.0,
+        "start": 168,
+        "end": 183,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:AKTENZAHL]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "ORG",
+        "score": 0.9997873902320862,
+        "start": 194,
+        "end": 222,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:ORGANISATION]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "PER",
+        "score": 1.0,
+        "start": 256,
+        "end": 276,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:PERSON]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "IBAN",
+        "score": 1.0,
+        "start": 351,
+        "end": 375,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:IBAN]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "BIC",
+        "score": 0.55,
+        "start": 381,
+        "end": 389,
+        "source": "presidio_compat",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:BIC]",
+        "sources": []
+      }
+    ],
+    "channel": "ifg",
+    "quality_report": {
+      "passed": true,
+      "issues": [],
+      "leak_count": 0
+    },
+    "redaction_protocol": [
+      {
+        "category": "AKTENZAHL",
+        "count": 1,
+        "min_confidence": 1.0,
+        "max_confidence": 1.0
+      },
+      {
+        "category": "BIC",
+        "count": 1,
+        "min_confidence": 0.55,
+        "max_confidence": 0.55
+      },
+      {
+        "category": "IBAN",
+        "count": 1,
+        "min_confidence": 1.0,
+        "max_confidence": 1.0
+      },
+      {
+        "category": "ORGANISATION",
+        "count": 1,
+        "min_confidence": 0.9997873902320862,
+        "max_confidence": 0.9997873902320862
+      },
+      {
+        "category": "PERSON",
+        "count": 2,
+        "min_confidence": 0.999994695186615,
+        "max_confidence": 1.0
+      }
+    ]
+  }
+}

@@ -37,8 +37,11 @@ KI-generierter Output
 │  (gliner_layer.py)            │  zero-shot NER für AT-PII-Kategorien
 ├───────────────────────────────┤
 │  Stage 2c: Presidio-compat    │  Lokale AT-Recognizer (kein Presidio-Dep)
-│  (presidio_compat_layer.py)   │  SVNR, IBAN, KFZ, Firmenbuch, Reisepass,
-│                               │  Aktenzahl, AT-Namen
+│  (presidio_compat_layer.py)   │  SVNR, IBAN, UID, BIC, KFZ, Firmenbuch,
+│                               │  Reisepass, Aktenzahl, AT-Namen,
+│                               │  ICD-10, Führerschein, ZMR,
+│                               │  Gerichtsaktenzahl, Art. 9 Lexikon
+│                               │  (Religion/Politik/Gewerkschaft)
 └─────────┬─────────────────────┘
           ▼
 ┌───────────────────────────────┐
@@ -125,7 +128,9 @@ anomyze/
 │   ├── recognizers/            Presidio-kompatible Recognizer-Klassen
 │   │   ├── base.py             PatternRecognizer, Pattern, RecognizerResult
 │   │   └── austrian.py         ATSVNR, ATIBAN, ATKFZ, ATFirmenbuch,
-│   │                           ATPassport, ATAktenzahl, ATName
+│   │                           ATPassport, ATAktenzahl, ATName, ATUID,
+│   │                           ATBIC, ATICD10, ATFuehrerschein, ATZMR,
+│   │                           ATGerichtsaktenzahl, ATArt9
 │   └── utils.py                Entity-Utilities (Overlap, Cleaning)
 ├── channels/                   3-Kanal-Output
 │   ├── base.py                 Abstrakte Basis-Klasse
@@ -136,8 +141,10 @@ anomyze/
 │   └── mapping_store.py        Platzhalter ↔ Original Zuordnung
 ├── audit/
 │   └── logger.py               Audit-Trail Logging
-├── patterns/                   Modulare Regex-Pattern-Bibliothek
+├── patterns/                   Modulare Regex-/Lexikon-Bibliothek
 │   ├── addresses.py            Straße+Nr, PLZ+Ort
+│   ├── art9.py                 DSGVO Art. 9 Lexika: Religion,
+│   │                           politische Affiliation, Gewerkschaft
 │   ├── at_names.py             AT-Vornamen und -Nachnamen
 │   ├── blacklist.py            False-Positive-Filterung
 │   ├── company_context.py      Kontext-Patterns für unbekannte Firmen
@@ -145,9 +152,11 @@ anomyze/
 │   ├── documents.py            Reisepass, Personalausweis, Aktenzahl
 │   ├── email.py                E-Mail
 │   ├── financial.py            IBAN, SVNR, Steuernummer
+│   ├── healthcare.py           ICD-10-Chapter-Validierung
 │   ├── names.py                Titel+Name, Label+Name
 │   ├── phone.py                AT-Telefonnummern
-│   └── vehicles.py             KFZ-Kennzeichen (AT-Bezirkscodes)
+│   ├── vehicles.py             KFZ-Kennzeichen (AT-Bezirkscodes)
+│   └── whitelist.py            AT-Rechtstexte + Behördennamen
 ├── config/
 │   └── settings.py             Zentrale Konfiguration
 └── cli.py                      Kommandozeilen-Interface
@@ -190,6 +199,15 @@ Alle Modelle laufen 100 % lokal — kein Cloud-Call, kein API-Call nach außen. 
 | PERSONALAUSWEIS | AB123456CD | Regex (kontext-gesteuert) |
 | KFZ | W-34567B | Regex (AT-Bezirkscodes) |
 | TELEFON | +43 664 1234567 | Regex |
+| UID | ATU12345678 | AT-Recognizer + MOD-11 (stdnum) |
+| BIC | GIBAATWWXXX | AT-Recognizer + ISO-Länderprüfung + Uppercase-Gate |
+| HEALTH_DIAGNOSIS | F32.1 | AT-Recognizer (ICD-10, kontextgesteuert) |
+| RELIGION | römisch-katholisch, evangelisch A.B. | AT-Lexikon (art9.py) |
+| POLITICAL | ÖVP, SPÖ, FPÖ, NEOS, Grüne | AT-Lexikon (art9.py) |
+| UNION | ÖGB, GPA, vida, GÖD | AT-Lexikon (art9.py) |
+| FUEHRERSCHEIN | 87654321 | AT-Recognizer (kontextgesteuert) |
+| ZMR | 123 456 789 012 | AT-Recognizer (kontextgesteuert) |
+| GERICHTSAKTENZAHL | 3 Ob 123/45 | AT-Recognizer |
 | QUASI_ID | "der Beschwerdeführer aus Graz, geboren 1985" | Kontext (Kombinations-Check) |
 
 ## Ensemble-Merging

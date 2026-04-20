@@ -1,0 +1,151 @@
+{
+  "num_samples": 50,
+  "overall": {
+    "tp": 171,
+    "fp": 76,
+    "fn": 54,
+    "precision": 0.6923076923076923,
+    "recall": 0.76,
+    "f1": 0.7245762711864407
+  },
+  "by_category": {
+    "AKTENZAHL": {
+      "tp": 26,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "PER": {
+      "tp": 62,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "SVN": {
+      "tp": 25,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "IBAN": {
+      "tp": 25,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "LOC": {
+      "tp": 0,
+      "fp": 38,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "ADRESSE": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 38,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "KFZ": {
+      "tp": 9,
+      "fp": 4,
+      "fn": 4,
+      "precision": 0.6923076923076923,
+      "recall": 0.6923076923076923,
+      "f1": 0.6923076923076923
+    },
+    "UID": {
+      "tp": 12,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "EMAIL": {
+      "tp": 12,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "AUSTRIAN VAT ID": {
+      "tp": 0,
+      "fp": 11,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "ORG": {
+      "tp": 0,
+      "fp": 10,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "TELEPHONENUM": {
+      "tp": 0,
+      "fp": 12,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "TELEFON": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 12,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "BANK IDENTIFIER CODE": {
+      "tp": 0,
+      "fp": 1,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    }
+  },
+  "by_layer": {
+    "gliner": {
+      "tp": 1,
+      "fp": 12,
+      "fn": 224,
+      "precision": 0.07692307692307693,
+      "recall": 0.0044444444444444444,
+      "f1": 0.008403361344537815
+    },
+    "org": {
+      "tp": 0,
+      "fp": 10,
+      "fn": 225,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "ensemble": {
+      "tp": 170,
+      "fp": 54,
+      "fn": 55,
+      "precision": 0.7589285714285714,
+      "recall": 0.7555555555555555,
+      "f1": 0.7572383073496659
+    }
+  }
+}

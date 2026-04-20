@@ -1,0 +1,207 @@
+[
+  {
+    "id": "bka-ifg-001-bescheid-verfassungsdienst",
+    "text": "BESCHEID\n\nDes Bundeskanzleramts, Sektion BKA-Verfassungsdienst, betreffend den Antrag gemäß § 4 IFG vom 03.03.2026.\n\nGeschäftszahl: GZ 2026/0142-VD/3\nDatum: 18.04.2026\n\nIn der Verwaltungssache der Antragstellerin Frau Ingrid Falschnamerl, geboren am 14.05.1981, wohnhaft Donaufelder Straße 247, 1220 Wien, Sozialversicherungsnummer 1001 140288, ergeht folgender Bescheid: Dem Antrag auf Akteneinsicht in das Konvolut zur interministeriellen Abstimmung wird teilweise stattgegeben.\n\nFür Rückfragen steht die zuständige Sachbearbeiterin Mag.a Roswitha Erfunderl unter der Adresse roswitha.erfunderl@bka.gv.at zur Verfügung.",
+    "entities": [
+      {
+        "start": 41,
+        "end": 62,
+        "type": "ORG"
+      },
+      {
+        "start": 132,
+        "end": 149,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 218,
+        "end": 237,
+        "type": "PER"
+      },
+      {
+        "start": 271,
+        "end": 304,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 332,
+        "end": 343,
+        "type": "SVN"
+      },
+      {
+        "start": 541,
+        "end": 559,
+        "type": "PER"
+      },
+      {
+        "start": 578,
+        "end": 606,
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "bka-ifg-002-ministerratsvortrag",
+    "text": "VORTRAG AN DEN MINISTERRAT\n\nGeschäftszahl: GZ 2026/0089-MRV/1\nEingebracht von Bundeskanzler Karl Phantasie im Einvernehmen mit dem Bundesministerium für Finanzen und dem Bundesministerium für Inneres.\n\nGegenstand: Förderzuwendung an die Erfundene Forschungsstiftung GmbH, eingetragen unter der Firmenbuchnummer FN 482910 t, Auszahlung auf das Konto AT79 3000 6291 4697 2442. Die zentrale Melderegister-Zahl der Geschäftsführerin ist ZMR-Zahl 123 456 789 012. Verantwortlich gezeichnet: Sektionschefin Dr.in Brigitte Niemand.",
+    "entities": [
+      {
+        "start": 43,
+        "end": 61,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 78,
+        "end": 106,
+        "type": "PER"
+      },
+      {
+        "start": 131,
+        "end": 161,
+        "type": "ORG"
+      },
+      {
+        "start": 170,
+        "end": 199,
+        "type": "ORG"
+      },
+      {
+        "start": 237,
+        "end": 270,
+        "type": "ORG"
+      },
+      {
+        "start": 311,
+        "end": 322,
+        "type": "FIRMENBUCH"
+      },
+      {
+        "start": 349,
+        "end": 373,
+        "type": "IBAN"
+      },
+      {
+        "start": 442,
+        "end": 457,
+        "type": "ZMR"
+      },
+      {
+        "start": 501,
+        "end": 523,
+        "type": "PER"
+      }
+    ]
+  },
+  {
+    "id": "bka-ifg-003-buergeranfrage-antwort",
+    "text": "Antwortschreiben gem. § 8 IFG\n\nSehr geehrter Herr Hubert Niefürwahr,\n\nbezugnehmend auf Ihre Anfrage vom 02.04.2026, wohnhaft Mariahilfer Straße 318/14, 1150 Wien, erreichbar unter +43 660 1234567 oder h.niefuerwahr@example.at, übermitteln wir Ihnen die angeforderte Auskunft.\n\nDas von Ihnen gemeldete Fahrzeug mit Kennzeichen W-12345BX wurde im aktuellen Verfahren erwähnt. Ihre Führerschein-Nummer 87654321 ist im Akt vermerkt; weitere Daten werden nicht offengelegt.\n\nMit freundlichen Grüßen, das Bundeskanzleramt.",
+    "entities": [
+      {
+        "start": 50,
+        "end": 67,
+        "type": "PER"
+      },
+      {
+        "start": 125,
+        "end": 161,
+        "type": "ADRESSE"
+      },
+      {
+        "start": 180,
+        "end": 195,
+        "type": "TELEFON"
+      },
+      {
+        "start": 201,
+        "end": 225,
+        "type": "EMAIL"
+      },
+      {
+        "start": 326,
+        "end": 335,
+        "type": "KFZ"
+      },
+      {
+        "start": 399,
+        "end": 407,
+        "type": "FUEHRERSCHEIN"
+      }
+    ]
+  },
+  {
+    "id": "bka-ifg-004-interministerielle-mitteilung",
+    "text": "INTERMINISTERIELLE MITTEILUNG\n\nVom Bundesministerium für Inneres an das Bundeskanzleramt, Sektion Personal.\n\nBetrifft: Dienstunfähigkeit des Beamten Dr. Wolfgang Hirngespinst, UID-Nummer der bezugsauszahlenden Stelle ATU16990120, Bankverbindung BIC GIBAATWWXXX.\n\nAufgrund der ärztlich attestierten Diagnose F32.1 (mittelgradige depressive Episode) wird die vorzeitige Ruhestandsversetzung beantragt. Die Glaubensgemeinschaft des Beamten – Religion: römisch-katholisch – ist für die seelsorgerische Betreuung im Krankenstand vermerkt.",
+    "entities": [
+      {
+        "start": 35,
+        "end": 64,
+        "type": "ORG"
+      },
+      {
+        "start": 72,
+        "end": 88,
+        "type": "ORG"
+      },
+      {
+        "start": 149,
+        "end": 174,
+        "type": "PER"
+      },
+      {
+        "start": 217,
+        "end": 228,
+        "type": "UID"
+      },
+      {
+        "start": 249,
+        "end": 260,
+        "type": "BIC"
+      },
+      {
+        "start": 307,
+        "end": 312,
+        "type": "HEALTH_DIAGNOSIS"
+      },
+      {
+        "start": 449,
+        "end": 467,
+        "type": "RELIGION"
+      }
+    ]
+  },
+  {
+    "id": "bka-ifg-005-parlamentarische-anfrage",
+    "text": "PARLAMENTARISCHE ANFRAGE\ngemäß § 90 Abs. 1 GOG-NR\n\nder Abgeordneten Sabine Trugschluss und Genoss:innen an den Bundeskanzler betreffend das Verfahren zur Geschäftszahl Zl 2026/0312-IV gegen die Beispielhafte Beratungs GmbH.\n\nIm Rahmen der Erhebungen wurde Mag. Klaus Niegelebt als Auskunftsperson herangezogen. Förderzahlungen erfolgten auf das Konto AT23 7624 7973 5626 2552. Wir ersuchen um schriftliche Beantwortung gemäß § 91 GOG-NR.",
+    "entities": [
+      {
+        "start": 68,
+        "end": 86,
+        "type": "PER"
+      },
+      {
+        "start": 111,
+        "end": 124,
+        "type": "ORG"
+      },
+      {
+        "start": 168,
+        "end": 183,
+        "type": "AKTENZAHL"
+      },
+      {
+        "start": 194,
+        "end": 222,
+        "type": "ORG"
+      },
+      {
+        "start": 256,
+        "end": 276,
+        "type": "PER"
+      },
+      {
+        "start": 351,
+        "end": 375,
+        "type": "IBAN"
+      }
+    ]
+  }
+]

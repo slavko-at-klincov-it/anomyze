@@ -1,0 +1,223 @@
+{
+  "num_samples": 7,
+  "overall": {
+    "tp": 37,
+    "fp": 27,
+    "fn": 10,
+    "precision": 0.578125,
+    "recall": 0.7872340425531915,
+    "f1": 0.6666666666666667
+  },
+  "by_category": {
+    "AKTENZAHL": {
+      "tp": 6,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "PER": {
+      "tp": 11,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "KFZ": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "EMAIL": {
+      "tp": 7,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "SVN": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "TELEPHONENUM": {
+      "tp": 0,
+      "fp": 5,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "GEBURTSDATUM": {
+      "tp": 0,
+      "fp": 5,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "DATEOFBIRTH": {
+      "tp": 0,
+      "fp": 2,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "LOC": {
+      "tp": 0,
+      "fp": 5,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "ADRESSE": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 5,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "TELEFON": {
+      "tp": 0,
+      "fp": 1,
+      "fn": 5,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "FIRMENBUCH": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "ORG": {
+      "tp": 0,
+      "fp": 4,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "QUASI_ID": {
+      "tp": 0,
+      "fp": 1,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "REISEPASS": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "IBAN": {
+      "tp": 2,
+      "fp": 1,
+      "fn": 0,
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "f1": 0.8
+    },
+    "UID": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "BIC": {
+      "tp": 1,
+      "fp": 1,
+      "fn": 0,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6666666666666666
+    },
+    "AUSTRIAN VAT ID": {
+      "tp": 0,
+      "fp": 1,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "BANK IDENTIFIER CODE": {
+      "tp": 0,
+      "fp": 1,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    }
+  },
+  "by_layer": {
+    "org": {
+      "tp": 0,
+      "fp": 1,
+      "fn": 47,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "regex": {
+      "tp": 0,
+      "fp": 6,
+      "fn": 47,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "presidio_compat": {
+      "tp": 4,
+      "fp": 1,
+      "fn": 43,
+      "precision": 0.8,
+      "recall": 0.0851063829787234,
+      "f1": 0.15384615384615383
+    },
+    "quasi_id": {
+      "tp": 0,
+      "fp": 1,
+      "fn": 47,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "gliner": {
+      "tp": 1,
+      "fp": 4,
+      "fn": 46,
+      "precision": 0.2,
+      "recall": 0.02127659574468085,
+      "f1": 0.03846153846153846
+    },
+    "ensemble": {
+      "tp": 32,
+      "fp": 14,
+      "fn": 15,
+      "precision": 0.6956521739130435,
+      "recall": 0.6808510638297872,
+      "f1": 0.6881720430107526
+    }
+  }
+}

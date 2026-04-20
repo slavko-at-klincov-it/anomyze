@@ -1,0 +1,131 @@
+{
+  "doc_id": "bka-ifg-004-interministerielle-mitteilung",
+  "channel": "govgpt",
+  "elapsed_s": 0.347,
+  "input_chars": 533,
+  "ground_truth_entity_count": 7,
+  "result": {
+    "text": "INTERMINISTERIELLE MITTEILUNG\n\nVom Bundesministerium für Inneres an das Bundeskanzleramt, [ORGANISATION_1].\n\nBetrifft: Dienstunfähigkeit des Beamten [PERSON_1], [SVNR_1] der bezugsauszahlenden Stelle [UID_1], Bankverbindung [BIC_1].\n\nAufgrund der ärztlich attestierten Diagnose [GESUNDHEIT_1] (mittelgradige depressive Episode) wird die vorzeitige Ruhestandsversetzung beantragt. Die Glaubensgemeinschaft des Beamten - Religion: [RELIGION_1] - ist für die seelsorgerische Betreuung im Krankenstand vermerkt.",
+    "entities": [
+      {
+        "word": "Sektion Personal",
+        "entity_group": "ORG",
+        "score": 0.8588310480117798,
+        "start": 90,
+        "end": 106,
+        "source": "gliner",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[ORGANISATION_1]",
+        "sources": [
+          "gliner"
+        ]
+      },
+      {
+        "word": "Dr. Wolfgang Hirngespinst",
+        "entity_group": "PER",
+        "score": 1.0,
+        "start": 149,
+        "end": 174,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[PERSON_1]",
+        "sources": [
+          "gliner",
+          "org",
+          "pii",
+          "presidio_compat"
+        ]
+      },
+      {
+        "word": "UID-Nummer",
+        "entity_group": "SVN",
+        "score": 0.8596575260162354,
+        "start": 176,
+        "end": 186,
+        "source": "gliner",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[SVNR_1]",
+        "sources": [
+          "gliner"
+        ]
+      },
+      {
+        "word": "ATU16990120",
+        "entity_group": "UID",
+        "score": 1.0,
+        "start": 217,
+        "end": 228,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[UID_1]",
+        "sources": [
+          "gliner",
+          "presidio_compat"
+        ]
+      },
+      {
+        "word": "BIC GIBAATWWXXX",
+        "entity_group": "BIC",
+        "score": 0.9742157518863678,
+        "start": 245,
+        "end": 260,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[BIC_1]",
+        "sources": [
+          "gliner",
+          "presidio_compat"
+        ]
+      },
+      {
+        "word": "F32.1",
+        "entity_group": "HEALTH_DIAGNOSIS",
+        "score": 0.9,
+        "start": 307,
+        "end": 312,
+        "source": "presidio_compat",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESUNDHEIT_1]",
+        "sources": [
+          "presidio_compat"
+        ]
+      },
+      {
+        "word": "römisch-katholisch",
+        "entity_group": "RELIGION",
+        "score": 0.9,
+        "start": 449,
+        "end": 467,
+        "source": "presidio_compat",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[RELIGION_1]",
+        "sources": [
+          "presidio_compat"
+        ]
+      }
+    ],
+    "channel": "govgpt",
+    "quality_report": {
+      "passed": true,
+      "issues": [],
+      "leak_count": 0
+    },
+    "mapping": {
+      "[ORGANISATION_1]": "Sektion Personal",
+      "[PERSON_1]": "Dr. Wolfgang Hirngespinst",
+      "[SVNR_1]": "UID-Nummer",
+      "[UID_1]": "ATU16990120",
+      "[BIC_1]": "BIC GIBAATWWXXX",
+      "[GESUNDHEIT_1]": "F32.1",
+      "[RELIGION_1]": "römisch-katholisch"
+    },
+    "original_text": "INTERMINISTERIELLE MITTEILUNG\n\nVom Bundesministerium für Inneres an das Bundeskanzleramt, Sektion Personal.\n\nBetrifft: Dienstunfähigkeit des Beamten Dr. Wolfgang Hirngespinst, UID-Nummer der bezugsauszahlenden Stelle ATU16990120, Bankverbindung BIC GIBAATWWXXX.\n\nAufgrund der ärztlich attestierten Diagnose F32.1 (mittelgradige depressive Episode) wird die vorzeitige Ruhestandsversetzung beantragt. Die Glaubensgemeinschaft des Beamten – Religion: römisch-katholisch – ist für die seelsorgerische Betreuung im Krankenstand vermerkt."
+  }
+}

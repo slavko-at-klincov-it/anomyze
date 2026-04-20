@@ -1,0 +1,264 @@
+{
+  "doc_id": "bka-ifg-002-ministerratsvortrag",
+  "channel": "kapa",
+  "elapsed_s": 0.35,
+  "input_chars": 524,
+  "ground_truth_entity_count": 9,
+  "result": {
+    "text": "VORTRAG AN DEN [PRÜFEN:BIC_1]\n\nGeschäftszahl: [AKTENZAHL_1]\nEingebracht von [PERSON_1] im Einvernehmen mit dem Bundesministerium für Finanzen und dem Bundesministerium für Inneres.\n\nGegenstand: Förderzuwendung an die [ORGANISATION_1], eingetragen unter der Firmenbuchnummer [FIRMENBUCH_1], Auszahlung auf das Konto [IBAN_1]. Die zentrale Melderegister-Zahl der Geschäftsführerin ist [TAXNUM_1]. Verantwortlich gezeichnet: Sektionschefin [PERSON_2].",
+    "entities": [
+      {
+        "word": "MINISTERRAT",
+        "entity_group": "BIC",
+        "score": 0.55,
+        "start": 15,
+        "end": 26,
+        "source": "presidio_compat",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[PRÜFEN:BIC_1]",
+        "sources": [
+          "presidio_compat"
+        ]
+      },
+      {
+        "word": "GZ 2026/0089-MRV/1",
+        "entity_group": "AKTENZAHL",
+        "score": 1.0,
+        "start": 43,
+        "end": 61,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[AKTENZAHL_1]",
+        "sources": [
+          "presidio_compat",
+          "regex"
+        ]
+      },
+      {
+        "word": "Bundeskanzler Karl Phantasie",
+        "entity_group": "PER",
+        "score": 0.9999993443489075,
+        "start": 78,
+        "end": 106,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[PERSON_1]",
+        "sources": [
+          "gliner",
+          "org",
+          "presidio_compat",
+          "pii"
+        ]
+      },
+      {
+        "word": "Erfundene Forschungsstiftung GmbH",
+        "entity_group": "ORG",
+        "score": 0.9999933242797852,
+        "start": 237,
+        "end": 270,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[ORGANISATION_1]",
+        "sources": [
+          "org",
+          "gliner"
+        ]
+      },
+      {
+        "word": "FN 482910 t",
+        "entity_group": "FIRMENBUCH",
+        "score": 1.0,
+        "start": 311,
+        "end": 322,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[FIRMENBUCH_1]",
+        "sources": [
+          "gliner",
+          "presidio_compat"
+        ]
+      },
+      {
+        "word": "AT79 3000 6291 4697 2442",
+        "entity_group": "IBAN",
+        "score": 1.0,
+        "start": 349,
+        "end": 373,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[IBAN_1]",
+        "sources": [
+          "regex",
+          "gliner",
+          "presidio_compat"
+        ]
+      },
+      {
+        "word": "ZMR-Zahl 123 456 789 012",
+        "entity_group": "TAXNUM",
+        "score": 0.9985936284065247,
+        "start": 433,
+        "end": 457,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[TAXNUM_1]",
+        "sources": [
+          "gliner",
+          "pii",
+          "presidio_compat"
+        ]
+      },
+      {
+        "word": "Dr.in Brigitte Niemand",
+        "entity_group": "PER",
+        "score": 1.0,
+        "start": 501,
+        "end": 523,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[PERSON_2]",
+        "sources": [
+          "gliner",
+          "org",
+          "pii",
+          "presidio_compat"
+        ]
+      }
+    ],
+    "channel": "kapa",
+    "quality_report": {
+      "passed": true,
+      "issues": [],
+      "leak_count": 0
+    },
+    "mapping": {
+      "[PRÜFEN:BIC_1]": "MINISTERRAT",
+      "[AKTENZAHL_1]": "GZ 2026/0089-MRV/1",
+      "[PERSON_1]": "Bundeskanzler Karl Phantasie",
+      "[ORGANISATION_1]": "Erfundene Forschungsstiftung GmbH",
+      "[FIRMENBUCH_1]": "FN 482910 t",
+      "[IBAN_1]": "AT79 3000 6291 4697 2442",
+      "[TAXNUM_1]": "ZMR-Zahl 123 456 789 012",
+      "[PERSON_2]": "Dr.in Brigitte Niemand"
+    },
+    "original_text": "VORTRAG AN DEN MINISTERRAT\n\nGeschäftszahl: GZ 2026/0089-MRV/1\nEingebracht von Bundeskanzler Karl Phantasie im Einvernehmen mit dem Bundesministerium für Finanzen und dem Bundesministerium für Inneres.\n\nGegenstand: Förderzuwendung an die Erfundene Forschungsstiftung GmbH, eingetragen unter der Firmenbuchnummer FN 482910 t, Auszahlung auf das Konto AT79 3000 6291 4697 2442. Die zentrale Melderegister-Zahl der Geschäftsführerin ist ZMR-Zahl 123 456 789 012. Verantwortlich gezeichnet: Sektionschefin Dr.in Brigitte Niemand.",
+    "flagged_for_review": [
+      "[PRÜFEN:BIC_1]"
+    ],
+    "audit_entries": [
+      {
+        "timestamp": "2026-04-20T05:43:31.805439+00:00",
+        "document_id": "41c25175-df92-46b8-9e31-896bb7ccfa22",
+        "entity_word": "MINISTERRAT",
+        "entity_group": "BIC",
+        "confidence": 0.55,
+        "source_layer": "presidio_compat",
+        "action": "flagged_for_review",
+        "placeholder": "[PRÜFEN:BIC_1]",
+        "context_snippet": "...VORTRAG AN DEN [PRÜFEN:BIC_1]\n\nGeschäftszahl: GZ 2026/0089-...",
+        "reviewer": null,
+        "review_decision": null
+      },
+      {
+        "timestamp": "2026-04-20T05:43:31.805439+00:00",
+        "document_id": "41c25175-df92-46b8-9e31-896bb7ccfa22",
+        "entity_word": "GZ 2026/0089-MRV/1",
+        "entity_group": "AKTENZAHL",
+        "confidence": 1.0,
+        "source_layer": "ensemble",
+        "action": "anonymized",
+        "placeholder": "[AKTENZAHL_1]",
+        "context_snippet": "...N MINISTERRAT\n\nGeschäftszahl: [AKTENZAHL_1]\nEingebracht von Bundeskanzler...",
+        "reviewer": null,
+        "review_decision": null
+      },
+      {
+        "timestamp": "2026-04-20T05:43:31.805439+00:00",
+        "document_id": "41c25175-df92-46b8-9e31-896bb7ccfa22",
+        "entity_word": "Bundeskanzler Karl Phantasie",
+        "entity_group": "PERSON",
+        "confidence": 0.9999993443489075,
+        "source_layer": "ensemble",
+        "action": "anonymized",
+        "placeholder": "[PERSON_1]",
+        "context_snippet": "...26/0089-MRV/1\nEingebracht von [PERSON_1] im Einvernehmen mit dem Bunde...",
+        "reviewer": null,
+        "review_decision": null
+      },
+      {
+        "timestamp": "2026-04-20T05:43:31.805439+00:00",
+        "document_id": "41c25175-df92-46b8-9e31-896bb7ccfa22",
+        "entity_word": "Erfundene Forschungsstiftung GmbH",
+        "entity_group": "ORGANISATION",
+        "confidence": 0.9999933242797852,
+        "source_layer": "ensemble",
+        "action": "anonymized",
+        "placeholder": "[ORGANISATION_1]",
+        "context_snippet": "...stand: Förderzuwendung an die [ORGANISATION_1], eingetragen unter der Firmen...",
+        "reviewer": null,
+        "review_decision": null
+      },
+      {
+        "timestamp": "2026-04-20T05:43:31.805439+00:00",
+        "document_id": "41c25175-df92-46b8-9e31-896bb7ccfa22",
+        "entity_word": "FN 482910 t",
+        "entity_group": "FIRMENBUCH",
+        "confidence": 1.0,
+        "source_layer": "ensemble",
+        "action": "anonymized",
+        "placeholder": "[FIRMENBUCH_1]",
+        "context_snippet": "...en unter der Firmenbuchnummer [FIRMENBUCH_1], Auszahlung auf das Konto AT7...",
+        "reviewer": null,
+        "review_decision": null
+      },
+      {
+        "timestamp": "2026-04-20T05:43:31.805439+00:00",
+        "document_id": "41c25175-df92-46b8-9e31-896bb7ccfa22",
+        "entity_word": "AT79 3000 6291 4697 2442",
+        "entity_group": "IBAN",
+        "confidence": 1.0,
+        "source_layer": "ensemble",
+        "action": "anonymized",
+        "placeholder": "[IBAN_1]",
+        "context_snippet": "...0 t, Auszahlung auf das Konto [IBAN_1]. Die zentrale Melderegister-Z...",
+        "reviewer": null,
+        "review_decision": null
+      },
+      {
+        "timestamp": "2026-04-20T05:43:31.805439+00:00",
+        "document_id": "41c25175-df92-46b8-9e31-896bb7ccfa22",
+        "entity_word": "ZMR-Zahl 123 456 789 012",
+        "entity_group": "TAXNUM",
+        "confidence": 0.9985936284065247,
+        "source_layer": "ensemble",
+        "action": "anonymized",
+        "placeholder": "[TAXNUM_1]",
+        "context_snippet": "...ahl der Geschäftsführerin ist [TAXNUM_1]. Verantwortlich gezeichnet: S...",
+        "reviewer": null,
+        "review_decision": null
+      },
+      {
+        "timestamp": "2026-04-20T05:43:31.805439+00:00",
+        "document_id": "41c25175-df92-46b8-9e31-896bb7ccfa22",
+        "entity_word": "Dr.in Brigitte Niemand",
+        "entity_group": "PERSON",
+        "confidence": 1.0,
+        "source_layer": "ensemble",
+        "action": "anonymized",
+        "placeholder": "[PERSON_2]",
+        "context_snippet": "...ch gezeichnet: Sektionschefin [PERSON_2]....",
+        "reviewer": null,
+        "review_decision": null
+      }
+    ],
+    "document_id": "41c25175-df92-46b8-9e31-896bb7ccfa22"
+  }
+}

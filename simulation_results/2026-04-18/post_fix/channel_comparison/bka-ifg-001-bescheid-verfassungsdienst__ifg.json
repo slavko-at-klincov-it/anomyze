@@ -1,0 +1,206 @@
+{
+  "doc_id": "bka-ifg-001-bescheid-verfassungsdienst",
+  "channel": "ifg",
+  "elapsed_s": 0.377,
+  "input_chars": 621,
+  "ground_truth_entity_count": 7,
+  "result": {
+    "text": "BESCHEID\n\nDes [GESCHWÄRZT:ORGANISATION], [GESCHWÄRZT:ORGANISATION], betreffend den Antrag gemäß § 4 IFG vom [GESCHWÄRZT:GEBURTSDATUM].\n\nGeschäftszahl: [GESCHWÄRZT:AKTENZAHL]\nDatum: [GESCHWÄRZT:GEBURTSDATUM]\n\nIn der Verwaltungssache der Antragstellerin Frau [GESCHWÄRZT:PERSON], geboren am [GESCHWÄRZT:DATEOFBIRTH], wohnhaft [GESCHWÄRZT:ORT], Sozialversicherungsnummer [GESCHWÄRZT:SVNR], ergeht folgender Bescheid: Dem Antrag auf Akteneinsicht in das Konvolut zur interministeriellen Abstimmung wird teilweise stattgegeben.\n\nFür Rückfragen steht die zuständige Sachbearbeiterin [GESCHWÄRZT:SURNAME] unter der Adresse [GESCHWÄRZT:EMAIL] zur Verfügung.",
+    "entities": [
+      {
+        "word": "[REDACTED]",
+        "entity_group": "ORG",
+        "score": 0.9855068922042847,
+        "start": 14,
+        "end": 31,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:ORGANISATION]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "ORG",
+        "score": 0.9995793104171753,
+        "start": 33,
+        "end": 62,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:ORGANISATION]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "GEBURTSDATUM",
+        "score": 0.95,
+        "start": 104,
+        "end": 114,
+        "source": "regex",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:GEBURTSDATUM]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "AKTENZAHL",
+        "score": 1.0,
+        "start": 132,
+        "end": 149,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:AKTENZAHL]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "GEBURTSDATUM",
+        "score": 0.95,
+        "start": 157,
+        "end": 167,
+        "source": "regex",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:GEBURTSDATUM]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "PER",
+        "score": 1.0,
+        "start": 218,
+        "end": 237,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:PERSON]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "DATEOFBIRTH",
+        "score": 0.9999935030937195,
+        "start": 250,
+        "end": 260,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:DATEOFBIRTH]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "LOC",
+        "score": 1.0,
+        "start": 271,
+        "end": 304,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:ORT]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "SVN",
+        "score": 1.0,
+        "start": 332,
+        "end": 343,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:SVNR]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "SURNAME",
+        "score": 0.9999999403953552,
+        "start": 535,
+        "end": 559,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:SURNAME]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "EMAIL",
+        "score": 0.9999997019767761,
+        "start": 578,
+        "end": 606,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:EMAIL]",
+        "sources": []
+      }
+    ],
+    "channel": "ifg",
+    "quality_report": {
+      "passed": true,
+      "issues": [],
+      "leak_count": 0
+    },
+    "redaction_protocol": [
+      {
+        "category": "AKTENZAHL",
+        "count": 1,
+        "min_confidence": 1.0,
+        "max_confidence": 1.0
+      },
+      {
+        "category": "DATEOFBIRTH",
+        "count": 1,
+        "min_confidence": 0.9999935030937195,
+        "max_confidence": 0.9999935030937195
+      },
+      {
+        "category": "EMAIL",
+        "count": 1,
+        "min_confidence": 0.9999997019767761,
+        "max_confidence": 0.9999997019767761
+      },
+      {
+        "category": "GEBURTSDATUM",
+        "count": 2,
+        "min_confidence": 0.95,
+        "max_confidence": 0.95
+      },
+      {
+        "category": "ORGANISATION",
+        "count": 2,
+        "min_confidence": 0.9855068922042847,
+        "max_confidence": 0.9995793104171753
+      },
+      {
+        "category": "ORT",
+        "count": 1,
+        "min_confidence": 1.0,
+        "max_confidence": 1.0
+      },
+      {
+        "category": "PERSON",
+        "count": 1,
+        "min_confidence": 1.0,
+        "max_confidence": 1.0
+      },
+      {
+        "category": "SURNAME",
+        "count": 1,
+        "min_confidence": 0.9999999403953552,
+        "max_confidence": 0.9999999403953552
+      },
+      {
+        "category": "SVNR",
+        "count": 1,
+        "min_confidence": 1.0,
+        "max_confidence": 1.0
+      }
+    ]
+  }
+}

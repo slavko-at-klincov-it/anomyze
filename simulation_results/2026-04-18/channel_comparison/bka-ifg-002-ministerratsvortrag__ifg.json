@@ -1,0 +1,170 @@
+{
+  "doc_id": "bka-ifg-002-ministerratsvortrag",
+  "channel": "ifg",
+  "elapsed_s": 0.331,
+  "input_chars": 524,
+  "ground_truth_entity_count": 9,
+  "result": {
+    "text": "VORTRAG AN DEN [GESCHWÄRZT:BIC]\n\nGeschäftszahl: [GESCHWÄRZT:AKTENZAHL]\nEingebracht von [GESCHWÄRZT:PERSON] im Einvernehmen mit dem Bundesministerium für Finanzen und dem Bundesministerium für Inneres.\n\nGegenstand: Förderzuwendung an die [GESCHWÄRZT:ORGANISATION], [GESCHWÄRZT:BIC] unter der Firmenbuchnummer [GESCHWÄRZT:FIRMENBUCH], Auszahlung auf das Konto [GESCHWÄRZT:IBAN]. Die zentrale Melderegister-Zahl der Geschäftsführerin ist [GESCHWÄRZT:TAXNUM]. Verantwortlich gezeichnet: Sektionschefin [GESCHWÄRZT:PERSON].",
+    "entities": [
+      {
+        "word": "[REDACTED]",
+        "entity_group": "BIC",
+        "score": 0.55,
+        "start": 15,
+        "end": 26,
+        "source": "presidio_compat",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:BIC]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "AKTENZAHL",
+        "score": 1.0,
+        "start": 43,
+        "end": 61,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:AKTENZAHL]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "PER",
+        "score": 0.9999993443489075,
+        "start": 78,
+        "end": 106,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:PERSON]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "ORG",
+        "score": 0.9999933242797852,
+        "start": 237,
+        "end": 270,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:ORGANISATION]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "BIC",
+        "score": 0.55,
+        "start": 272,
+        "end": 283,
+        "source": "presidio_compat",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:BIC]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "FIRMENBUCH",
+        "score": 1.0,
+        "start": 311,
+        "end": 322,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:FIRMENBUCH]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "IBAN",
+        "score": 1.0,
+        "start": 349,
+        "end": 373,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:IBAN]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "TAXNUM",
+        "score": 0.9985936284065247,
+        "start": 433,
+        "end": 457,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:TAXNUM]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "PER",
+        "score": 1.0,
+        "start": 501,
+        "end": 523,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:PERSON]",
+        "sources": []
+      }
+    ],
+    "channel": "ifg",
+    "quality_report": {
+      "passed": true,
+      "issues": [],
+      "leak_count": 0
+    },
+    "redaction_protocol": [
+      {
+        "category": "AKTENZAHL",
+        "count": 1,
+        "min_confidence": 1.0,
+        "max_confidence": 1.0
+      },
+      {
+        "category": "BIC",
+        "count": 2,
+        "min_confidence": 0.55,
+        "max_confidence": 0.55
+      },
+      {
+        "category": "FIRMENBUCH",
+        "count": 1,
+        "min_confidence": 1.0,
+        "max_confidence": 1.0
+      },
+      {
+        "category": "IBAN",
+        "count": 1,
+        "min_confidence": 1.0,
+        "max_confidence": 1.0
+      },
+      {
+        "category": "ORGANISATION",
+        "count": 1,
+        "min_confidence": 0.9999933242797852,
+        "max_confidence": 0.9999933242797852
+      },
+      {
+        "category": "PERSON",
+        "count": 2,
+        "min_confidence": 0.9999993443489075,
+        "max_confidence": 1.0
+      },
+      {
+        "category": "TAXNUM",
+        "count": 1,
+        "min_confidence": 0.9985936284065247,
+        "max_confidence": 0.9985936284065247
+      }
+    ]
+  }
+}

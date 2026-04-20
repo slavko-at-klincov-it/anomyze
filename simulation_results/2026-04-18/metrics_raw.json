@@ -1,0 +1,1488 @@
+{
+  "pytest": {
+    "tests": 493,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "time_s": 382.297
+  },
+  "coverage": {
+    "percent_covered": 76.91,
+    "covered_lines": 1999,
+    "num_statements": 2599,
+    "missing_lines": 600
+  },
+  "benchmarks": {
+    "synthetic_at": {
+      "num_samples": 25,
+      "overall": {
+        "tp": 25,
+        "fp": 23,
+        "fn": 7,
+        "precision": 0.5208333333333334,
+        "recall": 0.78125,
+        "f1": 0.625
+      },
+      "by_category": {
+        "PER": {
+          "tp": 6,
+          "fp": 2,
+          "fn": 0,
+          "precision": 0.75,
+          "recall": 1.0,
+          "f1": 0.8571428571428571
+        },
+        "EMAIL": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "IBAN": {
+          "tp": 3,
+          "fp": 1,
+          "fn": 0,
+          "precision": 0.75,
+          "recall": 1.0,
+          "f1": 0.8571428571428571
+        },
+        "SVN": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "ORG": {
+          "tp": 0,
+          "fp": 7,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "GEBURTSDATUM": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "BIC": {
+          "tp": 0,
+          "fp": 3,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "TELEPHONENUM": {
+          "tp": 0,
+          "fp": 3,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "TELEFON": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 3,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "KFZ": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "AKTENZAHL": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "REISEPASS": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "FIRMENBUCH": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "ADRESSE": {
+          "tp": 0,
+          "fp": 2,
+          "fn": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "LOC": {
+          "tp": 0,
+          "fp": 4,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        }
+      },
+      "by_layer": {
+        "gliner": {
+          "tp": 1,
+          "fp": 10,
+          "fn": 31,
+          "precision": 0.09090909090909091,
+          "recall": 0.03125,
+          "f1": 0.046511627906976744
+        },
+        "presidio_compat": {
+          "tp": 3,
+          "fp": 3,
+          "fn": 29,
+          "precision": 0.5,
+          "recall": 0.09375,
+          "f1": 0.15789473684210525
+        },
+        "ensemble": {
+          "tp": 21,
+          "fp": 10,
+          "fn": 11,
+          "precision": 0.6774193548387096,
+          "recall": 0.65625,
+          "f1": 0.6666666666666667
+        }
+      }
+    },
+    "smoke_at": {
+      "num_samples": 50,
+      "overall": {
+        "tp": 171,
+        "fp": 101,
+        "fn": 54,
+        "precision": 0.6286764705882353,
+        "recall": 0.76,
+        "f1": 0.6881287726358148
+      },
+      "by_category": {
+        "AKTENZAHL": {
+          "tp": 26,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "PER": {
+          "tp": 62,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "SVN": {
+          "tp": 25,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "IBAN": {
+          "tp": 25,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "LOC": {
+          "tp": 0,
+          "fp": 38,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "BIC": {
+          "tp": 0,
+          "fp": 25,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "ADRESSE": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 38,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "KFZ": {
+          "tp": 9,
+          "fp": 4,
+          "fn": 4,
+          "precision": 0.6923076923076923,
+          "recall": 0.6923076923076923,
+          "f1": 0.6923076923076923
+        },
+        "UID": {
+          "tp": 12,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "EMAIL": {
+          "tp": 12,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "AUSTRIAN VAT ID": {
+          "tp": 0,
+          "fp": 11,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "ORG": {
+          "tp": 0,
+          "fp": 10,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "TELEPHONENUM": {
+          "tp": 0,
+          "fp": 12,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "TELEFON": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 12,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "BANK IDENTIFIER CODE": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        }
+      },
+      "by_layer": {
+        "ensemble": {
+          "tp": 170,
+          "fp": 54,
+          "fn": 55,
+          "precision": 0.7589285714285714,
+          "recall": 0.7555555555555555,
+          "f1": 0.7572383073496659
+        },
+        "presidio_compat": {
+          "tp": 0,
+          "fp": 25,
+          "fn": 225,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "gliner": {
+          "tp": 1,
+          "fp": 12,
+          "fn": 224,
+          "precision": 0.07692307692307693,
+          "recall": 0.0044444444444444444,
+          "f1": 0.008403361344537815
+        },
+        "org": {
+          "tp": 0,
+          "fp": 10,
+          "fn": 225,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        }
+      }
+    },
+    "realistic_at": {
+      "num_samples": 7,
+      "overall": {
+        "tp": 37,
+        "fp": 33,
+        "fn": 10,
+        "precision": 0.5285714285714286,
+        "recall": 0.7872340425531915,
+        "f1": 0.6324786324786325
+      },
+      "by_category": {
+        "AKTENZAHL": {
+          "tp": 6,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "PER": {
+          "tp": 11,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "KFZ": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "EMAIL": {
+          "tp": 7,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "SVN": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "TELEPHONENUM": {
+          "tp": 0,
+          "fp": 5,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "GEBURTSDATUM": {
+          "tp": 0,
+          "fp": 5,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "DATEOFBIRTH": {
+          "tp": 0,
+          "fp": 2,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "LOC": {
+          "tp": 0,
+          "fp": 5,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "ADRESSE": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 5,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "TELEFON": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 5,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "FIRMENBUCH": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "ORG": {
+          "tp": 0,
+          "fp": 4,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "BIC": {
+          "tp": 1,
+          "fp": 7,
+          "fn": 0,
+          "precision": 0.125,
+          "recall": 1.0,
+          "f1": 0.2222222222222222
+        },
+        "QUASI_ID": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "REISEPASS": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "IBAN": {
+          "tp": 2,
+          "fp": 1,
+          "fn": 0,
+          "precision": 0.6666666666666666,
+          "recall": 1.0,
+          "f1": 0.8
+        },
+        "UID": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "AUSTRIAN VAT ID": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "BANK IDENTIFIER CODE": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        }
+      },
+      "by_layer": {
+        "org": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 47,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "regex": {
+          "tp": 0,
+          "fp": 6,
+          "fn": 47,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "gliner": {
+          "tp": 1,
+          "fp": 4,
+          "fn": 46,
+          "precision": 0.2,
+          "recall": 0.02127659574468085,
+          "f1": 0.03846153846153846
+        },
+        "ensemble": {
+          "tp": 32,
+          "fp": 14,
+          "fn": 15,
+          "precision": 0.6956521739130435,
+          "recall": 0.6808510638297872,
+          "f1": 0.6881720430107526
+        },
+        "quasi_id": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 47,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "presidio_compat": {
+          "tp": 4,
+          "fp": 7,
+          "fn": 43,
+          "precision": 0.36363636363636365,
+          "recall": 0.0851063829787234,
+          "f1": 0.13793103448275862
+        }
+      }
+    },
+    "bka_ifg": {
+      "num_samples": 5,
+      "overall": {
+        "tp": 23,
+        "fp": 22,
+        "fn": 12,
+        "precision": 0.5111111111111111,
+        "recall": 0.6571428571428571,
+        "f1": 0.575
+      },
+      "by_category": {
+        "AKTENZAHL": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "PER": {
+          "tp": 7,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.875,
+          "f1": 0.9333333333333333
+        },
+        "SVN": {
+          "tp": 1,
+          "fp": 1,
+          "fn": 0,
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666
+        },
+        "EMAIL": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "ORG": {
+          "tp": 3,
+          "fp": 2,
+          "fn": 5,
+          "precision": 0.6,
+          "recall": 0.375,
+          "f1": 0.4615384615384615
+        },
+        "GEBURTSDATUM": {
+          "tp": 0,
+          "fp": 3,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "DATEOFBIRTH": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "LOC": {
+          "tp": 0,
+          "fp": 2,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "SURNAME": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "ADRESSE": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "FIRMENBUCH": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "IBAN": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "BIC": {
+          "tp": 1,
+          "fp": 9,
+          "fn": 0,
+          "precision": 0.1,
+          "recall": 1.0,
+          "f1": 0.18181818181818182
+        },
+        "TAXNUM": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "ZMR": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "KFZ": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "TELEPHONENUM": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "DRIVERLICENSENUM": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "TELEFON": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "FUEHRERSCHEIN": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "UID": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "HEALTH_DIAGNOSIS": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "RELIGION": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        }
+      },
+      "by_layer": {
+        "regex": {
+          "tp": 0,
+          "fp": 3,
+          "fn": 35,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "ensemble": {
+          "tp": 22,
+          "fp": 8,
+          "fn": 13,
+          "precision": 0.7333333333333333,
+          "recall": 0.6285714285714286,
+          "f1": 0.6769230769230768
+        },
+        "presidio_compat": {
+          "tp": 1,
+          "fp": 9,
+          "fn": 34,
+          "precision": 0.1,
+          "recall": 0.02857142857142857,
+          "f1": 0.04444444444444444
+        },
+        "gliner": {
+          "tp": 0,
+          "fp": 2,
+          "fn": 35,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        }
+      }
+    }
+  },
+  "channel_comparison": [
+    {
+      "doc_id": "bka-ifg-001-bescheid-verfassungsdienst",
+      "channel": "govgpt",
+      "elapsed_s": 0.543,
+      "input_chars": 621,
+      "ground_truth_entities": 7,
+      "detected_entities": 11,
+      "mapping_size": 11,
+      "redaction_protocol": [],
+      "flagged_for_review": [],
+      "audit_entries_count": 0
+    },
+    {
+      "doc_id": "bka-ifg-001-bescheid-verfassungsdienst",
+      "channel": "ifg",
+      "elapsed_s": 0.365,
+      "input_chars": 621,
+      "ground_truth_entities": 7,
+      "detected_entities": 11,
+      "mapping_size": 0,
+      "redaction_protocol": [
+        {
+          "category": "AKTENZAHL",
+          "count": 1,
+          "min_confidence": 1.0,
+          "max_confidence": 1.0
+        },
+        {
+          "category": "DATEOFBIRTH",
+          "count": 1,
+          "min_confidence": 0.9999935030937195,
+          "max_confidence": 0.9999935030937195
+        },
+        {
+          "category": "EMAIL",
+          "count": 1,
+          "min_confidence": 0.9999998807907104,
+          "max_confidence": 0.9999998807907104
+        },
+        {
+          "category": "GEBURTSDATUM",
+          "count": 2,
+          "min_confidence": 0.95,
+          "max_confidence": 0.95
+        },
+        {
+          "category": "ORGANISATION",
+          "count": 2,
+          "min_confidence": 0.9855068922042847,
+          "max_confidence": 0.9995793104171753
+        },
+        {
+          "category": "ORT",
+          "count": 1,
+          "min_confidence": 1.0,
+          "max_confidence": 1.0
+        },
+        {
+          "category": "PERSON",
+          "count": 1,
+          "min_confidence": 1.0,
+          "max_confidence": 1.0
+        },
+        {
+          "category": "SURNAME",
+          "count": 1,
+          "min_confidence": 0.9999999403953552,
+          "max_confidence": 0.9999999403953552
+        },
+        {
+          "category": "SVNR",
+          "count": 1,
+          "min_confidence": 1.0,
+          "max_confidence": 1.0
+        }
+      ],
+      "flagged_for_review": [],
+      "audit_entries_count": 0
+    },
+    {
+      "doc_id": "bka-ifg-001-bescheid-verfassungsdienst",
+      "channel": "kapa",
+      "elapsed_s": 0.36,
+      "input_chars": 621,
+      "ground_truth_entities": 7,
+      "detected_entities": 11,
+      "mapping_size": 11,
+      "redaction_protocol": [],
+      "flagged_for_review": [],
+      "audit_entries_count": 11
+    },
+    {
+      "doc_id": "bka-ifg-002-ministerratsvortrag",
+      "channel": "govgpt",
+      "elapsed_s": 0.377,
+      "input_chars": 524,
+      "ground_truth_entities": 9,
+      "detected_entities": 9,
+      "mapping_size": 9,
+      "redaction_protocol": [],
+      "flagged_for_review": [],
+      "audit_entries_count": 0
+    },
+    {
+      "doc_id": "bka-ifg-002-ministerratsvortrag",
+      "channel": "ifg",
+      "elapsed_s": 0.331,
+      "input_chars": 524,
+      "ground_truth_entities": 9,
+      "detected_entities": 9,
+      "mapping_size": 0,
+      "redaction_protocol": [
+        {
+          "category": "AKTENZAHL",
+          "count": 1,
+          "min_confidence": 1.0,
+          "max_confidence": 1.0
+        },
+        {
+          "category": "BIC",
+          "count": 2,
+          "min_confidence": 0.55,
+          "max_confidence": 0.55
+        },
+        {
+          "category": "FIRMENBUCH",
+          "count": 1,
+          "min_confidence": 1.0,
+          "max_confidence": 1.0
+        },
+        {
+          "category": "IBAN",
+          "count": 1,
+          "min_confidence": 1.0,
+          "max_confidence": 1.0
+        },
+        {
+          "category": "ORGANISATION",
+          "count": 1,
+          "min_confidence": 0.9999933242797852,
+          "max_confidence": 0.9999933242797852
+        },
+        {
+          "category": "PERSON",
+          "count": 2,
+          "min_confidence": 0.9999993443489075,
+          "max_confidence": 1.0
+        },
+        {
+          "category": "TAXNUM",
+          "count": 1,
+          "min_confidence": 0.9985936284065247,
+          "max_confidence": 0.9985936284065247
+        }
+      ],
+      "flagged_for_review": [],
+      "audit_entries_count": 0
+    },
+    {
+      "doc_id": "bka-ifg-002-ministerratsvortrag",
+      "channel": "kapa",
+      "elapsed_s": 0.325,
+      "input_chars": 524,
+      "ground_truth_entities": 9,
+      "detected_entities": 9,
+      "mapping_size": 9,
+      "redaction_protocol": [],
+      "flagged_for_review": [
+        "[PRÜFEN:BIC_1]",
+        "[PRÜFEN:BIC_2]"
+      ],
+      "audit_entries_count": 9
+    },
+    {
+      "doc_id": "bka-ifg-003-buergeranfrage-antwort",
+      "channel": "govgpt",
+      "elapsed_s": 0.352,
+      "input_chars": 516,
+      "ground_truth_entities": 6,
+      "detected_entities": 9,
+      "mapping_size": 9,
+      "redaction_protocol": [],
+      "flagged_for_review": [],
+      "audit_entries_count": 0
+    },
+    {
+      "doc_id": "bka-ifg-003-buergeranfrage-antwort",
+      "channel": "ifg",
+      "elapsed_s": 0.318,
+      "input_chars": 516,
+      "ground_truth_entities": 6,
+      "detected_entities": 9,
+      "mapping_size": 0,
+      "redaction_protocol": [
+        {
+          "category": "BIC",
+          "count": 2,
+          "min_confidence": 0.55,
+          "max_confidence": 0.55
+        },
+        {
+          "category": "DRIVERLICENSENUM",
+          "count": 1,
+          "min_confidence": 0.990511417388916,
+          "max_confidence": 0.990511417388916
+        },
+        {
+          "category": "EMAIL",
+          "count": 1,
+          "min_confidence": 0.9999930262565613,
+          "max_confidence": 0.9999930262565613
+        },
+        {
+          "category": "GEBURTSDATUM",
+          "count": 1,
+          "min_confidence": 0.95,
+          "max_confidence": 0.95
+        },
+        {
+          "category": "KFZ",
+          "count": 1,
+          "min_confidence": 1.0,
+          "max_confidence": 1.0
+        },
+        {
+          "category": "ORT",
+          "count": 1,
+          "min_confidence": 1.0,
+          "max_confidence": 1.0
+        },
+        {
+          "category": "PERSON",
+          "count": 1,
+          "min_confidence": 1.0,
+          "max_confidence": 1.0
+        },
+        {
+          "category": "TELEPHONENUM",
+          "count": 1,
+          "min_confidence": 0.9999991059303284,
+          "max_confidence": 0.9999991059303284
+        }
+      ],
+      "flagged_for_review": [],
+      "audit_entries_count": 0
+    },
+    {
+      "doc_id": "bka-ifg-003-buergeranfrage-antwort",
+      "channel": "kapa",
+      "elapsed_s": 0.319,
+      "input_chars": 516,
+      "ground_truth_entities": 6,
+      "detected_entities": 9,
+      "mapping_size": 9,
+      "redaction_protocol": [],
+      "flagged_for_review": [
+        "[PRÜFEN:BIC_1]",
+        "[PRÜFEN:BIC_2]"
+      ],
+      "audit_entries_count": 9
+    },
+    {
+      "doc_id": "bka-ifg-004-interministerielle-mitteilung",
+      "channel": "govgpt",
+      "elapsed_s": 0.335,
+      "input_chars": 533,
+      "ground_truth_entities": 7,
+      "detected_entities": 10,
+      "mapping_size": 10,
+      "redaction_protocol": [],
+      "flagged_for_review": [],
+      "audit_entries_count": 0
+    },
+    {
+      "doc_id": "bka-ifg-004-interministerielle-mitteilung",
+      "channel": "ifg",
+      "elapsed_s": 0.317,
+      "input_chars": 533,
+      "ground_truth_entities": 7,
+      "detected_entities": 10,
+      "mapping_size": 0,
+      "redaction_protocol": [
+        {
+          "category": "BESONDERE_KATEGORIE",
+          "count": 1,
+          "min_confidence": 0.9,
+          "max_confidence": 0.9
+        },
+        {
+          "category": "BIC",
+          "count": 5,
+          "min_confidence": 0.55,
+          "max_confidence": 0.9742157518863678
+        },
+        {
+          "category": "ORGANISATION",
+          "count": 1,
+          "min_confidence": 0.8588310480117798,
+          "max_confidence": 0.8588310480117798
+        },
+        {
+          "category": "PERSON",
+          "count": 1,
+          "min_confidence": 1.0,
+          "max_confidence": 1.0
+        },
+        {
+          "category": "SVNR",
+          "count": 1,
+          "min_confidence": 0.8596575260162354,
+          "max_confidence": 0.8596575260162354
+        },
+        {
+          "category": "UID",
+          "count": 1,
+          "min_confidence": 1.0,
+          "max_confidence": 1.0
+        }
+      ],
+      "flagged_for_review": [],
+      "audit_entries_count": 0
+    },
+    {
+      "doc_id": "bka-ifg-004-interministerielle-mitteilung",
+      "channel": "kapa",
+      "elapsed_s": 0.317,
+      "input_chars": 533,
+      "ground_truth_entities": 7,
+      "detected_entities": 10,
+      "mapping_size": 10,
+      "redaction_protocol": [],
+      "flagged_for_review": [
+        "[PRÜFEN:BIC_3]",
+        "[PRÜFEN:GESUNDHEIT_1]",
+        "[PRÜFEN:BIC_4]",
+        "[PRÜFEN:BIC_5]"
+      ],
+      "audit_entries_count": 10
+    },
+    {
+      "doc_id": "bka-ifg-005-parlamentarische-anfrage",
+      "channel": "govgpt",
+      "elapsed_s": 0.327,
+      "input_chars": 437,
+      "ground_truth_entities": 6,
+      "detected_entities": 6,
+      "mapping_size": 6,
+      "redaction_protocol": [],
+      "flagged_for_review": [],
+      "audit_entries_count": 0
+    },
+    {
+      "doc_id": "bka-ifg-005-parlamentarische-anfrage",
+      "channel": "ifg",
+      "elapsed_s": 0.294,
+      "input_chars": 437,
+      "ground_truth_entities": 6,
+      "detected_entities": 6,
+      "mapping_size": 0,
+      "redaction_protocol": [
+        {
+          "category": "AKTENZAHL",
+          "count": 1,
+          "min_confidence": 1.0,
+          "max_confidence": 1.0
+        },
+        {
+          "category": "BIC",
+          "count": 1,
+          "min_confidence": 0.55,
+          "max_confidence": 0.55
+        },
+        {
+          "category": "IBAN",
+          "count": 1,
+          "min_confidence": 1.0,
+          "max_confidence": 1.0
+        },
+        {
+          "category": "ORGANISATION",
+          "count": 1,
+          "min_confidence": 0.9997873902320862,
+          "max_confidence": 0.9997873902320862
+        },
+        {
+          "category": "PERSON",
+          "count": 2,
+          "min_confidence": 0.999994695186615,
+          "max_confidence": 1.0
+        }
+      ],
+      "flagged_for_review": [],
+      "audit_entries_count": 0
+    },
+    {
+      "doc_id": "bka-ifg-005-parlamentarische-anfrage",
+      "channel": "kapa",
+      "elapsed_s": 0.282,
+      "input_chars": 437,
+      "ground_truth_entities": 6,
+      "detected_entities": 6,
+      "mapping_size": 6,
+      "redaction_protocol": [],
+      "flagged_for_review": [
+        "[PRÜFEN:BIC_1]"
+      ],
+      "audit_entries_count": 6
+    }
+  ],
+  "leakage": {
+    "bka-ifg-001-bescheid-verfassungsdienst__govgpt": {
+      "doc_id": "bka-ifg-001-bescheid-verfassungsdienst",
+      "channel": "govgpt",
+      "regex_leak_count": 0,
+      "gt_verbatim_leak_count": 0,
+      "max_severity": "NONE",
+      "leaks": []
+    },
+    "bka-ifg-001-bescheid-verfassungsdienst__ifg": {
+      "doc_id": "bka-ifg-001-bescheid-verfassungsdienst",
+      "channel": "ifg",
+      "regex_leak_count": 0,
+      "gt_verbatim_leak_count": 0,
+      "max_severity": "NONE",
+      "leaks": []
+    },
+    "bka-ifg-001-bescheid-verfassungsdienst__kapa": {
+      "doc_id": "bka-ifg-001-bescheid-verfassungsdienst",
+      "channel": "kapa",
+      "regex_leak_count": 0,
+      "gt_verbatim_leak_count": 0,
+      "max_severity": "NONE",
+      "leaks": []
+    },
+    "bka-ifg-002-ministerratsvortrag__govgpt": {
+      "doc_id": "bka-ifg-002-ministerratsvortrag",
+      "channel": "govgpt",
+      "regex_leak_count": 0,
+      "gt_verbatim_leak_count": 2,
+      "max_severity": "MEDIUM",
+      "leaks": [
+        {
+          "type": "ORG",
+          "verbatim": true,
+          "severity": "MEDIUM",
+          "snippet": "<GT value of length 30 present in output>",
+          "value_length": 30,
+          "detector": "ground-truth-verbatim"
+        },
+        {
+          "type": "ORG",
+          "verbatim": true,
+          "severity": "MEDIUM",
+          "snippet": "<GT value of length 29 present in output>",
+          "value_length": 29,
+          "detector": "ground-truth-verbatim"
+        }
+      ]
+    },
+    "bka-ifg-002-ministerratsvortrag__ifg": {
+      "doc_id": "bka-ifg-002-ministerratsvortrag",
+      "channel": "ifg",
+      "regex_leak_count": 0,
+      "gt_verbatim_leak_count": 2,
+      "max_severity": "HIGH",
+      "leaks": [
+        {
+          "type": "ORG",
+          "verbatim": true,
+          "severity": "HIGH",
+          "snippet": "<GT value of length 30 present in output>",
+          "value_length": 30,
+          "detector": "ground-truth-verbatim"
+        },
+        {
+          "type": "ORG",
+          "verbatim": true,
+          "severity": "HIGH",
+          "snippet": "<GT value of length 29 present in output>",
+          "value_length": 29,
+          "detector": "ground-truth-verbatim"
+        }
+      ]
+    },
+    "bka-ifg-002-ministerratsvortrag__kapa": {
+      "doc_id": "bka-ifg-002-ministerratsvortrag",
+      "channel": "kapa",
+      "regex_leak_count": 0,
+      "gt_verbatim_leak_count": 2,
+      "max_severity": "MEDIUM",
+      "leaks": [
+        {
+          "type": "ORG",
+          "verbatim": true,
+          "severity": "MEDIUM",
+          "snippet": "<GT value of length 30 present in output>",
+          "value_length": 30,
+          "detector": "ground-truth-verbatim"
+        },
+        {
+          "type": "ORG",
+          "verbatim": true,
+          "severity": "MEDIUM",
+          "snippet": "<GT value of length 29 present in output>",
+          "value_length": 29,
+          "detector": "ground-truth-verbatim"
+        }
+      ]
+    },
+    "bka-ifg-003-buergeranfrage-antwort__govgpt": {
+      "doc_id": "bka-ifg-003-buergeranfrage-antwort",
+      "channel": "govgpt",
+      "regex_leak_count": 0,
+      "gt_verbatim_leak_count": 0,
+      "max_severity": "NONE",
+      "leaks": []
+    },
+    "bka-ifg-003-buergeranfrage-antwort__ifg": {
+      "doc_id": "bka-ifg-003-buergeranfrage-antwort",
+      "channel": "ifg",
+      "regex_leak_count": 0,
+      "gt_verbatim_leak_count": 0,
+      "max_severity": "NONE",
+      "leaks": []
+    },
+    "bka-ifg-003-buergeranfrage-antwort__kapa": {
+      "doc_id": "bka-ifg-003-buergeranfrage-antwort",
+      "channel": "kapa",
+      "regex_leak_count": 0,
+      "gt_verbatim_leak_count": 0,
+      "max_severity": "NONE",
+      "leaks": []
+    },
+    "bka-ifg-004-interministerielle-mitteilung__govgpt": {
+      "doc_id": "bka-ifg-004-interministerielle-mitteilung",
+      "channel": "govgpt",
+      "regex_leak_count": 0,
+      "gt_verbatim_leak_count": 3,
+      "max_severity": "HIGH",
+      "leaks": [
+        {
+          "type": "ORG",
+          "verbatim": true,
+          "severity": "MEDIUM",
+          "snippet": "<GT value of length 29 present in output>",
+          "value_length": 29,
+          "detector": "ground-truth-verbatim"
+        },
+        {
+          "type": "ORG",
+          "verbatim": true,
+          "severity": "MEDIUM",
+          "snippet": "<GT value of length 16 present in output>",
+          "value_length": 16,
+          "detector": "ground-truth-verbatim"
+        },
+        {
+          "type": "RELIGION",
+          "verbatim": true,
+          "severity": "HIGH",
+          "snippet": "<GT value of length 18 present in output>",
+          "value_length": 18,
+          "detector": "ground-truth-verbatim"
+        }
+      ]
+    },
+    "bka-ifg-004-interministerielle-mitteilung__ifg": {
+      "doc_id": "bka-ifg-004-interministerielle-mitteilung",
+      "channel": "ifg",
+      "regex_leak_count": 0,
+      "gt_verbatim_leak_count": 3,
+      "max_severity": "CRITICAL",
+      "leaks": [
+        {
+          "type": "ORG",
+          "verbatim": true,
+          "severity": "HIGH",
+          "snippet": "<GT value of length 29 present in output>",
+          "value_length": 29,
+          "detector": "ground-truth-verbatim"
+        },
+        {
+          "type": "ORG",
+          "verbatim": true,
+          "severity": "HIGH",
+          "snippet": "<GT value of length 16 present in output>",
+          "value_length": 16,
+          "detector": "ground-truth-verbatim"
+        },
+        {
+          "type": "RELIGION",
+          "verbatim": true,
+          "severity": "CRITICAL",
+          "snippet": "<GT value of length 18 present in output>",
+          "value_length": 18,
+          "detector": "ground-truth-verbatim"
+        }
+      ]
+    },
+    "bka-ifg-004-interministerielle-mitteilung__kapa": {
+      "doc_id": "bka-ifg-004-interministerielle-mitteilung",
+      "channel": "kapa",
+      "regex_leak_count": 0,
+      "gt_verbatim_leak_count": 3,
+      "max_severity": "HIGH",
+      "leaks": [
+        {
+          "type": "ORG",
+          "verbatim": true,
+          "severity": "MEDIUM",
+          "snippet": "<GT value of length 29 present in output>",
+          "value_length": 29,
+          "detector": "ground-truth-verbatim"
+        },
+        {
+          "type": "ORG",
+          "verbatim": true,
+          "severity": "MEDIUM",
+          "snippet": "<GT value of length 16 present in output>",
+          "value_length": 16,
+          "detector": "ground-truth-verbatim"
+        },
+        {
+          "type": "RELIGION",
+          "verbatim": true,
+          "severity": "HIGH",
+          "snippet": "<GT value of length 18 present in output>",
+          "value_length": 18,
+          "detector": "ground-truth-verbatim"
+        }
+      ]
+    },
+    "bka-ifg-005-parlamentarische-anfrage__govgpt": {
+      "doc_id": "bka-ifg-005-parlamentarische-anfrage",
+      "channel": "govgpt",
+      "regex_leak_count": 0,
+      "gt_verbatim_leak_count": 1,
+      "max_severity": "MEDIUM",
+      "leaks": [
+        {
+          "type": "ORG",
+          "verbatim": true,
+          "severity": "MEDIUM",
+          "snippet": "<GT value of length 13 present in output>",
+          "value_length": 13,
+          "detector": "ground-truth-verbatim"
+        }
+      ]
+    },
+    "bka-ifg-005-parlamentarische-anfrage__ifg": {
+      "doc_id": "bka-ifg-005-parlamentarische-anfrage",
+      "channel": "ifg",
+      "regex_leak_count": 0,
+      "gt_verbatim_leak_count": 1,
+      "max_severity": "HIGH",
+      "leaks": [
+        {
+          "type": "ORG",
+          "verbatim": true,
+          "severity": "HIGH",
+          "snippet": "<GT value of length 13 present in output>",
+          "value_length": 13,
+          "detector": "ground-truth-verbatim"
+        }
+      ]
+    },
+    "bka-ifg-005-parlamentarische-anfrage__kapa": {
+      "doc_id": "bka-ifg-005-parlamentarische-anfrage",
+      "channel": "kapa",
+      "regex_leak_count": 0,
+      "gt_verbatim_leak_count": 1,
+      "max_severity": "MEDIUM",
+      "leaks": [
+        {
+          "type": "ORG",
+          "verbatim": true,
+          "severity": "MEDIUM",
+          "snippet": "<GT value of length 13 present in output>",
+          "value_length": 13,
+          "detector": "ground-truth-verbatim"
+        }
+      ]
+    },
+    "_overall": {
+      "CRITICAL": 1,
+      "HIGH": 4,
+      "MEDIUM": 4,
+      "NONE": 6
+    }
+  }
+}

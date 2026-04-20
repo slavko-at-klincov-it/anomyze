@@ -215,7 +215,7 @@ Stage 2: NER-Ensemble
     ├─ NER-Modell (Davlan/xlm-roberta-large-ner-hrl)
     └─ GLiNER Zero-Shot (urchade/gliner_large-v2.1, optional)
 Stage 2c: Presidio-kompatible AT-Recognizer (mit Checksum-Validierung)
-    └─ SVNR, IBAN, UID, BIC, KFZ, Firmenbuch, Reisepass, Führerschein, ZMR, Aktenzahl, Gerichtsaktenzeichen, ICD-10, AT-Namen
+    └─ SVNR, IBAN, UID, BIC, KFZ, Firmenbuch, Reisepass, Führerschein, ZMR, Aktenzahl, Gerichtsaktenzeichen, ICD-10, AT-Namen, Art. 9 Lexikon (Religion/Politik/Gewerkschaft)
 Ensemble-Merge (überlappende Spans + Konfidenz-Aggregation)
 Whitelist-Filter (AT-Gesetzestitel + Behördennamen bleiben im Output)
 Stage 3: Kontext/MLM (dbmdz/bert-base-german-cased)
@@ -247,6 +247,9 @@ Gefilterter Output verlässt das System
 | ZMR | 12-stellig (kontext-gesteuert) | AT-Recognizer |
 | GERICHTSAKTENZAHL | 3 Ob 123/45 | AT-Recognizer |
 | GESUNDHEIT (Art. 9) | ICD-10 Codes (F32.1 ...) | AT-Recognizer (kontext-gesteuert) |
+| RELIGION (Art. 9) | Glaubensbekenntnis (römisch-katholisch, evangelisch A.B., ...) | AT-Lexikon (patterns/art9.py) |
+| POLITIK (Art. 9) | Parteizugehörigkeit (ÖVP, SPÖ, FPÖ, NEOS, Grüne, ...) | AT-Lexikon (patterns/art9.py) |
+| GEWERKSCHAFT (Art. 9) | Mitgliedschaft (ÖGB, GPA, vida, GÖD, ...) | AT-Lexikon (patterns/art9.py) |
 | TELEFON | +43, 0043, 06xx | Regex |
 | KFZ | Bezirkscode-Ziffern-Buchstaben | Regex + AT-Recognizer |
 | AKTENZAHL | GZ/AZ/Zl. + Kürzel | Regex + AT-Recognizer |
@@ -264,6 +267,38 @@ Gefilterter Output verlässt das System
 | **GovGPT** | KI-generierte Antworten vor Weitergabe filtern | Ja (Mapping) | Nein |
 | **IFG** | KI-Outputs vor Veröffentlichung auf data.gv.at schwärzen | Nein | Schwärzungsprotokoll |
 | **KAPA** | KI-Rechercheergebnisse für parlamentarische Antworten filtern | Ja (Mapping) | Vollständiger Trail |
+
+## Wann ist menschliche Prüfung erforderlich?
+
+Anomyze ist ein **statistischer Filter** — keine 100 %-Garantie. Die BKA/IFG-Simulation gegen 5 synthetische österreichische Verwaltungsdokumente (2026-04-18, commit `4cf8bdd`, nach BIC-Fix + Art. 9 Lexikon) lieferte folgende Recall-Werte:
+
+| Entitätstyp | Recall | Zuverlässigkeit | Handlungsbedarf |
+|---|---|---|---|
+| SVNR, IBAN, UID, KFZ, E-Mail, Aktenzahl, Firmenbuch, ICD-10 | 1.00 | Sehr hoch (Prüfsummen-validiert) | Kein zusätzlicher Eingriff nötig |
+| Personennamen | 0.88 | Mittel–Hoch (NER + Namensliste + Phonetik) | Prüfung empfohlen bei seltenen/fremdsprachigen Namen |
+| RELIGION / POLITIK / GEWERKSCHAFT | 1.00 (Lexikon-Treffer) | Kuratiertes Lexikon (`art9.py`) | Manuell prüfen bei Termen außerhalb des Lexikons |
+| ADRESSE (Format `Straße Nr/Tür, PLZ Ort`) | 0.00 | Gering (Formatvarianten) | Immer manuell prüfen |
+| Führerschein-Nr. | 0.00 | Gering (kontextabhängig, 8-stellig) | Immer manuell prüfen |
+| ZMR-Zahl | 0.00 | Gering (kontextabhängig) | Immer manuell prüfen |
+| Organisationen (Ministerien, Behörden) | 0.38 | Gering (Behörden-Whitelist by design) | Policy-Entscheidung, ob Behördennamen im IFG-Output geschwärzt werden sollen |
+
+**Ehrliche Einordnung, keine Schönfärberei:**
+
+- **IFG-Kanal (öffentliche Publikation):** **Menschliche Prüfung vor jeder Veröffentlichung ist Pflicht.** Begründung: Recall-Lücken bei Adressen (0 %), Führerschein, ZMR sowie bei Personennamen außerhalb der Namensliste (~12 % Ausfallrate im Testkorpus). Die Zahlen basieren auf **N=5 synthetischen Dokumenten** — bei echten BKA-Dokumenten kann die Rate nach oben oder unten abweichen. Die tatsächliche Ausfallquote lässt sich **nur durch Tests gegen das reale Corpus** quantifizieren.
+- **KAPA-Kanal (parlamentarische Anfragen):** Human-in-the-Loop ist architektonisch vorgesehen — Entitäten unter Konfidenz-Schwelle 0,85 erhalten automatisch `[PRÜFEN:…]`, Art. 9-Kategorien werden unabhängig von der Konfidenz immer geflaggt (`ANOMYZE_ALWAYS_REVIEW_ART9=true`). Grenze dieser Automatik: **Was nicht erkannt wird, kann nicht geflaggt werden.** Für die oben mit Recall 0,00 ausgewiesenen Typen gilt auch hier: manuelle Kontrolle ist erforderlich.
+- **GovGPT-Kanal (intern):** Geringeres Risiko durch reversible Platzhalter und keine öffentliche Freigabe. Menschliche Kontrolle bleibt best practice, aber nicht zwingend vor jeder Antwort.
+
+**Was der Betreiber konkret noch tun muss:**
+
+1. **Tests gegen echte BKA-Dokumente durchführen**, um reale Recall-Raten zu bestimmen. Die Simulation ist eine Stichprobe von 5 Dokumenten und keine Garantie für das Produktivverhalten.
+2. **Sachbearbeiter:innen-Workflow** (z. B. Web-UI wie in [docs/end-to-end-process.md](docs/end-to-end-process.md) beschrieben) einrichten, in dem jedes IFG-Dokument vor Freigabe manuell geprüft wird.
+3. **Adresserkennung erweitern:** Das österreichische Format mit Stiege/Türnummer (`Schottenfeldgasse 29/3, 1070 Wien`) wird derzeit in `patterns/addresses.py` nur teilweise erkannt.
+4. **Kontextabhängige Recognizer robuster machen:** Führerschein-Nr. und ZMR-Zahl werden nur erkannt, wenn passende Schlüsselwörter nah genug stehen.
+5. **Art. 9 Lexikon pflegen:** `anomyze/patterns/art9.py` regelmäßig um neue Parteien, Glaubensgemeinschaften und Gewerkschaften ergänzen, wenn solche in Dokumenten auftauchen.
+6. **DSGVO-Compliance-Dokumente aktualisieren:** ROPA (Verarbeitungsverzeichnis) und DPIA insbesondere um den neuen Art. 9 Lexikon-Scan ergänzen — siehe [docs/compliance/](docs/compliance/).
+7. **Modell-Revisionen pinnen** (`ANOMYZE_PII_MODEL_REVISION`, `ANOMYZE_ORG_MODEL_REVISION`, …) für reproduzierbare Produktions-Deployments. Andernfalls ändert sich das Detection-Verhalten, sobald ein Modell auf HuggingFace aktualisiert wird.
+
+**Kurzfassung:** Anomyze deckt die formatbasierten Identifier (SVNR, IBAN, KFZ, Telefon, E-Mail, Aktenzahlen, ICD-10) zuverlässig ab. Bei allem anderen — Namen, Adressen, Organisationen, Art. 9-Termen außerhalb des Lexikons — gilt: **Der Mensch entscheidet am Ende, nicht die Maschine.**
 
 ## API-Endpunkte
 

@@ -1,0 +1,140 @@
+{
+  "doc_id": "bka-ifg-004-interministerielle-mitteilung",
+  "channel": "ifg",
+  "elapsed_s": 0.31,
+  "input_chars": 533,
+  "ground_truth_entity_count": 7,
+  "result": {
+    "text": "INTERMINISTERIELLE MITTEILUNG\n\nVom Bundesministerium für Inneres an das Bundeskanzleramt, [GESCHWÄRZT:ORGANISATION].\n\nBetrifft: Dienstunfähigkeit des Beamten [GESCHWÄRZT:PERSON], [GESCHWÄRZT:SVNR] der bezugsauszahlenden Stelle [GESCHWÄRZT:UID], Bankverbindung [GESCHWÄRZT:BIC].\n\nAufgrund der ärztlich attestierten Diagnose [GESCHWÄRZT:BESONDERE_KATEGORIE] (mittelgradige depressive Episode) wird die vorzeitige Ruhestandsversetzung beantragt. Die Glaubensgemeinschaft des Beamten - Religion: [GESCHWÄRZT:BESONDERE_KATEGORIE] - ist für die seelsorgerische Betreuung im Krankenstand vermerkt.",
+    "entities": [
+      {
+        "word": "[REDACTED]",
+        "entity_group": "ORG",
+        "score": 0.8588310480117798,
+        "start": 90,
+        "end": 106,
+        "source": "gliner",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:ORGANISATION]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "PER",
+        "score": 1.0,
+        "start": 149,
+        "end": 174,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:PERSON]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "SVN",
+        "score": 0.8596575260162354,
+        "start": 176,
+        "end": 186,
+        "source": "gliner",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:SVNR]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "UID",
+        "score": 1.0,
+        "start": 217,
+        "end": 228,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:UID]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "BIC",
+        "score": 0.9742157518863678,
+        "start": 245,
+        "end": 260,
+        "source": "ensemble",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:BIC]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "HEALTH_DIAGNOSIS",
+        "score": 0.9,
+        "start": 307,
+        "end": 312,
+        "source": "presidio_compat",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:BESONDERE_KATEGORIE]",
+        "sources": []
+      },
+      {
+        "word": "[REDACTED]",
+        "entity_group": "RELIGION",
+        "score": 0.9,
+        "start": 449,
+        "end": 467,
+        "source": "presidio_compat",
+        "context": "",
+        "anomaly_score": 0.0,
+        "placeholder": "[GESCHWÄRZT:BESONDERE_KATEGORIE]",
+        "sources": []
+      }
+    ],
+    "channel": "ifg",
+    "quality_report": {
+      "passed": true,
+      "issues": [],
+      "leak_count": 0
+    },
+    "redaction_protocol": [
+      {
+        "category": "BESONDERE_KATEGORIE",
+        "count": 2,
+        "min_confidence": 0.9,
+        "max_confidence": 0.9
+      },
+      {
+        "category": "BIC",
+        "count": 1,
+        "min_confidence": 0.9742157518863678,
+        "max_confidence": 0.9742157518863678
+      },
+      {
+        "category": "ORGANISATION",
+        "count": 1,
+        "min_confidence": 0.8588310480117798,
+        "max_confidence": 0.8588310480117798
+      },
+      {
+        "category": "PERSON",
+        "count": 1,
+        "min_confidence": 1.0,
+        "max_confidence": 1.0
+      },
+      {
+        "category": "SVNR",
+        "count": 1,
+        "min_confidence": 0.8596575260162354,
+        "max_confidence": 0.8596575260162354
+      },
+      {
+        "category": "UID",
+        "count": 1,
+        "min_confidence": 1.0,
+        "max_confidence": 1.0
+      }
+    ]
+  }
+}
