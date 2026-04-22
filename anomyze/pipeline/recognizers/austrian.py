@@ -4,13 +4,12 @@ Includes Austrian PII types not yet covered by the regex layer (e.g.,
 Firmenbuchnummer) and demonstrates context-aware confidence scoring.
 """
 
+import re
 
 from stdnum import bic as stdnum_bic
 from stdnum import iban as stdnum_iban
 from stdnum.at import uid as stdnum_uid
 from stdnum.at import vnr as stdnum_vnr
-
-import re
 
 from anomyze.patterns.art9 import ART9_LEXICONS
 from anomyze.patterns.at_names import is_at_firstname, is_at_lastname
@@ -40,7 +39,7 @@ class ATSVNRRecognizer(PatternRecognizer):
     def _is_valid_match(
         self, matched: str, full_text: str, start: int, end: int
     ) -> bool:
-        return stdnum_vnr.is_valid(matched)
+        return bool(stdnum_vnr.is_valid(matched))
 
 
 class ATIBANRecognizer(PatternRecognizer):
@@ -63,7 +62,7 @@ class ATIBANRecognizer(PatternRecognizer):
     def _is_valid_match(
         self, matched: str, full_text: str, start: int, end: int
     ) -> bool:
-        return stdnum_iban.is_valid(matched)
+        return bool(stdnum_iban.is_valid(matched))
 
 
 # Austrian Bundesland and Bezirk codes for license plates.
@@ -115,7 +114,7 @@ class ATUIDRecognizer(PatternRecognizer):
     def _is_valid_match(
         self, matched: str, full_text: str, start: int, end: int
     ) -> bool:
-        return stdnum_uid.is_valid(matched)
+        return bool(stdnum_uid.is_valid(matched))
 
 
 class ATBICRecognizer(PatternRecognizer):
@@ -145,7 +144,7 @@ class ATBICRecognizer(PatternRecognizer):
         # 2 alphanumerics).
         if matched != matched.upper():
             return False
-        return stdnum_bic.is_valid(matched)
+        return bool(stdnum_bic.is_valid(matched))
 
 
 class ATFirmenbuchRecognizer(PatternRecognizer):
